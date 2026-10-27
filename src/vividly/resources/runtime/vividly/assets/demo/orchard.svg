@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Rows of trees in an orchard">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#bfe0c4"/><stop offset="1" stop-color="#5f9e6a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <rect y="330" width="800" height="170" fill="#3f7347"/>
+  <g>
+    <g fill="#2f5c38"><rect x="120" y="300" width="10" height="70"/><rect x="330" y="290" width="12" height="80"/><rect x="560" y="305" width="10" height="65"/></g>
+    <circle cx="125" cy="280" r="52" fill="#2b6b3c"/><circle cx="336" cy="266" r="62" fill="#246034"/><circle cx="565" cy="286" r="48" fill="#2f7241"/>
+  </g>
+  <g fill="#e8f3e6" opacity=".5"><circle cx="180" cy="90" r="26"/><circle cx="215" cy="90" r="34"/><circle cx="255" cy="92" r="24"/></g>
+</svg>

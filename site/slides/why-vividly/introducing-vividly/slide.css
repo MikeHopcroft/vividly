@@ -1,0 +1,172 @@
+:scope {
+  --introduction-accent: #ffb547;
+  position: relative;
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 86% 12%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 38%),
+    var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.introduction {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 7vh, 5rem);
+  width: min(100%, 108rem);
+  height: 100%;
+  overflow: auto;
+  scroll-padding-bottom: 4rem;
+  margin-inline: auto;
+  padding: clamp(3rem, 9vh, 7rem) clamp(2rem, 6vw, 7rem);
+  padding-bottom: max(4rem, min(9vh, 7rem));
+}
+
+.introduction-progress {
+  --v-step-progress-color: var(--introduction-accent);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.introduction h1 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .1em 0;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 5vw, 6rem);
+  font-weight: 500;
+  letter-spacing: -.045em;
+  line-height: 1.1;
+}
+
+.introduction-logo {
+  display: block;
+  width: clamp(17rem, 25vw, 30rem);
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 508 / 130;
+}
+
+.introduction-points {
+  display: grid;
+  gap: clamp(1.5rem, 4vh, 3rem);
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: clamp(1.5rem, 2.5vw, 3rem);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.introduction-points li {
+  padding-left: .35em;
+}
+
+.introduction-points li::marker {
+  color: var(--introduction-accent);
+}
+
+.introduction-proof {
+  flex-shrink: 0;
+  margin: 0;
+  padding-left: 1.45em;
+  font-size: clamp(1.5rem, 2.5vw, 3rem);
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.introduction mark {
+  background: transparent;
+  color: var(--introduction-accent);
+}
+
+.is-revealing h1 {
+  animation: introduction-title-wipe 420ms ease-out both;
+}
+
+.is-revealing .introduction-points li {
+  animation: introduction-reveal 320ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.is-revealing .introduction-points li:nth-child(2) {
+  animation-delay: 220ms;
+}
+
+.is-revealing .introduction-points li:nth-child(3) {
+  animation-delay: 440ms;
+}
+
+.is-revealing .introduction-proof {
+  animation: introduction-proof-reveal 240ms ease-out 1300ms both;
+}
+
+@keyframes introduction-proof-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes introduction-title-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes introduction-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .introduction {
+    gap: .875rem;
+    padding: 4rem 1.5rem;
+  }
+
+  .introduction h1 {
+    font-size: clamp(1.8rem, 7vw, 2.5rem);
+  }
+
+  .introduction-logo {
+    width: clamp(8rem, 36vw, 12rem);
+  }
+
+  .introduction-points {
+    gap: 1.25rem;
+    font-size: clamp(1.125rem, 5vw, 1.375rem);
+    line-height: 1.4;
+  }
+
+  .introduction-proof {
+    font-size: clamp(1rem, 4.5vw, 1.25rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-revealing h1,
+  .is-revealing .introduction-points li,
+  .is-revealing .introduction-proof {
+    animation: none;
+  }
+}

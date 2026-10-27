@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      source_commit:
+        description: Exact source commit to validate
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_commit || github.sha }}
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Install development dependencies
+        run: uv sync --locked
+
+      - name: Install Chromium
+        run: uv run --locked playwright install --with-deps chromium
+
+      - name: Lint
+        run: uv run --locked ruff check src tests tools/release.py
+
+      - name: Type check
+        if: matrix.python-version == '3.12'
+        run: uv run --locked pyright
+
+      - name: Generate thumbnails
+        run: uv run --locked vividly thumbnails
+
+      - name: Test
+        run: uv run --locked pytest
+
+      - name: Build distributions
+        if: matrix.python-version == '3.14'
+        run: uv build
+
+      - name: Validate distributions
+        if: matrix.python-version == '3.14'
+        run: |
+          uvx twine check dist/*
+          uvx check-wheel-contents dist/*.whl
+
+  javascript:
+    name: JavaScript tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_commit || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Test
+        run: node --test tests/*.test.mjs

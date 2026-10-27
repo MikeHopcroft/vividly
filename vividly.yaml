@@ -1,0 +1,6 @@
+schema: 1
+runtime:
+  source: repository
+  path: src/vividly/resources/runtime
+  version: 0.0.2
+  commit: 4b9dc0cc51a14c5351145d7f3e0635a80f0e247e

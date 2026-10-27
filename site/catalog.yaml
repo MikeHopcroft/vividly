@@ -1,0 +1,31 @@
+version: 1
+dependencies:
+  archivo:
+    baseUrl: https://cdn.jsdelivr.net/npm/@fontsource-variable/archivo@5.2.8/
+    entry: standard.css
+  ibm-plex-mono:
+    baseUrl: https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5.2.7/
+    entry: latin-400.css
+  libre-caslon-text:
+    baseUrl: https://cdn.jsdelivr.net/npm/@fontsource/libre-caslon-text@5.3.0/
+    entry: latin.css
+
+presentations:
+  - id: vividly
+    title: Vividly
+    manifest: ./presentations/vividly.yaml
+  - id: feature-tour
+    title: Runtime Feature Tour
+    manifest: ./presentations/feature-tour.yaml
+  - id: tic-tac-toe
+    title: Tic-Tac-Toe
+    manifest: ./presentations/tic-tac-toe.yaml
+  - id: inverted
+    title: Inverted
+    manifest: ./presentations/inverted.yaml
+  - id: pool-table-break-lab
+    title: Pool Table Break Lab
+    manifest: ./presentations/pool-table-break-lab.yaml
+  - id: city-of-loops-lab
+    title: City of Loops Lab
+    manifest: ./presentations/city-of-loops-lab.yaml

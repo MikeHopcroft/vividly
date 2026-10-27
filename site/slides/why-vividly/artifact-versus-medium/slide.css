@@ -1,0 +1,229 @@
+:scope {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0a0a;
+  color: #f2eee6;
+  font-family: "Archivo Variable", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.woodblock {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.woodblock-images,
+.woodblock-image,
+.woodblock-top-shade,
+.woodblock-bottom-shade,
+.woodblock-spotlight {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.woodblock-image {
+  display: block;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 700ms ease-out;
+}
+
+:scope .woodblock-image-table,
+:scope[data-step="1"] .woodblock-image-artifact,
+:scope[data-step="2"] .woodblock-image-artifact,
+:scope[data-step="3"] .woodblock-image-artifact,
+:scope[data-step="2"] .woodblock-image-medium,
+:scope[data-step="3"] .woodblock-image-medium {
+  opacity: 1;
+}
+
+.woodblock-top-shade {
+  height: 33.333%;
+  bottom: auto;
+  background: linear-gradient(180deg, rgb(8 6 5 / 90%) 0%, rgb(8 6 5 / 60%) 55%, transparent 100%);
+}
+
+.woodblock-bottom-shade {
+  top: auto;
+  height: 27.778%;
+  background: linear-gradient(0deg, rgb(8 6 5 / 92%) 0%, rgb(8 6 5 / 55%) 55%, transparent 100%);
+}
+
+.woodblock-spotlight {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 800ms ease-out;
+}
+
+:scope[data-step="3"] .woodblock-spotlight {
+  opacity: 1;
+}
+
+.woodblock-header {
+  position: absolute;
+  top: 5.556%;
+  left: 5%;
+  display: flex;
+  width: min(78.125%, 75rem);
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.woodblock-header p,
+.woodblock-header h1,
+.woodblock-caption p,
+.woodblock-caption strong {
+  margin: 0;
+}
+
+.woodblock-header > p:first-child,
+.woodblock-caption p {
+  color: #e9b44c;
+  font: 400 clamp(.85rem, 1.1vw, 1.3rem) / 1.2 "IBM Plex Mono", monospace;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.woodblock-header h1 {
+  display: grid;
+  color: #f7f3ec;
+  font-size: clamp(2.7rem, 3.3vw, 4.2rem);
+  font-stretch: 82%;
+  font-weight: 720;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+}
+
+.woodblock-header h1 span,
+.woodblock-promise,
+.woodblock-caption[data-copy-step],
+.woodblock-comparison {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 500ms ease-out,
+    visibility 0s linear 500ms;
+}
+
+.woodblock-header h1 span {
+  grid-area: 1 / 1;
+}
+
+:scope[data-step="0"] [data-copy-step="0"],
+:scope[data-step="1"] [data-copy-step="1"],
+:scope[data-step="2"] [data-copy-step="2"],
+:scope[data-step="3"] [data-copy-step="3"] {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.woodblock-header .woodblock-promise {
+  color: #f6cd74;
+  font-size: clamp(1.45rem, 1.9vw, 2.35rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.woodblock-caption {
+  position: absolute;
+  bottom: 4.167%;
+  display: flex;
+  max-width: 91%;
+  flex-direction: column;
+  gap: .45rem;
+}
+
+.woodblock-comparison {
+  position: absolute;
+  right: 5%;
+  bottom: 4.167%;
+  left: 4%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 2rem;
+  align-items: end;
+}
+
+.woodblock-comparison .woodblock-caption {
+  position: static;
+  max-width: none;
+}
+
+.woodblock-caption strong {
+  color: #f7f3ec;
+  font-size: clamp(1.45rem, 1.9vw, 2.35rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.woodblock-caption-artifact {
+  left: 4%;
+}
+
+.woodblock-caption-medium {
+  right: 5%;
+  align-items: flex-end;
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .woodblock-bottom-shade {
+    display: none;
+  }
+
+  .woodblock > .woodblock-caption,
+  .woodblock-comparison {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-width: none;
+    padding: 0 5% 2rem 4%;
+    isolation: isolate;
+  }
+
+  .woodblock > .woodblock-caption::before,
+  .woodblock-comparison::before {
+    position: absolute;
+    z-index: -1;
+    inset: -6rem 0 0;
+    background: linear-gradient(
+      180deg,
+      transparent 0,
+      rgb(7 5 4 / 85%) 7rem
+    );
+    content: "";
+    pointer-events: none;
+  }
+
+  .woodblock-comparison {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .woodblock-comparison .woodblock-caption-medium {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .woodblock-image,
+  .woodblock-spotlight,
+  .woodblock-header h1 span,
+  .woodblock-promise,
+  .woodblock-caption,
+  .woodblock-comparison {
+    transition: none;
+  }
+}

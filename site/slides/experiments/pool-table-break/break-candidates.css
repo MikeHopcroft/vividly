@@ -1,0 +1,52 @@
+:scope {
+  display: block;
+  height: 100%;
+  overflow: auto;
+}
+
+.break-comparison {
+  min-height: 100%;
+  padding: 24px;
+  background: var(--bg-primary, #151719);
+  color: var(--text-primary, #eee);
+  font-family: var(--font-body, system-ui, sans-serif);
+  color-scheme: dark;
+}
+
+.break-comparison *,
+.break-comparison *::before,
+.break-comparison *::after {
+  box-sizing: border-box;
+}
+
+.break-comparison header { max-width: 1100px; margin: 0 auto 24px; }
+.break-comparison h1 { margin: 0 0 12px; }
+.break-comparison p { line-height: 1.5; color: var(--text-muted, #c4c8cc); }
+.break-comparison a { color: var(--accent-warm, #ffca70); }
+.break-comparison button,
+.break-comparison select {
+  font: inherit;
+  padding: 8px 12px;
+  color: inherit;
+  background: var(--bg-elevated, #292d31);
+  border: 1px solid var(--border, #626971);
+  border-radius: 6px;
+}
+.break-comparison button { cursor: pointer; }
+.break-comparison :focus-visible { outline: 3px solid var(--accent-warm, #ffca70); outline-offset: 3px; }
+.break-comparison .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.break-comparison .candidates {
+  --table-width: 512px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: start;
+  gap: 32px 24px;
+}
+.break-comparison article { width: min(100%, var(--table-width)); background: var(--bg-elevated, #202428); border-radius: 10px; overflow: hidden; }
+.break-comparison .description { padding: 16px; min-height: 220px; }
+.break-comparison h2 { margin: 0 0 8px; font-size: 1.25rem; }
+.break-comparison article p { margin: 8px 0; }
+.break-comparison .metrics { font-size: .875rem; color: var(--text-muted, #aab4bd); }
+.break-comparison .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
+.break-comparison canvas { display: block; width: 100%; aspect-ratio: 2056 / 1228; }

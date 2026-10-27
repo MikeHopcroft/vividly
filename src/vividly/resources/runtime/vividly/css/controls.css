@@ -1,0 +1,625 @@
+@layer vividly.controls {
+  vividly-code,
+  vividly-image,
+  vividly-markdown,
+  vividly-annotated-markdown,
+  vividly-advance,
+  vividly-step-progress,
+  vividly-thumbnail {
+    display: block;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  /* --- advance prompt --- */
+
+  vividly-advance {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  vividly-advance > button {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    max-width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: var(--font-size-md);
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  vividly-advance > button:hover {
+    border-color: var(--accent);
+  }
+
+  vividly-advance > button:focus-visible {
+    border-color: var(--accent);
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  vividly-advance kbd {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.2rem;
+    min-height: 2rem;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid #f4f5f7;
+    border-bottom: 3px solid #8d949e;
+    border-radius: var(--radius-sm);
+    background: #d8dce2;
+    color: #171a1f;
+    font: 600 0.85em / 1 var(--font-mono);
+    white-space: nowrap;
+  }
+
+  vividly-advance kbd.v-advance-arrow {
+    font-family: var(--font-body);
+    font-size: 1.25em;
+    font-weight: 750;
+  }
+
+  /* --- step readiness progress --- */
+
+  vividly-step-progress {
+    position: relative;
+    width: 100%;
+    height: var(--v-step-progress-height, 3px);
+  }
+
+  .v-step-progress-track {
+    height: 100%;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--text-primary) 7%, transparent);
+  }
+
+  .v-step-progress-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--v-step-progress-color, var(--accent-warm));
+    box-shadow: 0 0 10px var(--v-step-progress-color, var(--accent-warm));
+    transform-origin: left;
+  }
+
+  .v-step-progress-advance {
+    position: absolute;
+    right: calc(2rem + 2 * var(--spacing-md));
+    bottom: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-sunken);
+    color: var(--text-muted);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .v-step-progress-advance:hover {
+    border-color: var(--v-step-progress-color, var(--accent-warm));
+    color: var(--text-primary);
+  }
+
+  .v-step-progress-advance:focus-visible {
+    outline: 2px solid var(--v-step-progress-color, var(--accent-warm));
+    outline-offset: 2px;
+  }
+
+  .v-toc:not([data-thumbnails]) .v-toc-outline vividly-thumbnail {
+    display: none;
+  }
+
+  .v-toc[data-thumbnails][data-steps-expanded]
+    .v-toc-outline
+    .v-toc-item[data-indexed-steps]
+    > vividly-thumbnail {
+    display: none;
+  }
+
+  .v-control-error {
+    margin: 0;
+    padding: var(--spacing-md);
+    border-left: 3px solid var(--accent-warm);
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+  }
+
+  /* --- image --- */
+
+  vividly-image {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-primary);
+  }
+
+  vividly-image > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* --- code browser --- */
+
+  .v-code-copy-tools {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-sm);
+    white-space: normal;
+  }
+
+  .v-code-copy {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .v-code-copy:hover,
+  .v-code-copy:focus-visible {
+    border-color: var(--text-muted);
+    color: var(--text-primary);
+  }
+
+  .v-code-copy:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .v-code-copy svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+  }
+
+  .v-code-copy-check,
+  .v-code-copy[data-copied] .v-code-copy-symbol {
+    display: none;
+  }
+
+  .v-code-copy[data-copied] .v-code-copy-check {
+    display: block;
+  }
+
+  .v-code-copy-status:not(.is-error) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .v-code-copy-status.is-error {
+    max-width: 14rem;
+    color: var(--accent-warm);
+    font: 400 var(--font-size-sm) / 1.4 var(--font-body);
+  }
+
+  .v-code-copy-block {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--spacing-md);
+  }
+
+  .v-code-copy-block > code {
+    display: block;
+    min-width: 0;
+    overflow: auto;
+  }
+
+  vividly-code {
+    --v-code-font-size: var(--font-size-sm);
+    --v-code-line-height: calc(var(--v-code-font-size) * 1.5);
+    --v-code-padding-block: var(--spacing-md);
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-sunken);
+  }
+
+  vividly-code:not([no-copy]) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  vividly-code > .v-code-copy-tools {
+    flex: none;
+    padding: var(--spacing-sm);
+    border-bottom: 1px solid var(--border);
+  }
+
+  vividly-code:not([no-copy]) > .v-code-scroll {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+
+  vividly-code .v-code-scroll {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  vividly-code .v-code-frame {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    width: max-content;
+    min-width: 100%;
+    min-height: 100%;
+  }
+
+  vividly-code .v-code-gutter {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    padding: var(--v-code-padding-block) var(--spacing-sm);
+    border-right: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--v-code-font-size);
+    line-height: var(--v-code-line-height);
+    text-align: right;
+    user-select: none;
+  }
+
+  vividly-code pre {
+    position: relative;
+    z-index: 1;
+    min-width: max-content;
+    margin: 0;
+    background: transparent;
+  }
+
+  vividly-code code.hljs {
+    display: block;
+    min-height: 100%;
+    padding: var(--v-code-padding-block) var(--spacing-md);
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: var(--v-code-font-size);
+    line-height: var(--v-code-line-height);
+    white-space: pre;
+  }
+
+  vividly-code .v-code-markers {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  vividly-code .v-code-line {
+    position: absolute;
+    top: calc(var(--v-code-padding-block) + var(--line) * var(--v-code-line-height));
+    right: 0;
+    left: 0;
+    height: var(--v-code-line-height);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+
+  vividly-code .v-code-line.is-active {
+    background: color-mix(in srgb, var(--accent-warm) 24%, transparent);
+    box-shadow: inset 3px 0 var(--accent-warm);
+  }
+
+  /* --- markdown --- */
+
+  vividly-markdown {
+    overflow: auto;
+    color: var(--text-primary);
+    line-height: 1.7;
+  }
+
+  vividly-markdown > :first-child {
+    margin-top: 0;
+  }
+
+  vividly-markdown > :last-child {
+    margin-bottom: 0;
+  }
+
+  vividly-markdown h1,
+  vividly-markdown h2,
+  vividly-markdown h3 {
+    font-family: var(--font-display);
+  }
+
+  vividly-markdown h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  vividly-markdown h2 {
+    margin-top: var(--spacing-xl);
+    font-size: var(--font-size-lg);
+  }
+
+  vividly-markdown h3 {
+    margin-top: var(--spacing-lg);
+  }
+
+  vividly-markdown p,
+  vividly-markdown ul,
+  vividly-markdown ol,
+  vividly-markdown pre,
+  vividly-markdown blockquote {
+    margin-block: 0 var(--spacing-md);
+  }
+
+  vividly-markdown ul,
+  vividly-markdown ol {
+    padding-left: 1.5em;
+  }
+
+  vividly-markdown :not(pre) > code {
+    padding: 2px 5px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  vividly-markdown pre {
+    overflow: auto;
+    padding: var(--spacing-md);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-sunken);
+  }
+
+  vividly-markdown pre code.hljs {
+    padding: 0;
+    background: transparent;
+  }
+
+  vividly-markdown .v-prompt {
+    width: min(100%, 80ch);
+    margin: 0 0 var(--spacing-md);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--accent-warm) 35%, var(--border));
+    border-left: 4px solid var(--accent-warm);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--accent-warm) 4%, var(--bg-sunken));
+  }
+
+  vividly-markdown .v-prompt figcaption {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-warm) 25%, var(--border));
+    background: color-mix(in srgb, var(--accent-warm) 10%, var(--bg-elevated));
+    color: var(--accent-warm);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  vividly-markdown .v-prompt-content {
+    padding: var(--spacing-md);
+    overflow-wrap: anywhere;
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+
+  vividly-markdown .v-prompt-content > :is(p, ul, ol, pre, blockquote) {
+    margin-block: 0 var(--spacing-md);
+  }
+
+  vividly-markdown .v-prompt-content li + li {
+    margin-top: 0.4em;
+  }
+
+  vividly-markdown .v-prompt-content > :last-child {
+    margin-bottom: 0;
+  }
+
+  vividly-markdown blockquote {
+    margin-inline: 0;
+    padding-left: var(--spacing-md);
+    border-left: 3px solid var(--accent);
+    color: var(--text-muted);
+  }
+
+  vividly-markdown a {
+    color: var(--accent);
+  }
+
+  /* --- annotated Markdown --- */
+
+  vividly-annotated-markdown {
+    container-type: inline-size;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+  }
+
+  vividly-annotated-markdown .v-annotated-header {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elevated);
+  }
+
+  vividly-annotated-markdown .v-annotated-header[hidden] {
+    display: none;
+  }
+
+  vividly-annotated-markdown .v-annotated-header h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--font-size-lg);
+  }
+
+  vividly-annotated-markdown .v-annotated-description {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  vividly-annotated-markdown .v-annotated-body {
+    display: grid;
+    grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  vividly-annotated-markdown .v-annotated-nav,
+  vividly-annotated-markdown .v-annotated-content {
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  vividly-annotated-markdown .v-annotated-nav {
+    padding: var(--spacing-md) 0;
+    border-right: 1px solid var(--border);
+    background: var(--bg-elevated);
+  }
+
+  vividly-annotated-markdown .v-annotated-nav > h2 {
+    margin: 0;
+    padding: 0 var(--spacing-md) var(--spacing-sm);
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  vividly-annotated-markdown .v-annotation-entry {
+    border-left: 3px solid transparent;
+  }
+
+  vividly-annotated-markdown .v-annotation-entry.selected {
+    border-left-color: var(--accent-warm);
+    background: color-mix(in srgb, var(--accent-warm) 10%, transparent);
+  }
+
+  vividly-annotated-markdown .v-annotation-title {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 0;
+    background: transparent;
+    color: var(--text-primary);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  vividly-annotated-markdown .v-annotation-title:hover,
+  vividly-annotated-markdown .v-annotation-title:focus-visible {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    outline: none;
+  }
+
+  vividly-annotated-markdown .v-annotation-content {
+    display: none;
+    padding: 0 var(--spacing-md) var(--spacing-md);
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  vividly-annotated-markdown .v-annotation-entry.selected .v-annotation-content {
+    display: block;
+  }
+
+  vividly-annotated-markdown .v-annotated-content {
+    padding: var(--spacing-xl) 48px;
+    scroll-padding-block: 40%;
+  }
+
+  vividly-annotated-markdown .v-annotated-content > vividly-markdown {
+    overflow: visible;
+  }
+
+  vividly-annotated-markdown vividly-document-header,
+  vividly-annotated-markdown vividly-annotation {
+    display: none;
+  }
+
+  vividly-annotated-markdown .v-annotation-anchor {
+    position: relative;
+    display: block;
+    height: 0;
+    overflow: visible;
+  }
+
+  vividly-annotated-markdown .v-annotation-marker {
+    position: absolute;
+    top: -10px;
+    right: -32px;
+    display: grid;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid var(--text-muted);
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font: 700 11px/1 var(--font-body);
+    cursor: pointer;
+  }
+
+  vividly-annotated-markdown .v-annotation-marker:hover,
+  vividly-annotated-markdown .v-annotation-marker:focus-visible {
+    border-color: var(--accent);
+    outline: none;
+    color: var(--accent);
+  }
+
+  vividly-annotated-markdown .v-annotation-marker.selected {
+    border-color: var(--accent-warm);
+    background: var(--accent-warm);
+    color: var(--bg-primary);
+  }
+
+  @container (max-width: 42rem) {
+    vividly-annotated-markdown .v-annotated-header {
+      display: block;
+    }
+
+    vividly-annotated-markdown .v-annotated-body {
+      grid-template-rows: minmax(8rem, 35%) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    vividly-annotated-markdown .v-annotated-nav {
+      border-right: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    vividly-annotated-markdown .v-annotated-content {
+      padding: var(--spacing-lg) 40px var(--spacing-lg) var(--spacing-md);
+    }
+  }
+}

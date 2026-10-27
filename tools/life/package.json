@@ -1,0 +1,16 @@
+{
+  "name": "life-authoring",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node precompute.mjs",
+    "check": "node precompute.mjs --check",
+    "test": "node --test precompute.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "yaml": "^2.8.1"
+  }
+}

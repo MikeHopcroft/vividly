@@ -1,0 +1,17 @@
+id: cheese-context
+title: Cheese Context
+transition: dissolve
+
+nodes:
+  - type: slide
+    id: introduction
+    title: About Cheese Context
+    module: ../vividly/slides/markdown.js
+    data: ../slides/cheese-context/introduction
+    props:
+      src: ./introduction.md
+
+  - type: slide
+    id: demo
+    module: ../slides/cheese-context/demo/slide.js
+    title: Cheese Context

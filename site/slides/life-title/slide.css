@@ -1,0 +1,105 @@
+:scope {
+  display: block;
+  overflow: hidden;
+  background:
+    linear-gradient(rgb(37 43 51 / 62%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(37 43 51 / 62%) 1px, transparent 1px),
+    radial-gradient(circle at 76% 48%, rgb(70 168 255 / 10%), transparent 28%),
+    #11151a;
+  background-size: 54px 54px, 54px 54px, auto, auto;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+main {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1.25fr .75fr;
+  align-items: center;
+  gap: 7vw;
+  padding: 8vw;
+}
+
+.copy {
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  margin: 0 0 28px;
+  color: var(--text-muted);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(92px, 10.5vw, 174px);
+  font-weight: 500;
+  letter-spacing: -.055em;
+  line-height: .82;
+}
+
+.sub {
+  max-width: 720px;
+  margin: 42px 0 0;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1.25;
+}
+
+.seed {
+  position: relative;
+  width: min(32vw, 520px);
+  aspect-ratio: 7 / 4;
+  filter: drop-shadow(0 20px 38px rgb(0 0 0 / 34%));
+}
+
+.cell {
+  position: absolute;
+  width: calc(100% / 7);
+  aspect-ratio: 1;
+  border: 2px solid #252b33;
+  background: #f7f8fa;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 55%);
+}
+
+.c1 {
+  left: 0;
+  top: 0;
+}
+
+.c2 {
+  left: calc(100% / 7);
+  top: 0;
+}
+
+.c3 {
+  left: calc(100% / 7);
+  top: calc(200% / 4);
+}
+
+.c4 {
+  left: calc(300% / 7);
+  top: calc(100% / 4);
+}
+
+.c5 {
+  left: calc(400% / 7);
+  top: 0;
+}
+
+.c6 {
+  left: calc(500% / 7);
+  top: 0;
+}
+
+.c7 {
+  left: calc(600% / 7);
+  top: 0;
+}

@@ -1,0 +1,40 @@
+/* Shared controls and step primitives. Slides restyle these with plain
+   selectors — slide sheets are unlayered and beat this layer regardless of
+   specificity. --step and --steps are set on the slide root by the runtime. */
+@layer vividly.kit {
+  /* Visible once the deck reaches --at, and from then on. */
+  .v-reveal {
+    --shown: clamp(0, calc(var(--step, 0) - var(--at, 0) + 1), 1);
+    opacity: var(--shown);
+    transform: translateY(calc((1 - var(--shown)) * var(--reveal-rise, 12px)));
+    transition: opacity 400ms ease, transform 400ms ease;
+  }
+
+  /* --on is 1 only on the exact step --at, 0 otherwise. The difference of two
+     clamps stands in for an equality test CSS cannot express directly. */
+  .v-at {
+    --on: calc(
+      clamp(0, calc(var(--step, 0) - var(--at, 0) + 1), 1) -
+      clamp(0, calc(var(--step, 0) - var(--at, 0)), 1)
+    );
+  }
+
+  .v-caption {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .v-figure {
+    margin: 0;
+    display: grid;
+    gap: var(--spacing-sm);
+  }
+
+  .v-figure img,
+  .v-figure svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+  }
+}

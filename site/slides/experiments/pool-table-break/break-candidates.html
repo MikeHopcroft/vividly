@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Billiards break candidates</title>
+  <link rel="stylesheet" href="./break-candidates.css">
+  <style>body { margin: 0; }</style>
+</head>
+<body>
+  <script type="module">
+    import { createBreakCandidates } from './break-candidates.js';
+
+    const comparison = createBreakCandidates(document.body);
+    comparison.finish();
+    window.addEventListener('pagehide', () => comparison.dispose(), { once: true });
+  </script>
+</body>
+</html>

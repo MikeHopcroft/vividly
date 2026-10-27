@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Aurora over a dark ridge">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1d2e"/><stop offset="1" stop-color="#123a46"/>
+    </linearGradient>
+    <linearGradient id="veil" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5ef2b0" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#5ef2b0" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <path d="M0 60 C 160 180 240 20 400 120 S 660 40 800 140 L800 320 C 640 220 520 340 380 260 S 140 320 0 240 Z" fill="url(#veil)"/>
+  <path d="M0 140 C 180 240 260 90 420 190 S 680 120 800 220 L800 300 C 620 230 500 330 360 270 S 120 330 0 280 Z" fill="url(#veil)" opacity=".5"/>
+  <circle cx="640" cy="90" r="4" fill="#dff6ff"/><circle cx="120" cy="60" r="3" fill="#dff6ff"/>
+  <circle cx="300" cy="40" r="2.5" fill="#dff6ff"/><circle cx="720" cy="180" r="2.5" fill="#dff6ff"/>
+  <path d="M0 500 L0 400 L140 330 L280 410 L430 320 L580 400 L800 310 L800 500 Z" fill="#060d15"/>
+</svg>

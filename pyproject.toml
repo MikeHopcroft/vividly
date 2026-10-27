@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vividly"
+version = "0.0.2"
+description = "Vividly presentation builder and runner"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Michael Hopcroft" }]
+keywords = ["presentations", "slides", "web"]
+classifiers = [
+	"Development Status :: 2 - Pre-Alpha",
+	"Environment :: Console",
+	"Operating System :: OS Independent",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3.13",
+	"Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "pillow>=12.3.0",
+    "playwright==1.62.0",
+    "pyyaml>=6.0.2",
+    "rich>=14.2.0",
+    "watchfiles>=1.2.0",
+]
+
+[project.scripts]
+vividly = "vividly.cli:main"
+
+[dependency-groups]
+dev = [
+	"pyright>=1.1.414",
+	"pytest>=8.4",
+	"ruff>=0.14",
+	"types-pyyaml>=6.0.12.20250915",
+]
+
+[tool.uv]
+package = true
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+pythonVersion = "3.12"
+include = ["src", "tests", "tools/release.py", "tools/maintain.py"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

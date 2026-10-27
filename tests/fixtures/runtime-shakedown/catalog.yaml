@@ -1,0 +1,5 @@
+version: 1
+presentations:
+  - id: vividly
+    title: Vividly Runtime Shakedown
+    manifest: ./presentations/vividly.yaml

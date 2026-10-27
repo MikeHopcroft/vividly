@@ -1,0 +1,5 @@
+version: 1
+presentations:
+  - id: vividly
+    title: My Vividly Presentation
+    manifest: ./presentations/vividly.yaml

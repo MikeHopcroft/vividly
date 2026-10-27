@@ -1,0 +1,689 @@
+{
+  "page": 45,
+  "guideLeft": "Aghast",
+  "guideRight": "Agonic",
+  "terms": [
+    "shoelace",
+    "plastic",
+    "end"
+  ],
+  "columns": {
+    "a": [
+      {
+        "forms": [
+          "A·ghast´"
+        ],
+        "pos": "a & p. p.",
+        "etym": "[OE. agast, agasted, p. p. of agasten to terrify, fr. AS. pref. a- (cf. Goth. us-, G. er-, orig. meaning out) + g to terrify, torment: cf. Goth. usgaisjan to terrify, primitively to fix, to root to the spot with terror; akin to L. haerere to stick fast, cling. See Gaze, Hesitate.]",
+        "label": "",
+        "senses": [
+          "Terrified; struck with amazement; showing signs of terror or horror. Aghast he waked; and, starting from his bed, Cold sweat in clammy drops his limbs o'erspread. Dryden. The commissioners read and stood aghast. Macaulay."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´i·ble"
+        ],
+        "pos": "a.",
+        "etym": "[Cf. LL. agibilis, fr. L. agere to move, do.]",
+        "label": "",
+        "senses": [
+          "Possible to be done; practicable. [Obs.] \"Fit for agible things.\" Sir A. Sherley."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´ile"
+        ],
+        "pos": "a.",
+        "etym": "[F. agile, L. agilis, fr. agere to move. See Agent.]",
+        "label": "",
+        "senses": [
+          "Having the faculty of quick motion in the limbs; apt or ready to move; nimble; active; as, an agile boy; an agile tongue. Shaking it with agile hand. Cowper.",
+          "Syn. — Active; alert; nimble; brisk; lively; quick."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´ile·ly"
+        ],
+        "pos": "adv.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "In an agile manner; nimbly."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´ile·ness"
+        ],
+        "pos": "n.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "Agility; nimbleness. [R.]"
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·gil´i·ty"
+        ],
+        "pos": "n.",
+        "etym": "[F. agilié, L. agilitas, fr. agilis.]",
+        "label": "",
+        "senses": [
+          "1. The quality of being agile; the power of moving the limbs quickly and easily; nimbleness; activity; quickness of motion; as, strength and agility of body. They . . . trust to the agility of their wit. Bacon. Wheeling with the agility of a hawk. Sir W. Scott.",
+          "2. Activity; powerful agency. [Obs.] The agility of the sun's fiery heat. Holland."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´i·o"
+        ],
+        "pos": "n.; pl. Agios.",
+        "etym": "[It. aggio exchange, discount, premium, the same word as agio ease. See Ease.]",
+        "label": "(Com.)",
+        "senses": [
+          "The premium or percentage on a better sort of money when it is given in exchange for an inferior sort. The premium or discount on foreign bills of exchange is sometimes called agio."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´i·o·tage"
+        ],
+        "pos": "n.",
+        "etym": "[F. agiotage, fr. agioter to practice stockjobbing, fr. agio.]",
+        "label": "",
+        "senses": [
+          "Exchange business; also, stockjobbing; the maneuvers of speculators to raise or lower the price of stocks or public funds. Vanity and agiotage are to a Parisian the oxygen and hydrogen of life. Landor."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·gist´"
+        ],
+        "pos": "v. t.",
+        "etym": "[OF. agister; à (L. ad) + gister to assign a lodging, fr. giste lodging, abode, F. gîte, LL. gistum, gista, fr. L. jacitum, p. p. of jac to lie: cf. LL. agistare, adgistare. See Gist.]",
+        "label": "(Law)",
+        "senses": [
+          "To take to graze or pasture, at a certain sum; — used originally of the feeding of cattle in the king's forests, and collecting the money for the same. Blackstone."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag˝is·ta´tor"
+        ],
+        "pos": "n.",
+        "etym": "[LL.]",
+        "label": "",
+        "senses": [
+          "See Agister."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·gist´er",
+          "A·gist´or"
+        ],
+        "pos": "n.",
+        "etym": "[Anglo-Norman agistour.]",
+        "label": "(Law) (a)",
+        "senses": [
+          "Formerly, an officer of the king's forest, who had the care of cattle agisted, and collected the money for the same; — hence called gisttaker, which in England is corrupted into guest-taker. (b) Now, one who agists or takes in cattle to pasture at a certain rate; a pasturer. Mozley & W."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·gist´ment"
+        ],
+        "pos": "n.",
+        "etym": "[OF. agistement. See Agist.]",
+        "label": "(Law) (a)",
+        "senses": [
+          "Formerly, the taking and feeding of other men's cattle in the king's forests. (b) The taking in by any one of other men's cattle to graze at a certain rate. Mozley & W. (c) The price paid for such feeding. (d) A charge or rate against lands; as, an agistment of sea banks, i. e., charge for banks or dikes."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´i·ta·ble"
+        ],
+        "pos": "a.",
+        "etym": "[L. agitabilis: cf. F. agitable.]",
+        "label": "",
+        "senses": [
+          "Capable of being agitated, or easily moved. [R.]"
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´i·tate"
+        ],
+        "pos": "v. t. [imp. & p. p. Agitated; p. pr. & vb. n. Agitating.]",
+        "etym": "[L. agitatus, p. p. of agitare to put in motion, fr. agere to move: cf. F. agiter. See Act, Agent.]",
+        "label": "",
+        "senses": [
+          "1. To move with a violent, irregular action; as, the wind agitates the sea; to agitate water in a vessel. \"Winds . . . agitate the air.\" Cowper.",
+          "2. To move or actuate. [R.] Thomson.",
+          "3. To stir up; to disturb or excite; to perturb; as, he was greatly agitated. The mind of man is agitated by various passions. Johnson.",
+          "4. To discuss with great earnestness; to debate; as, a controversy hotly agitated. Boyle.",
+          "5. To revolve in the mind, or view in all its aspects; to contrive busily; to devise; to plot; as, politicians agitate desperate designs.",
+          "Syn. — To move; shake; excite; rouse; disturb; distract; revolve; discuss; debate; canvass."
+        ],
+        "target": false
+      }
+    ],
+    "b": [
+      {
+        "forms": [
+          "Ag´i·ta˝ted·ly"
+        ],
+        "pos": "adv.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "In an agitated manner."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag˝i·ta´tion"
+        ],
+        "pos": "n.",
+        "etym": "[L. agitatio: cf. F. agitation.]",
+        "label": "",
+        "senses": [
+          "1. The act of agitating, or the state of being agitated; the state of being moved with violence, or with irregular action; commotion; as, the sea after a storm is in agitation.",
+          "2. A stirring up or arousing; disturbance of tranquillity; disturbance of mind which shows itself by physical excitement; perturbation; as, to cause any one agitation.",
+          "3. Excitement of public feeling by discussion, appeals, etc.; as, the antislavery agitation; labor agitation. \"Religious agitations.\" Prescott.",
+          "4. Examination or consideration of a subject in controversy, or of a plan proposed for adoption; earnest discussion; debate. A logical agitation of the matter. L'Estrange. The project now in agitation. Swift.",
+          "Syn. — Emotion; commotion; excitement; trepidation; tremor; perturbation. See Emotion."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´i·ta·tive"
+        ],
+        "pos": "a.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "Tending to agitate."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A˝gi·ta´to"
+        ],
+        "pos": "a.",
+        "etym": "[It., agitated.]",
+        "label": "(Med.)",
+        "senses": [
+          "Sung or played in a restless, hurried, and spasmodic manner."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´i·ta˝tor"
+        ],
+        "pos": "n.",
+        "etym": "[L.]",
+        "label": "",
+        "senses": [
+          "1. One who agitates; one who stirs up or excites others; as, political reformers and agitators.",
+          "2. (Eng. Hist.) One of a body of men appointed by the army, in Cromwell's time, to look after their interests; — called also adjutators. Clarendon.",
+          "3. An implement for shaking or mixing."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·gleam´"
+        ],
+        "pos": "adv. & a.",
+        "etym": "[Pref. a- + gleam.]",
+        "label": "",
+        "senses": [
+          "Gleaming; as, faces agleam. Lowell."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´let",
+          "Aig´let"
+        ],
+        "pos": "n.",
+        "etym": "[F. aiguillette point, tagged point, dim. of aiguille needle, fr. LL. acucula for acicula, dim. of L. acus needle. See Acute, and cf. Aiguillette.]",
+        "label": "",
+        "senses": [
+          "1. A small sheath of plastic or metal crimped about the end of a shoelace or cord, to keep it from fraying and to ease its passage through an eyelet.",
+          "2. Formerly, a tag of a lace or of the points, braids, or cords used in dress, sometimes wrought into small images. Hence, \"aglet baby\" (Shak.), an aglet image.",
+          "3. (Haberdashery) A round white staylace. Beck."
+        ],
+        "target": true
+      },
+      {
+        "forms": [
+          "A·gley´"
+        ],
+        "pos": "adv.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "Aside; askew. [Scotch] Burns."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·glim´mer"
+        ],
+        "pos": "adv. & a.",
+        "etym": "[Pref. a- + glimmer.]",
+        "label": "",
+        "senses": [
+          "In a glimmering state. Hawthorne."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·glit´ter"
+        ],
+        "pos": "adv. & a.",
+        "etym": "[Pref. a- + glitter.]",
+        "label": "",
+        "senses": [
+          "Glittering; in a glitter."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·glos´sal"
+        ],
+        "pos": "a.",
+        "etym": "",
+        "label": "(Zoöl.)",
+        "senses": [
+          "Without tongue; tongueless."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·glow´"
+        ],
+        "pos": "adv. & a.",
+        "etym": "[Pref. a- + glow.]",
+        "label": "",
+        "senses": [
+          "In a glow; glowing; as, cheeks aglow; the landscape all aglow."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag˝lu·ti´tion"
+        ],
+        "pos": "n.",
+        "etym": "[Pref. a- not + L. glutire to swallow.]",
+        "label": "(Med.)",
+        "senses": [
+          "Inability to swallow."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´mi·nal"
+        ],
+        "pos": "a.",
+        "etym": "[L. agminalis; agmen, agminis, a train.]",
+        "label": "",
+        "senses": [
+          "Pertaining to an army marching, or to a train. [R.]"
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´mi·nate",
+          "Ag´mi·na˝ted"
+        ],
+        "pos": "a.",
+        "etym": "[L. agmen, agminis, a train, crowd.]",
+        "label": "(Physiol.)",
+        "senses": [
+          "Grouped together; as, the agminated glands of Peyer in the small intestine."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´nail"
+        ],
+        "pos": "n.",
+        "etym": "[AS. angnægl; ange vexation, trouble + nægel nail. Cf. Hangnail.]",
+        "label": "",
+        "senses": [
+          "1. A corn on the toe or foot. [Obs.]",
+          "2. An inflammation or sore under or around the nail; also, a hangnail."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´nate"
+        ],
+        "pos": "a.",
+        "etym": "[L. agnatus, p. p. of agnasci to be born in addition to; ad + nasci (for gnasci) to be born. Cf. Adnate.]",
+        "label": "",
+        "senses": [
+          "1. Related or akin by the father's side; also, sprung from the same male ancestor.",
+          "2. Allied; akin. \"Agnate words.\" Pownall. Assume more or less of a fictitious character, but congenial and agnate with the former. Landor."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´nate"
+        ],
+        "pos": "n.",
+        "etym": "[Cf. F. agnat.]",
+        "label": "(Civil Law)",
+        "senses": [
+          "A relative whose relationship can be traced exclusively through males."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag·nat´ic"
+        ],
+        "pos": "a.",
+        "etym": "[Cf. F. agnatique.]",
+        "label": "",
+        "senses": [
+          "Pertaining to descent by the male line of ancestors. \"The agnatic succession.\" Blackstone."
+        ],
+        "target": false
+      }
+    ],
+    "c": [
+      {
+        "forms": [
+          "Ag·na´tion"
+        ],
+        "pos": "n.",
+        "etym": "[L. agnatio: cf. F. agnation.]",
+        "label": "",
+        "senses": [
+          "1. (Civil Law) Consanguinity by a line of males only, as distinguished from cognation. Bouvier."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag·ni´tion"
+        ],
+        "pos": "n.",
+        "etym": "[L. agnitio, fr. agnoscere. See Notion.]",
+        "label": "",
+        "senses": [
+          "Acknowledgment. [Obs.] Grafton."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag·nize´"
+        ],
+        "pos": "v. t.",
+        "etym": "[Formed like recognize, fr. L. agnoscere.]",
+        "label": "",
+        "senses": [
+          "To recognize; to acknowledge. [Archaic] I do agnize a natural and prompt alacrity. Shak."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag˝noi·ol´o·gy"
+        ],
+        "pos": "n.",
+        "etym": "[Gr. -logy.]",
+        "label": "(Metaph.)",
+        "senses": [
+          "The doctrine concerning those things of which we are necessarily ignorant."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag·no´men"
+        ],
+        "pos": "n.",
+        "etym": "[L.; ad + nomen name.]",
+        "label": "",
+        "senses": [
+          "1. An additional or fourth name given by the Romans, or account of some remarkable exploit or event; as, Publius Caius Scipio Africanus.",
+          "2. An additional name, or an epithet appended to a name; as, Aristides the Just."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag·nom´i·nate"
+        ],
+        "pos": "v. t.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "To name. [Obs.]"
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag·nom˝i·na´tion"
+        ],
+        "pos": "n.",
+        "etym": "[L. agnominatio. See Agnomen.]",
+        "label": "",
+        "senses": [
+          "1. A surname. [R.] Minsheu.",
+          "2. Paronomasia; also, alliteration; annomination."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag·nos´tic"
+        ],
+        "pos": "a.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "Professing ignorance; involving no dogmatic; pertaining to or involving agnosticism. — Ag·nos´tic·al·ly, adv."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag·nos´tic"
+        ],
+        "pos": "n.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "One who professes ignorance, or denies that we have any knowledge, save of phenomena; one who supports agnosticism, neither affirming nor denying the existence of a personal Deity, a future life, etc."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag·nos´ti·cism"
+        ],
+        "pos": "n.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "That doctrine which, professing ignorance, neither asserts nor denies. Specifically: (Theol.)",
+          "The doctrine that the existence of a personal Deity, an unseen world, etc., can be neither proved nor disproved, because of the necessary limits of the human mind (as sometimes charged upon Hamilton and Mansel), or because of the insufficiency of the evidence furnished by physical and physical data, to warrant a positive conclusion (as taught by the school of Herbert Spencer); — opposed alike dogmatic skepticism and to dogmatic theism."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´nus"
+        ],
+        "pos": "n.; pl. E. Agnuses; L. Agni.",
+        "etym": "[L., a lamb.]",
+        "label": "",
+        "senses": [
+          "Agnus Dei."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´nus cas´tus."
+        ],
+        "pos": "",
+        "etym": "",
+        "label": "(Bot.)",
+        "senses": [
+          "A species of Vitex (V. agnus castus); the chaste tree. Loudon. And wreaths of agnus castus others bore. Dryden."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´nus De´i."
+        ],
+        "pos": "",
+        "etym": "[L., lamb of God.]",
+        "label": "(R. C. Ch.) (a)",
+        "senses": [
+          "A figure of a lamb bearing a cross or flag. (b) A cake of wax stamped with such a figure. It is made from the remains of the paschal candles and blessed by the Pope. (c) A triple prayer in the sacrifice of the Mass, beginning with the words \"Agnus Dei.\""
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´nus Scyth´i·cus. [L."
+        ],
+        "pos": "Scythian lamb.] (Bot.)",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "The Scythian lamb, a kind of woolly-skinned rootstock. See Barometz."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·go´"
+        ],
+        "pos": "a. & adv.",
+        "etym": "[OE. ago, agon, p. p. of agon to go away, pass by, AS. agan to pass away; a- (cf. Goth. us-, Ger. er-, orig. meaning out) + gan to go. See Go.]",
+        "label": "",
+        "senses": [
+          "Past; gone by; since; as, ten years ago; gone long ago."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·gog´"
+        ],
+        "pos": "a. & adv.",
+        "etym": "[Cf. F. gogue fun, perhaps of Celtic origin.]",
+        "label": "",
+        "senses": [
+          "In eager desire; eager; astir. All agog to dash through thick and thin. Cowper."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·go´ing"
+        ],
+        "pos": "adv.",
+        "etym": "[Pref. a- + p. pr. of go.]",
+        "label": "",
+        "senses": [
+          "In motion; in the act of going; as, to set a mill agoing."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "Ag´on"
+        ],
+        "pos": "n.; pl. Agones.",
+        "etym": "",
+        "label": "(Gr. Antiq.)",
+        "senses": [
+          "A contest for a prize at the public games."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·gone´"
+        ],
+        "pos": "a. & adv.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "Ago. [Archaic. & Poet.] Three days agone I fell sick. 1 Sam. xxx. 13."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A´gone"
+        ],
+        "pos": "n.",
+        "etym": "[See Agonic.]",
+        "label": "",
+        "senses": [
+          "Agonic line."
+        ],
+        "target": false
+      },
+      {
+        "forms": [
+          "A·gon´ic"
+        ],
+        "pos": "a.",
+        "etym": "",
+        "label": "",
+        "senses": [
+          "Not forming an angle. Agonic line (Physics), an imaginary line on the earth's surface passing through those places where the magnetic needle points to the true north; the line of no magnetic variation. There is one such line in the Western hemisphere, and another in the Eastern hemisphere."
+        ],
+        "target": false
+      }
+    ]
+  }
+}

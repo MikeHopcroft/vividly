@@ -1,0 +1,299 @@
+id: vividly
+title: Vividly
+theme: ../themes/vividly.css
+transition: cut
+keyboardHints: auto
+
+nodes:
+  - type: slide
+    id: opening
+    title: Making Complex Ideas Move
+    module: ../slides/documentation/opening.js
+    navigator:
+      sections:
+        - ./why-vividly
+        - ./gallery
+        - ./make-something
+    props:
+      descriptions:
+        - A different way to explain complex ideas - with motion, interaction, and an agent working alongside you.
+        - Explore interactive examples. Try the controls and see how the explanations respond.
+        - Make your first interactive slide with an agent, preview it, and publish it on the web.
+
+  - type: section
+    id: why-vividly
+    title: Why Vividly?
+    children:
+      - type: slide
+        id: complex-ideas-should-move
+        title: Complex Ideas Should Move
+        module: ../slides/why-vividly/visual-promise/slide.js
+
+      - type: slide
+        id: introducing-vividly
+        title: Introducing Vividly
+        module: ../slides/why-vividly/introducing-vividly/slide.js
+        transition: dissolve
+
+      - type: slide
+        id: micro-demonstration
+        title: City of Loops
+        module: ../slides/why-vividly/city-of-loops/slide.js
+        transition: dissolve
+
+      - type: slide
+        id: the-partnership
+        title: The Partnership
+        module: ../slides/why-vividly/partnership/slide.js
+        transition: dissolve
+
+      - type: slide
+        id: artifact-versus-medium
+        title: Artifact Versus Medium
+        module: ../slides/why-vividly/artifact-versus-medium/slide.js
+        transition: dissolve
+
+  - type: section
+    id: gallery
+    title: See It Work
+    children:
+      - type: slide
+        id: overview
+        title: Gallery
+        module: ../slides/documentation/card-navigator.js
+        navigator:
+          sections:
+            - ./tic-tac-toe
+            - ./inverted
+            - ./cheese-context
+            - ./life
+        props:
+          eyebrow: Gallery
+          heading: See what Vividly can do
+          introduction: Choose a demo, read what to watch for, then see it in action.
+          descriptions:
+            - Explore the math inside a neural network, play against it, and train it in your browser.
+            - Discover inverted indexes through dictionary close-ups, concordances, and animated merging.
+            - See how changing context can expose an agent to different fragments of a project.
+            - Watch four local rules produce stable forms, oscillators, gliders, and long-lived complexity.
+          images:
+            - ../tic-tac-toe/introduction/assets/gallery-card.png
+            - ../inverted/introduction/assets/gallery-card.png
+            - ../cheese-context/introduction/assets/gallery-card.png
+            - ../life/introduction/assets/gallery-card.png
+
+      - type: presentation
+        id: tic-tac-toe
+        manifest: ./tic-tac-toe.yaml
+
+      - type: presentation
+        id: inverted
+        manifest: ./inverted.yaml
+
+      - type: presentation
+        id: cheese-context
+        manifest: ./cheese-context.yaml
+
+      - type: presentation
+        id: life
+        manifest: ./life.yaml
+
+  - type: section
+    id: make-something
+    title: Get Started
+    children:
+      - type: slide
+        id: choose-your-path
+        title: Choose Your Starting Path
+        module: ../slides/documentation/card-navigator.js
+        navigator:
+          sections:
+            - ./agentic
+            - ./get-started
+        props:
+          eyebrow: Get Started
+          heading: How would you like to begin?
+          introduction: Two ways to make your first interactive presentation. Choose the approach that suits you.
+          descriptions:
+            - Already comfortable with a coding agent? Give it a prompt to set up Vividly and create your first presentation.
+            - Prefer a guided introduction? Work through installation, creation, preview, refinement, and publishing step by step.
+
+      - type: section
+        id: agentic
+        title: Fully Agentic
+        children:
+          - type: slide
+            id: bootstrap
+            title: Start with Your Agent
+            module: ../slides/documentation/get-started/page.js
+            props: { page: agentic-start }
+
+      - type: section
+        id: get-started
+        title: Guided Introduction
+        children:
+          - type: slide
+            id: overview
+            title: Your First Interactive Slide
+            module: ../slides/documentation/get-started/page.js
+            props: { page: overview }
+          - type: slide
+            id: install
+            title: Install Vividly
+            module: ../slides/documentation/get-started/page.js
+            props: { page: install }
+          - type: slide
+            id: provision
+            title: Create a new Vividly Project
+            module: ../slides/documentation/get-started/page.js
+            props: { page: provision }
+          - type: slide
+            id: prompt
+            title: Ask Your Agent
+            module: ../slides/documentation/get-started/page.js
+            props: { page: prompt }
+          - type: slide
+            id: preview
+            title: See It Work
+            module: ../slides/documentation/get-started/page.js
+            props: { page: preview }
+          - type: slide
+            id: refine
+            title: Make One Improvement
+            module: ../slides/documentation/get-started/page.js
+            props: { page: refine }
+          - type: slide
+            id: present
+            title: Present Your Slide
+            module: ../slides/documentation/get-started/page.js
+            props: { page: present }
+          - type: slide
+            id: publish
+            title: Publish and Share
+            module: ../slides/documentation/get-started/page.js
+            props: { page: publish }
+
+  - type: section
+    id: documentation
+    title: Documentation
+    children:
+      - type: slide
+        id: overview
+        title: Documentation
+        module: ../slides/documentation/get-started/page.js
+        props: { page: documentation }
+      - type: slide
+        id: agent-session
+        title: Inside an Agent Session
+        module: ../slides/documentation/get-started/page.js
+        props: { page: agent-session }
+      - type: slide
+        id: troubleshooting
+        title: Getting Unstuck
+        module: ../slides/documentation/get-started/page.js
+        props: { page: troubleshooting }
+      - type: slide
+        id: customize
+        title: Customize and Extend
+        module: ../slides/documentation/get-started/page.js
+        props: { page: customize }
+      - type: slide
+        id: authoring
+        title: Authoring Slides
+        module: ../slides/documentation/get-started/page.js
+        # agentNotice opts into the shared audience notice below the page title.
+        # href and linkText are required; omit agentNotice to leave a page unchanged.
+        # The documentation overview also uses these opt-ins to mark agent-reference links.
+        props:
+          page: authoring
+          agentNotice:
+            href: "#/vividly/make-something/get-started/prompt"
+            linkText: Ask your agent to create a slide
+      - type: slide
+        id: slides
+        title: Slide Model
+        module: ../slides/documentation/get-started/page.js
+        props:
+          page: slides
+          agentNotice:
+            href: "#/vividly/documentation/customize"
+            linkText: Customize and extend your presentation
+      - type: slide
+        id: controls
+        title: Built-in Controls
+        module: ../slides/documentation/get-started/page.js
+        props:
+          page: controls
+          agentNotice:
+            href: "#/vividly/documentation/customize"
+            linkText: Customize and extend your presentation
+      - type: slide
+        id: keyboard
+        title: Present and Navigate
+        module: ../slides/documentation/get-started/page.js
+        props:
+          page: keyboard
+          agentNotice:
+            href: "#/vividly/make-something/get-started/present"
+            linkText: Present your slide
+      - type: slide
+        id: publishing
+        title: Publishing
+        module: ../slides/documentation/get-started/page.js
+        props:
+          page: publishing
+          agentNotice:
+            href: "#/vividly/make-something/get-started/publish"
+            linkText: Publish and share your presentation
+      - type: slide
+        id: dependencies
+        title: Browser Dependencies
+        module: ../slides/documentation/get-started/page.js
+        props:
+          page: dependencies
+          agentNotice:
+            href: "#/vividly/documentation/customize"
+            linkText: Customize and extend your presentation
+      - type: slide
+        id: cli
+        title: Command Line
+        module: ../slides/documentation/get-started/page.js
+        props:
+          page: cli
+          agentNotice:
+            href: "#/vividly/make-something/get-started/overview"
+            linkText: Follow the guided introduction
+      - type: slide
+        id: why-vividly-long-form
+        title: Why Vividly? — Long Form
+        module: ../slides/documentation/get-started/page.js
+        props: { page: why-vividly-long-form }
+      - type: slide
+        id: the-case-for-vividly
+        title: The Case for Vividly
+        module: ../slides/documentation/get-started/page.js
+        props: { page: the-case-for-vividly }
+
+      - type: slide
+        id: agentic
+        title: Documentation for Coding Agents
+        module: ../slides/documentation/get-started/page.js
+        props:
+          page: agentic
+          agentNotice:
+            href: "#/vividly/make-something/choose-your-path"
+            linkText: Choose your starting path
+      - type: slide
+        id: agentic-bootstrap
+        title: Agentic Bootstrap
+        module: ../slides/documentation/get-started/page.js
+        props:
+          page: agentic-bootstrap
+          agentNotice:
+            href: "#/vividly/make-something/agentic/bootstrap"
+            linkText: Start with your agent
+
+  - type: slide
+    id: home
+    title: Vividly Home
+    module: ../slides/home/slide.js

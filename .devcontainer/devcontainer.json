@@ -1,0 +1,32 @@
+{
+    "name": "Vividly",
+    "image": "mcr.microsoft.com/devcontainers/universal:6.1.7-noble",
+    "features": {
+        "ghcr.io/devcontainer-community/devcontainer-features/astral.sh-uv:1": {
+            "version": "latest",
+            "shellautocompletion": true
+        }
+    },
+    "postCreateCommand": "uv sync --locked && uv run playwright install chromium",
+    "forwardPorts": [
+        8080
+    ],
+    "portsAttributes": {
+        "8080": {
+            "label": "Vividly",
+            "onAutoForward": "openPreview"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "charliermarsh.ruff",
+                "ms-python.python",
+                "ms-python.vscode-pylance"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python"
+            }
+        }
+    }
+}

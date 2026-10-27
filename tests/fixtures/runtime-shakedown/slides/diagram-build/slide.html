@@ -1,0 +1,24 @@
+<h2>How a slide gets on screen</h2>
+
+<ol class="pipeline">
+  <li class="stage v-reveal" style="--at: 0">
+    <span class="stage-num">1</span>
+    <strong>import()</strong>
+    <span class="v-caption">The module loads. Styles are scoped and adopted.</span>
+  </li>
+  <li class="stage v-reveal" style="--at: 1">
+    <span class="stage-num">2</span>
+    <strong>preload()</strong>
+    <span class="v-caption">Data is fetched. The slide declares its step count.</span>
+  </li>
+  <li class="stage v-reveal" style="--at: 2">
+    <span class="stage-num">3</span>
+    <strong>mount()</strong>
+    <span class="v-caption">DOM is built while hidden, so transitions can cross-fade.</span>
+  </li>
+  <li class="stage v-reveal" style="--at: 3">
+    <span class="stage-num">4</span>
+    <strong>enter() &rarr; setStep()</strong>
+    <span class="v-caption">The runtime writes data-step and --step. CSS takes over.</span>
+  </li>
+</ol>

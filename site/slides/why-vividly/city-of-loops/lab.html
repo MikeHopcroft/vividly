@@ -1,0 +1,32 @@
+<main class="loops-lab" tabindex="-1">
+  <div class="artwork" role="img" aria-label="Static city roads and roundabouts with the hand-drawn red loop network">
+    <canvas class="city-layer" aria-hidden="true"></canvas>
+    <svg class="sketch-layer" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+    <img class="imported-layer" alt="" hidden>
+    <svg class="labels-layer" viewBox="0 0 1920 1080" aria-hidden="true" hidden></svg>
+    <div class="guides-layer" hidden aria-hidden="true">
+      <span>The real idea was far more exciting.</span>
+      <span>What I kept seeing was loops.</span>
+      <span>Lots of loops—interconnected and constantly changing.</span>
+      <span>Team members hopping from loop to loop as conditions change and new insights emerge.</span>
+    </div>
+  </div>
+  <aside class="lab-controls" aria-label="Composition controls">
+    <h1>City of Loops / tracing lab</h1>
+    <p>1920 × 1080 artwork. Match this viewBox in your returned SVG. Arrowheads are separate paths.</p>
+    <label>City opacity <input aria-label="City opacity" type="range" min="0" max="1" step=".05" value="1" data-layer=".city-layer"></label>
+    <label>Sketch opacity <input aria-label="Sketch opacity" type="range" min="0" max="1" step=".05" value=".85" data-layer=".sketch-layer"></label>
+    <label>Imported SVG opacity <input aria-label="Imported SVG opacity" type="range" min="0" max="1" step=".05" value="1" data-layer=".imported-layer"></label>
+    <label><input type="checkbox" data-toggle=".labels-layer"> Path labels</label>
+    <label><input type="checkbox" data-toggle=".guides-layer"> Text-safe areas</label>
+    <label>Overlay your SVG <input type="file" name="svg" accept=".svg,image/svg+xml"></label>
+    <p role="alert"></p>
+    <div class="actions">
+      <button class="clear-svg" type="button">Clear imported SVG</button>
+      <button class="download-button" type="button">Download sketch SVG</button>
+      <button class="clean-button" type="button">Clean screenshot mode</button>
+    </div>
+    <p>In clean mode, move to the bottom-right corner or press Tab to reveal Restore controls. Hide Vividly's toolbar before capturing.</p>
+  </aside>
+  <button class="restore-button" type="button">Restore controls</button>
+</main>

@@ -1,0 +1,12 @@
+:scope {
+  height: 100%;
+  overflow: hidden;
+  padding: clamp(var(--spacing-md), 4vw, var(--spacing-xl));
+}
+
+vividly-markdown {
+  width: min(100%, 72rem);
+  height: 100%;
+  margin-inline: auto;
+  padding-inline: var(--spacing-sm);
+}

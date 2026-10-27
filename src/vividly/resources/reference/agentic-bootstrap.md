@@ -1,0 +1,114 @@
+# Agentic Bootstrap
+
+This file explains the steps an agent should take to install [Vividly](https://github.com/MikeHopcroft/vividly) and create an initial presentation.
+
+Normally, when a Vividly project is provisioned, a `.vividly/reference/` folder is populated with agent-facing documentation which is linked from copilot instructions and skills installed in the `.github/` folder.
+
+The instructions here handle the scenario where a new user/author arrived directly from the [Vividly introduction](https://mikehopcroft.github.io/vividly/#/vividly/) hosted on GitHub pages. In this situation it will often be the case that the user/author does not have Vividly installed and has not yet provisioned a project. They want to get their toolchain and environment configured as quickly and seamlessly as possible so they can start authoring slides.
+
+You will have to use your judgment, based on your context as to how many decisions to put to the user/author and how many to make on your own. We want to balance ease and fluidity of a more automatic process with care that we don't harm the existing machine configuration.
+
+## Setup boundaries
+
+- Inspect the workspace and reuse installed tools before making changes.
+- Create new projects in a new directory. Do not overwrite an existing project or
+  provision an unrelated workspace.
+- Install the Vividly tool using the documented workflow; creating a presentation
+  does not require cloning Vividly's source repository.
+- Ask before installing prerequisites, using elevated permissions, changing
+  machine-wide configuration, or upgrading an existing project's runtime.
+- Respect the organization's package sources and network policies. If installation
+  is blocked, explain the blocker and use the approved process rather than bypassing
+  restrictions.
+- Initial setup ends with a local preview. Do not configure hosting, push, or publish
+  unless the user explicitly requests that action.
+
+## 1. Assess
+
+Check whether Vividly is installed with `vividly --version`, and independently look
+for `vividly.yaml` in the intended workspace.
+
+A `vividly.yaml` file identifies an existing project. If this is the user's intended
+project, validate it with the installed tool and continue to authoring without
+reprovisioning or changing its runtime selection. A missing command does not mean an
+existing workspace needs provisioning.
+
+## 2. Prerequisites
+
+- Required
+  - Python 3.12 or greater.
+  - `uv` or `pipx`. Vividly has been tested more thoroughly with `uv`, but some users may be more familiar with `pipx`. Also consider biasing towards what is already installed on the machine. 
+  - Access to a coding agent. Note that agent instructions and skills are surfaced in the .github folder. Agents other than GitHub Copilot may need additional instruction configuration.
+- Strongly Recommended
+  - `git` for version control is always a good idea, plus the Vividly publishing process uses commits to trigger CI/CD.
+  - `GitHub` account to run CI/CD for publishing and to host presentations on GitHub pages.
+  - `Visual Studio Code` provides access to GitHub Copilot along with an integrated web browser to assist agentic development.
+  - `playwright` is useful for the agentic development loop to be able to test slides. If the user/author is in a `Visual Studio Code` environment, there is an embedded browser available there, but `playwright` gives more flexibility and allows more formal testing. `Playwright` is required for creating slide thumbnails.
+  - version of `Chromium` that is compatible with `playwright` version. Use `playwright install chromium` or equivalent.
+- Optional
+  - If Node.js is already installed, use it for quick JavaScript syntax checks. Validate presentation behavior in the browser regardless. Python linting tools such as Ruff are not required for slide authoring.
+
+## 3. Installing Vividly
+
+Under normal circumstances, either `uv tool install vividly
+` or `pipx install vividly`.
+
+Please note that it is becoming more common for organizations to restrict the tools that can be installed, those that require elevated permissions, and the supply chain for packages. In some cases you may not have the permissions to do the installs yourself, but can walk the user/author through it.
+
+When organizations adopt secure supply chain practices, the often block access to URLs like [https://pypi.org/simple/vividly/](https://pypi.org/simple/vividly/) or use a proxy to route requests to the secure supply chain. Depending on organization policy, the secure supply chain might have an old version of Vividly or no version at all.
+
+If organization policy allows package installation directly from GitHub, you can get the latest version of Vividly using `uv` or `pipx`: 
+- `uv tool install git+https://github.com/MikeHopcroft/vividly@stable`
+- `pipx install git+https://github.com/MikeHopcroft/vividly@stable`
+
+## 4. Provisioning
+
+The provisioning process sets up a skeleton presentation project and configures agent instructions and skills. Generates
+- .github/ - agent instructions and skills
+- .gitignore
+- .vividly/ - agent facing documentation and Vividly site runtime
+- site/ - root of presentation site
+
+Normally `vividly provision [PATH]` where `PATH` is the folder for the presentation project.
+
+If the intended folder already exists, inspect it and confirm that it is an appropriate
+provisioning target before running `vividly provision` there. Follow the
+[CLI reference](./cli.md#vividly-provision) for validation and confirmation behavior.
+
+## 5. Agentic Development
+
+Use the provisioned project as the working root. Read its `.github/` instructions and
+Vividly authoring skill, even if the agent does not load them automatically.
+
+Follow the version-matched `.vividly/reference/` documents rather than the latest
+public reference. If local guidance is absent or stale, run `vividly reference`.
+Start with [Authoring slides](./authoring.md) and consult only the detailed references
+needed for the task.
+
+Implement the user's creative brief. For a first slide, prefer a single presentation
+step and avoid external assets or new browser dependencies unless the brief calls for
+them. Accessibility, legibility, and validation are authoring responsibilities; the
+user does not need to repeat those requirements in each prompt.
+
+Start the local preview with `vividly run` and perform the applicable
+[authoring checks](./authoring.md#5-validate-the-result). Apply the same workflow when
+refining the slide. When reporting completion:
+
+- give the exact browser URL for the affected slide;
+- explain where the user's presentation files live; and
+- state what was verified and what could not be verified.
+
+## Presenting and Publishing
+
+When the user asks to prepare for sharing, follow the local
+[publishing guide](./publishing.md). Inspect the project and Git setup, identify missing
+requirements, and ask for destination or hosting decisions that are not established.
+A request for a sharing plan does not authorize a push or publication.
+
+For offline presenting, follow the
+[dependency caching and rehearsal guidance](./dependencies.md#cache-preparation-and-offline-rehearsal).
+
+## Further Reading
+
+- [Documentation for coding agents](./agentic.md) - Find task-specific authoring,
+  interaction, validation, and publishing guidance.

@@ -1,0 +1,61 @@
+:scope {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  overflow: hidden;
+}
+
+.tour-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+}
+
+.tour-viewport {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* The whole filmstrip is positioned from --step; no JS per step. */
+.tour-strip {
+  display: flex;
+  height: 100%;
+  transform: translateX(calc(var(--step) * -100%));
+  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tour-frame {
+  flex: 0 0 100%;
+  grid-template-rows: 1fr auto;
+  min-width: 0;
+  padding-inline: var(--spacing-sm);
+}
+
+.tour-frame img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 0.45);
+}
+
+.tour-frame figcaption {
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.tour-progress {
+  height: 3px;
+  background: var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.tour-progress-thumb {
+  display: block;
+  height: 100%;
+  width: calc(100% / var(--steps));
+  background: var(--accent);
+  transform: translateX(calc(var(--step) * 100%));
+  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}

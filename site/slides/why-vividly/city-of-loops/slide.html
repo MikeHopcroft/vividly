@@ -1,0 +1,32 @@
+<main class="city-slide">
+  <section class="stage" aria-labelledby="scene-title" aria-describedby="scene-copy">
+    <div
+      class="canvas-stack"
+      aria-label="Animated city of connected roundabouts representing iterative work"
+      role="img"
+    >
+      <canvas class="scene-canvas" aria-hidden="true"></canvas>
+      <canvas class="scene-canvas" aria-hidden="true"></canvas>
+    </div>
+  </section>
+
+  <footer>
+    <div class="caption-panel caption-current" aria-live="polite">
+      <h2 id="scene-title"></h2>
+      <p id="scene-copy" class="scene-copy"></p>
+    </div>
+    <div class="caption-panel caption-expansion" aria-live="polite" hidden>
+      <h2 id="expansion-title"></h2>
+      <p id="expansion-copy" class="scene-copy"></p>
+    </div>
+    <div class="caption-panel caption-outgoing" aria-hidden="true">
+      <h2></h2>
+      <p class="scene-copy"></p>
+    </div>
+  </footer>
+  <div class="closing" aria-live="polite" hidden>
+    <h2 id="closing-title"></h2>
+    <p id="closing-copy"></p>
+  </div>
+  <vividly-step-progress class="timing" label="Scene readiness" advance></vividly-step-progress>
+</main>

@@ -1,0 +1,119 @@
+:scope {
+  display: block;
+  background: #05080d;
+  color: #e6ebf2;
+  font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+}
+
+.loops-lab {
+  display: grid;
+  place-items: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.artwork {
+  position: relative;
+  width: min(100%, calc(100vh * 16 / 9));
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.artwork > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.sketch-layer {
+  fill: none;
+  stroke: #ff5a52;
+  stroke-width: 4.86;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.labels-layer text {
+  fill: #fff1d0;
+  stroke: #05080d;
+  stroke-width: 5;
+  paint-order: stroke;
+  font: 15px monospace;
+}
+
+.guides-layer {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-content: space-between;
+  gap: 64px;
+  padding: 38px 58px;
+}
+
+.guides-layer span {
+  box-sizing: border-box;
+  max-width: 540px;
+  padding: 8px;
+  border: 1px dashed #ffb547;
+  background: #05080dbb;
+  font-size: 31px;
+  line-height: 1.2;
+}
+
+.guides-layer span:nth-child(even) {
+  justify-self: end;
+}
+
+.lab-controls {
+  position: absolute;
+  top: 150px;
+  left: 24px;
+  box-sizing: border-box;
+  width: 340px;
+  max-height: calc(100% - 175px);
+  overflow: auto;
+  padding: 20px;
+  border: 1px solid #5d6c82;
+  border-radius: 12px;
+  background: #0b1119f5;
+  font-size: 16px;
+}
+
+h1 { margin: 0; font-size: 22px; }
+p { line-height: 1.4; }
+label { display: block; margin: 12px 0; }
+input[type="range"] { display: block; width: 100%; }
+input[type="file"] { max-width: 100%; margin-top: 8px; }
+.actions { display: grid; gap: 8px; }
+button { padding: 9px; font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid #ffb547; outline-offset: 3px; }
+[role="alert"] { color: #ffb547; }
+
+.restore-button {
+  display: none;
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+}
+
+.is-clean .lab-controls,
+.is-clean .labels-layer,
+.is-clean .guides-layer {
+  display: none;
+}
+
+.is-clean .restore-button {
+  display: block;
+  opacity: 0;
+}
+
+.is-clean .restore-button:hover,
+.is-clean .restore-button:focus-visible {
+  opacity: 1;
+}

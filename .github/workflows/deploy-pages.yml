@@ -1,0 +1,65 @@
+name: Deploy Pages
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      source_commit:
+        description: Exact source commit to deploy (blank for the calling commit)
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Generate thumbnails and deploy the site
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_commit || github.sha }}
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+          enable-cache: true
+
+      - name: Install development dependencies
+        run: uv sync --locked
+
+      - name: Install Chromium
+        run: uv run --locked playwright install --with-deps chromium
+
+      - name: Generate thumbnails
+        run: uv run --locked vividly thumbnails
+
+      - name: Export the public site
+        run: uv run --locked python tools/export_public_site.py --output "$RUNNER_TEMP/site"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/site
+          retention-days: 1
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

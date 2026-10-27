@@ -1,0 +1,157 @@
+:scope {
+  --slide-w: 13.3333;
+  --slide-h: 7.5;
+  --mark-stroke: #808080;
+  --img-image4: url('./assets/image4.webp');
+  --img-image5: url('./assets/image5.webp');
+  --img-image6: url('./assets/image6.webp');
+  --img-image7: url('./assets/image7.webp');
+  --img-image8: url('./assets/image8.webp');
+  --img-image9: url('./assets/image9.webp');
+  --img-image10: url('./assets/image10.webp');
+  --img-image11: url('./assets/image11.webp');
+  --img-image12: url('./assets/image12.webp');
+  --img-image13: url('./assets/image13.webp');
+  --img-image14: url('./assets/image14.webp');
+  --img-image15: url('./assets/image15.webp');
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #fff;
+  container-type: size;
+}
+
+.cheese-stage {
+  position: relative;
+  width: min(100cqw, calc(100cqh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.card {
+  position: absolute;
+  left: calc(var(--x) / var(--slide-w) * 100%);
+  top: calc(var(--y) / var(--slide-h) * 100%);
+  width: calc(var(--w) / var(--slide-w) * 100%);
+  height: calc(var(--h) / var(--slide-h) * 100%);
+  background-size: 100% 100%;
+  box-shadow: 0.442cqw 0.442cqw 0.417cqw rgb(0 0 0 / 0.4);
+  opacity: 0;
+  transition: opacity 250ms linear;
+}
+
+.pile.on .card {
+  opacity: 1;
+  transition-delay: calc(var(--i) * 250ms);
+}
+
+.pass-1 {
+  --x: 3.1667;
+  --y: 0.3125;
+  --rot: 0deg;
+  --tint: rgb(21 96 130 / 0.47);
+  --in-x: 0;
+  --in-y: -1;
+  --out-x: 1;
+  --out-y: 0;
+}
+
+.pass-2 {
+  --x: 2.7675;
+  --y: 0.1839;
+  --rot: -22deg;
+  --tint: rgb(242 170 132 / 0.47);
+  --in-x: -1;
+  --in-y: 0;
+  --out-x: 0;
+  --out-y: 1;
+}
+
+.pass-3 {
+  --x: 3.077;
+  --y: -0.2771;
+  --rot: 29deg;
+  --tint: rgb(255 255 0 / 0.39);
+  --in-x: -1;
+  --in-y: -1;
+  --out-x: 1;
+  --out-y: 1;
+}
+
+.cheese,
+.marks {
+  --w: 7.5;
+  --h: 7.5;
+  position: absolute;
+  left: calc(var(--x) / var(--slide-w) * 100%);
+  top: calc(var(--y) / var(--slide-h) * 100%);
+  width: calc(var(--w) / var(--slide-w) * 100%);
+  height: calc(var(--h) / var(--slide-h) * 100%);
+  transform-origin: 50% 50%;
+}
+
+.marks {
+  transform: rotate(var(--rot));
+  opacity: 0;
+  transition: opacity 500ms linear;
+}
+
+.marks.on {
+  opacity: 1;
+}
+
+.marks svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.marks use {
+  fill: var(--tint);
+  stroke: var(--mark-stroke);
+  stroke-width: 1.9;
+}
+
+.cheese {
+  --dx-in: calc(var(--in-x) * (var(--x) + var(--w)) * 100% / var(--w));
+  --dy-in: calc(var(--in-y) * (var(--y) + var(--h)) * 100% / var(--h));
+  --dx-out: calc(var(--out-x) * (var(--slide-w) - var(--x)) * 100% / var(--w));
+  --dy-out: calc(var(--out-y) * (var(--slide-h) - var(--y)) * 100% / var(--h));
+  display: block;
+  pointer-events: none;
+  visibility: hidden;
+  transition: transform 500ms linear, visibility 0s linear 500ms;
+}
+
+.cheese[data-state='before'] {
+  transform: translate(var(--dx-in), var(--dy-in)) rotate(var(--rot));
+}
+
+.cheese[data-state='on'] {
+  visibility: visible;
+  transform: rotate(var(--rot));
+  transition: transform 500ms linear, visibility 0s;
+}
+
+.cheese[data-state='after'] {
+  transform: translate(var(--dx-out), var(--dy-out)) rotate(var(--rot));
+}
+
+:scope.skip-step-transitions .card,
+:scope.skip-step-transitions .marks,
+:scope.skip-step-transitions .cheese,
+:scope.skip-step-transitions .cheese[data-state] {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .marks,
+  .cheese,
+  .cheese[data-state] {
+    transition-duration: 1ms !important;
+    transition-delay: 0s !important;
+  }
+}

@@ -1,0 +1,11 @@
+id: city-of-loops-lab
+title: City of Loops Lab
+theme: ../vividly/themes/dark.css
+transition: cut
+keyboardHints: never
+
+nodes:
+  - type: slide
+    id: composition
+    title: Loops and Roads Composition
+    module: ../slides/why-vividly/city-of-loops/lab.js

@@ -1,0 +1,171 @@
+<header class="topbar">
+      <div>
+        <p class="eyebrow">Tic-tac-toe MLP</p>
+        <h1>Math explainer</h1>
+      </div>
+      <div class="topbar-controls">
+        <div class="step-picker">
+          <label for="beat-selector">Step</label>
+          <select id="beat-selector"></select>
+        </div>
+        <div class="model-picker">
+          <label for="model-selector">Model</label>
+          <select id="model-selector" aria-describedby="status"></select>
+          <span id="status" role="status">Loading explainer…</span>
+        </div>
+      </div>
+  </header>
+
+    <div class="workspace">
+      <aside class="controls technical-controls" hidden>
+        <section>
+          <p class="mode-label">Technical introduction</p>
+          <h2 id="technical-title">Encode the position</h2>
+          <p id="technical-number" class="beat-number">Step 1 of 21</p>
+          <p id="technical-caption" class="beat-caption" aria-live="polite"></p>
+          <div class="explainer-nav">
+            <button id="previous-technical">← Previous</button>
+            <button id="next-technical">Next →</button>
+          </div>
+          <button id="skip-technical" class="primary-button">Skip to math explainer →</button>
+          <p class="hint">Use presentation navigation to move through the sequence.</p>
+        </section>
+
+        <section>
+          <h2>Persistent stage</h2>
+          <dl class="controller-contract">
+            <dt>Board</dt><dd>Same semantic position</dd>
+            <dt>Geometry</dt><dd>One technical pipeline</dd>
+            <dt>Camera</dt><dd>Semantic framing</dd>
+            <dt>Reveal</dt><dd>Schematic → rich</dd>
+          </dl>
+        </section>
+      </aside>
+
+      <aside class="controls explainer-controls" hidden>
+        <section>
+          <h2>Deterministic beat</h2>
+          <p id="beat-number" class="beat-number">Step 5 of 21</p>
+          <p id="beat-caption" class="beat-caption" aria-live="polite"></p>
+          <div class="explainer-nav">
+            <button id="previous-beat">← Previous</button>
+            <button id="next-beat">Next →</button>
+            <button id="replay-beat">Replay</button>
+            <button id="settle-beat">Settle</button>
+          </div>
+          <button id="toggle-summary" class="summary-button" disabled>Show summary callouts</button>
+          <button id="enter-inference" class="primary-button" disabled>Try the network →</button>
+          <p class="hint">Both network layers animate; Replay repeats the beat and Settle finishes it immediately.</p>
+        </section>
+
+        <section>
+          <h2>Controller contract</h2>
+          <dl class="controller-contract">
+            <dt>State</dt><dd>21 settled presentation states</dd>
+            <dt>Navigation</dt><dd>Previous / Next</dd>
+            <dt>Recovery</dt><dd>Replay / Settle</dd>
+            <dt>Stage</dt><dd>Persistent components</dd>
+          </dl>
+        </section>
+      </aside>
+
+      <aside class="controls inference-controls" hidden>
+        <section>
+          <p class="mode-label">Interactive inference</p>
+          <h2>Play against the network</h2>
+          <p id="inference-status" class="inference-status" aria-live="polite">X to move</p>
+          <dl class="inference-readout">
+            <dt>Suggested move</dt><dd id="inference-move">—</dd>
+            <dt>Legal moves</dt><dd id="inference-legal">9</dd>
+            <dt>Hidden width</dt><dd id="inference-width">—</dd>
+          </dl>
+          <div class="inference-actions">
+            <button id="play-suggested">Play suggested</button>
+            <button id="run-inference">Run flow</button>
+            <button id="undo-inference">Undo</button>
+            <button id="clear-inference">Clear</button>
+          </div>
+          <label class="animation-toggle"><input id="animate-inference" type="checkbox" checked> Animate after board edits</label>
+          <button id="enter-training" class="primary-button">Show how it learns →</button>
+          <p class="hint">Click an empty square to play the side to move. Click a mark to remove it.</p>
+        </section>
+        <section>
+          <button id="leave-inference" class="wide-button">← Return to explanation</button>
+        </section>
+      </aside>
+
+      <aside class="controls training-controls" hidden>
+        <section>
+          <p class="mode-label">Training</p>
+          <h2>Deterministic initialization</h2>
+          <p class="training-status">Ready at epoch 0</p>
+          <label class="training-field" for="training-width-selector">Hidden width</label>
+          <select id="training-width-selector"></select>
+          <label class="training-field" for="training-seed">Random seed</label>
+          <input id="training-seed" type="number" min="0" step="1" value="1">
+          <label class="training-field training-field-spaced" for="training-epochs">Maximum epochs</label>
+          <input id="training-epochs" type="number" min="1" step="100" value="30000">
+          <button id="reset-training" class="primary-button">Initialize parameters</button>
+          <div class="training-actions">
+            <button id="start-training">Start training</button>
+            <button id="stop-training" disabled>Stop</button>
+          </div>
+          <label class="animation-toggle"><input id="training-weight-changes" type="checkbox"> Show weight changes (green + / yellow −)</label>
+          <output id="training-weight-change-scale" class="weight-change-scale" hidden>W₁ full dot = ±0</output>
+          <dl class="inference-readout training-readout">
+            <dt>Hidden width</dt><dd id="training-width">—</dd>
+            <dt>Epoch</dt><dd id="training-epoch">0</dd>
+            <dt>Loss</dt><dd id="training-loss">—</dd>
+            <dt>Passing boards</dt><dd id="training-passing">—</dd>
+            <dt>Failures</dt><dd id="training-failures">—</dd>
+            <dt>Elapsed</dt><dd id="training-elapsed">0.0 s</dd>
+            <dt>Snapshots</dt><dd id="training-frames">0</dd>
+          </dl>
+          <section class="training-evaluation" aria-label="Training evaluation">
+            <div class="section-heading">
+              <h2>Boards learned</h2>
+              <span id="training-curve-label">—</span>
+            </div>
+            <canvas id="training-curve" width="480" height="150" aria-label="Passing board percentage over training epochs"></canvas>
+          </section>
+          <div id="training-replay" class="training-replay" hidden>
+            <div class="section-heading">
+              <h2>Snapshot replay</h2>
+              <span id="training-frame-position">frame 0/0</span>
+            </div>
+            <input id="training-timeline" type="range" min="0" max="0" value="0">
+            <div class="training-replay-actions">
+              <button id="toggle-training-replay">▶ Replay</button>
+              <button id="finish-training-replay" disabled>⏭ Finish</button>
+              <select id="training-replay-speed" aria-label="Replay speed">
+                <option value="0.25">0.25×</option>
+                <option value="1" selected>1×</option>
+                <option value="4">4×</option>
+              </select>
+            </div>
+            <label class="animation-toggle"><input id="training-slow-start" type="checkbox" checked> Slow first two training seconds</label>
+          </div>
+          <p class="hint">The trained weights have been replaced by the exact seeded initialization that the worker will receive.</p>
+        </section>
+        <section>
+          <button id="leave-training" class="wide-button">← Return to inference</button>
+        </section>
+      </aside>
+
+      <div class="stage-stack">
+        <section class="viewport-shell" aria-label="MLP math explanation stage">
+          <div class="viewport" id="viewport" data-vividly-touch-ignore>
+            <div class="camera" id="camera">
+              <div id="stage-host"></div>
+            </div>
+          </div>
+        </section>
+        <section id="training-failures-card" class="training-failures-card" aria-labelledby="training-failures-heading" hidden>
+          <div class="section-heading">
+            <h2 id="training-failures-heading">Still failing</h2>
+            <span id="training-failing-label">No evaluation yet</span>
+          </div>
+          <div id="training-failing-boards" class="failing-boards" aria-live="polite"></div>
+        </section>
+      </div>
+    </div>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Boats in a calm harbor">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#123f5e"/><stop offset="1" stop-color="#4fa3a5"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <rect y="300" width="800" height="200" fill="#0e3a52"/>
+  <g fill="#e9f4f2">
+    <path d="M240 300 L300 300 L288 270 L252 270 Z"/><path d="M270 268 L270 190 L330 262 Z"/>
+    <path d="M470 300 L546 300 L530 262 L486 262 Z"/><path d="M508 260 L508 165 L580 254 Z"/>
+  </g>
+  <g stroke="#7fd4d0" stroke-width="3" opacity=".6">
+    <path d="M120 350 H360" fill="none"/><path d="M420 390 H700" fill="none"/><path d="M80 430 H500" fill="none"/>
+  </g>
+</svg>

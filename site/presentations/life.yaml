@@ -1,0 +1,234 @@
+id: life
+title: Conway's Game of Life
+theme: ../vividly/themes/dark.css
+transition: dissolve
+
+nodes:
+  - type: slide
+    id: introduction
+    title: About Conway's Game of Life
+    module: ../vividly/slides/markdown.js
+    data: ../slides/life/introduction
+    props:
+      src: ./introduction.md
+
+  - type: slide
+    id: title
+    module: ../slides/life-title/slide.js
+    title: Conway's Game of Life
+
+  - type: slide
+    id: life
+    module: ../slides/game-of-life/slide.js
+    title: Conway's Game of Life
+    thumbnail:
+      step: 21
+    props:
+      passages:
+        - id: survival
+          label: Rule 1 · Survival
+          initialCells:
+            - [0, 0]
+            - [1, 0]
+            - [0, 1]
+            - [1, 1]
+          viewport:
+            center: [0.5, 0.5]
+            cellsWide: 8
+          generations:
+            - turn: 0
+              mode: explain
+              title: Two or three neighbors
+              caption: A live cell with two or three neighbors survives into the next generation.
+
+        - id: isolation
+          label: Rule 2 · Underpopulation
+          initialCells:
+            - [0, 0]
+            - [1, 0]
+          viewport:
+            center: [0.5, 0]
+            cellsWide: 8
+          generations:
+            - turn: 0
+              mode: explain
+              title: Too few neighbors
+              caption: With fewer than two neighbors, a live cell dies.
+
+        - id: birth
+          label: Rule 3 · Reproduction
+          initialCells:
+            - [0, 0]
+            - [1, 0]
+            - [0, 1]
+          viewport:
+            center: [0.5, 0.5]
+            cellsWide: 8
+          generations:
+            - turn: 0
+              mode: explain
+              title: Exactly three neighbors
+              caption: An empty cell with exactly three neighbors becomes alive.
+
+        - id: crowding
+          label: Rule 4 · Overpopulation
+          initialCells:
+            - [0, -1]
+            - [-1, 0]
+            - [0, 0]
+            - [1, 0]
+            - [0, 1]
+          viewport:
+            center: [0, 0]
+            cellsWide: 9
+          generations:
+            - turn: 0
+              mode: explain
+              title: Too many neighbors
+              caption: The center cell has four neighbors. Crowding kills it; the cells with three neighbors survive.
+
+        - id: settling
+          label: Small world · Period two
+          initialCells:
+            - [-5, 0]
+            - [-4, 0]
+            - [-3, 0]
+            - [2, -1]
+            - [3, -1]
+            - [2, 0]
+            - [3, 0]
+            - [7, 2]
+          viewport:
+            encompass:
+              generations: [0, 12]
+              padding: 4
+          generations:
+            - turn: 0
+              mode: explain
+              title: A small world
+              caption: First, inspect what will survive and what will disappear.
+            - turn: 1
+              mode: explain
+              title: Generation one
+              caption: The isolated cell is gone. The block holds while the blinker turns.
+            - turn: 2
+              mode: explain
+              title: Generation two
+              caption: The stable block stays fixed; the oscillator returns to its first pose.
+            - turn: 12
+              mode: normal
+              animate:
+                duration: 3600
+                frames: 48
+              title: The rhythm remains
+              caption: Ten generations later, the block is still and the blinker continues its two-beat cycle.
+
+        - id: gun
+          label: Gosper glider gun · 1970
+          initialCells:
+            - [0, 4]
+            - [0, 5]
+            - [1, 4]
+            - [1, 5]
+            - [10, 4]
+            - [10, 5]
+            - [10, 6]
+            - [11, 3]
+            - [11, 7]
+            - [12, 2]
+            - [12, 8]
+            - [13, 2]
+            - [13, 8]
+            - [14, 5]
+            - [15, 3]
+            - [15, 7]
+            - [16, 4]
+            - [16, 5]
+            - [16, 6]
+            - [17, 5]
+            - [20, 2]
+            - [20, 3]
+            - [20, 4]
+            - [21, 2]
+            - [21, 3]
+            - [21, 4]
+            - [22, 1]
+            - [22, 5]
+            - [24, 0]
+            - [24, 1]
+            - [24, 5]
+            - [24, 6]
+            - [34, 2]
+            - [34, 3]
+            - [35, 2]
+            - [35, 3]
+          generations:
+            - turn: 0
+              mode: normal
+              viewport:
+                center: [17.5, 4]
+                cellsWide: 43
+              title: A machine made of cells
+              caption: The Gosper glider gun is stable machinery with a moving product.
+            - turn: 200
+              mode: normal
+              viewport:
+                center: [20, 12]
+                cellsWide: 82
+              animate:
+                duration: 8000
+                frames: 120
+              title: Structure creates motion
+              caption: As the view opens, the gun remains in place while a stream of gliders crosses—and leaves—the frame.
+
+        - id: acorn
+          label: Acorn · Seven-cell methuselah
+          initialCells:
+            - [0, 0]
+            - [1, 0]
+            - [1, 2]
+            - [3, 1]
+            - [4, 0]
+            - [5, 0]
+            - [6, 0]
+          generations:
+            - turn: 0
+              mode: normal
+              viewport:
+                center: [3, 1]
+                cellsWide: 14
+              title: Seven cells
+              caption: The Acorn begins with only seven live cells.
+            - turn: 5206
+              mode: normal
+              viewport:
+                center: [0, 0]
+                cellsWide: 1800
+              animate:
+                duration: 8000
+                frames: 120
+                turnCurve: 2.6
+                viewportKeyframes:
+                  - at: 0.18
+                    center: [0, 0]
+                    cellsWide: 120
+                  - at: 0.45
+                    center: [-20, 20]
+                    cellsWide: 700
+              title: After 5,206 generations
+              caption: The widening view follows the chaos until stable objects and oscillators remain—633 cells are alive.
+            - turn: 5206
+              mode: normal
+              viewport:
+                center: [-35, 35]
+                cellsWide: 230
+              overlayCells:
+                - [0, 0]
+                - [1, 0]
+                - [1, 2]
+                - [3, 1]
+                - [4, 0]
+                - [5, 0]
+                - [6, 0]
+              title: The original seven
+              caption: Bright green marks the fixed world coordinates of the seven-cell seed inside its final 633-cell legacy.

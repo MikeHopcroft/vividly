@@ -1,0 +1,22 @@
+<header class="narrative">
+  <p id="passage" class="passage"></p>
+  <div class="copy">
+    <h1 id="title"></h1>
+    <p id="caption"></p>
+  </div>
+  <p id="generation" class="generation">
+    <span id="phase"></span>
+    <span id="stage"></span>
+  </p>
+</header>
+
+<main class="board-shell">
+  <canvas id="board" role="img" aria-describedby="board-description"></canvas>
+  <p id="board-description" class="sr-only"></p>
+  <div id="legend" class="legend" aria-hidden="true">
+    <span><i class="survives"></i>survives</span>
+    <span><i class="dies"></i>dies</span>
+    <span><i class="born"></i>born</span>
+    <b>number = live neighbors</b>
+  </div>
+</main>

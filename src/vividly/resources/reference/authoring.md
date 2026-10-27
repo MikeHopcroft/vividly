@@ -1,0 +1,251 @@
+# Authoring slides
+
+This guide is the working procedure for creating or revising a Vividly slide. It tells
+an author or coding agent what to inspect, which implementation boundary to choose, and
+what evidence is required before the work is complete.
+
+Use [Slides](./slides.md) for the lifecycle and context APIs, [Controls](./controls.md)
+for built-in elements, and [Keyboard navigation](./keyboard.md) for presentation input
+behavior. When a slide needs an external browser package, follow
+[Browser dependencies](./dependencies.md).
+
+## 1. Understand the request
+
+Before editing, identify:
+
+- the target presentation and insertion point;
+- the audience and the point the slide must communicate;
+- required content, builds, interactions, data, and assets;
+- visual references or established presentation conventions; and
+- whether the representative thumbnail or offline presentation path matters.
+
+Resolve material ambiguity before implementation. Ask when different answers would
+change the narrative, interaction, or architecture. Do not block on details that can be
+answered by inspecting the target presentation or following its existing conventions.
+
+Preserve the requested meaning and sequence. A visually polished slide that changes the
+argument or lands in the wrong part of the presentation is not complete.
+
+## 2. Inspect before creating
+
+Read `site/catalog.yaml`, then open the target manifest under `site/presentations/`.
+Inspect the neighboring slide instances and the presentation theme. Search
+`site/slides/` for modules, controls, data layouts, and visual patterns that can be
+reused.
+
+Run:
+
+```console
+vividly dependencies
+```
+
+before selecting a browser package. The report shows both runtime-owned and
+project-selected logical keys without loading package code or accessing the network.
+
+The inspection should answer:
+
+- Is this a new slide instance or a revision to an existing one?
+- Can an existing module serve the content with a different `data` root or `props`?
+- Does an existing Vividly control already render the needed region?
+- Is the behavior local to one slide or reusable within several slides?
+- Does the slide need a package that is not already in the dependency registry?
+
+## 3. Choose the implementation boundary
+
+Choose the smallest boundary that owns the required behavior:
+
+| Need | Implementation |
+| --- | --- |
+| Existing whole-slide behavior with different content | Reuse the module with a different data root and props |
+| Standard Markdown, code, image, or annotated-document region | Use a built-in control |
+| Reusable region that could appear beside other content | Define or reuse a custom element |
+| Whole-stage behavior that owns the step axis | Create or revise a slide module |
+| Source code used only by this slide | Keep a relative source module in the slide directory |
+| Shared browser-ready package | Use the project dependency registry |
+
+Prefer plain DOM and CSS for one-off slide content. Keep presentation steps in the
+slide module, not in a reusable element. Do not create `site/vividly/` to accommodate a
+slide or modify runtime files as part of an authoring task.
+
+See [Element or module?](./slides.md#element-or-module) and
+[Reusing a module with different data](./slides.md#reusing-a-module-with-different-data)
+for the detailed boundaries.
+
+## 4. Implement the slide
+
+Keep slide-local markup, styles, scripts, data, and assets under its directory in
+`site/slides/`. Keep prose, Markdown, and code listings in files rather than manifest
+block scalars. Resolve content-owned paths with `ctx.load()` or `ctx.asset()` and
+module-owned files relative to `import.meta.url`.
+
+Default to `.js` for browser-only code. Reserve `.mjs` for deliberate Node/browser
+sharing or an authoring tool's module requirements; see
+[JavaScript file extensions](./slides.md#javascript-file-extensions). Do not infer
+a project-wide `.mjs` convention from a shared helper.
+
+Use the presentation manifest for instance structure:
+
+- `id` and `title`;
+- `module` and optional `data`;
+- concise configuration in `props`;
+- structural navigation;
+- transition overrides; and
+- thumbnail-step selection.
+
+Update `site/catalog.yaml` only when adding or removing a root presentation or changing
+the project-wide dependency selection.
+
+### Steps and motion
+
+Use a fixed step count unless the content length genuinely cannot be known in advance.
+For fixed slides:
+
+- treat `setStep(n)` as an absolute state assignment;
+- make the result deterministic, idempotent, and reversible;
+- support direct arrival at every step without visiting earlier steps; and
+- prefer the runtime's CSS step attributes and properties for ordinary builds.
+
+Implement `settleStep()` only for finite motion the runtime cannot settle, such as a
+timer, canvas animation, keyframes, or an animation library. It must synchronously
+finish the current step's motion and report whether it changed unfinished motion. Do
+not capture presentation navigation keys merely to skip animations.
+
+### Lifecycle and cleanup
+
+Do not perform I/O or DOM work in the constructor. Load data in `preload()`. Build DOM
+in `mount()`, remembering that the root is hidden there, and perform
+visibility-dependent work in `enter()`.
+
+Release resources at the matching boundary:
+
+- stop timers, observers, DOM listeners, and mounted animation resources in
+  `unmount()`; and
+- release longer-lived resources in `dispose()`.
+
+Subscriptions created through `ctx.bus` are released automatically at unmount.
+
+### Layout, styling, and accessibility
+
+- Follow the surrounding presentation's visual language before inventing a new one.
+- Use theme tokens rather than hard-coded theme values.
+- Keep slide styles local; presentation-wide styling belongs outside a slide module.
+- Make the slide legible and unclipped at the 1920 by 1080 capture viewport.
+- Use semantic markup, meaningful image alternatives, accessible names, visible focus,
+  and sufficient contrast.
+- Keep inactive interactive UI out of the tab order and accessibility tree.
+- Leave keyboard navigation to Vividly unless the interaction genuinely requires raw
+  keys.
+
+## 5. Validate the result
+
+Start the composed development site:
+
+```console
+vividly run
+```
+
+Open the exact ID-prefixed route for the affected slide. Validation is
+change-sensitive: perform every applicable check below and omit a check only when the
+changed behavior does not have that surface.
+
+### Slide behavior
+
+- Open step zero directly.
+- For a multi-step slide, open a nonzero step through its route.
+- Traverse every step forward and backward.
+- Repeat same-direction navigation while finite motion is active.
+- Leave the slide in both directions and re-enter it.
+- Verify the previous and next slide boundaries.
+- Verify captured keys or navigator selection and activation when present.
+
+### Rendering and diagnostics
+
+- Inspect every step for clipping, overlap, illegible text, and unintended scrollbars
+  at 1920 by 1080.
+- Check page and console errors.
+- Check failed network requests, missing data, and missing assets.
+- Confirm that loading the slide does not produce duplicate listeners, timers, or
+  custom-element definitions after re-entry.
+- Inspect mounted slide roots for duplicate IDs, especially SVG definitions and
+  fragment references. Leave and re-enter the slide in both directions and confirm
+  that rendering and accessible relationships do not change.
+
+### Generated and offline behavior
+
+When the representative overview image should change, regenerate only the affected
+scope:
+
+```console
+vividly thumbnails --presentation product-tour --slide section/slide-id
+```
+
+When a dependency or remote resource changed, first exercise every relevant path in
+connected mode so requested resources enter the cache. Then run:
+
+```console
+vividly rehearse
+```
+
+and manually exercise the offline path that matters. A successful rehearsal covers
+only the visited slides and interactions.
+
+## Responsibility boundary
+
+The slide author owns:
+
+- fidelity to the requested narrative and presentation sequence;
+- consistency with neighboring visual and structural conventions;
+- the choice of reuse, element, module, local-source, or dependency boundary;
+- deterministic steps, lifecycle behavior, and resource cleanup;
+- semantic and accessible content and interaction;
+- legibility and lack of clipping at the capture viewport;
+- correct module-root and data-root path resolution;
+- use of logical dependency keys rather than selected package URLs;
+- navigation into, through, backward through, and out of the slide;
+- checking browser errors, failed requests, and missing assets;
+- affected thumbnail regeneration; and
+- exercised-path offline verification when external resources matter.
+
+Vividly owns route orchestration, fixed-step indexing, lifecycle invocation, standard
+control registration, dependency resolution, overview rendering, and presentation
+keyboard policy. A slide should implement its side of those contracts rather than
+duplicating them.
+
+## Definition of done
+
+A slide change is complete when:
+
+- [ ] it preserves the requested meaning and sits in the intended presentation
+      location;
+- [ ] it uses the smallest correct implementation and dependency boundaries;
+- [ ] slide-local source, content, and assets remain independently authorable;
+- [ ] every applicable fixed step is deterministic on direct, forward, and backward
+      arrival;
+- [ ] owned resources are released at the correct lifecycle boundary;
+- [ ] the slide is accessible, legible, and unclipped at the capture viewport;
+- [ ] the exact route, neighboring boundaries, and relevant keyboard behavior work;
+- [ ] the browser reports no related page, console, network, data, or asset errors;
+- [ ] affected thumbnails have been regenerated when their representative image
+      changed; and
+- [ ] offline-sensitive paths have been exercised in cache-only rehearsal.
+
+When reporting completion, name the affected routes and state which steps,
+interactions, thumbnails, and rehearsal paths were verified. Surface unverified paths
+or known limitations explicitly.
+
+## See also
+
+[Slides](./slides.md) — slide anatomy, lifecycle, steps, context, manifests, data roots,
+and thumbnails.
+
+[Controls](./controls.md) — built-in elements and the control/slide responsibility
+boundary.
+
+[Keyboard navigation](./keyboard.md) — presentation keys, navigators, and captured-key
+rules.
+
+[Browser dependencies](./dependencies.md) — package selection, upgrades, cache
+preparation, and offline verification.
+
+[Command Line](./cli.md) — development serving, dependency inspection, thumbnails,
+rehearsal, and export.

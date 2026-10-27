@@ -1,0 +1,170 @@
+:scope {
+  --paper: #f3eee2;
+  --ink: #1d1a16;
+  --rule: #8c8579;
+  --definition: rgba(255, 226, 102, 0.5);
+  --plastic: rgba(255, 92, 170, 0.55);
+  --shoelace: rgba(60, 200, 110, 0.55);
+  --fit-scale: 0.69;
+  --fit-x: 581px;
+  --fit-y: 21px;
+  --zoom-scale: 4;
+  --zoom-x: 0px;
+  --zoom-y: 0px;
+  --loop-length: 1;
+  padding: 0;
+  overflow: hidden;
+  background: #3e3b38;
+  color: var(--ink);
+  font-family: "Libre Caslon Text", "Iowan Old Style", Georgia, "Times New Roman", serif;
+}
+
+.sheet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1100px;
+  height: 1500px;
+  padding: 70px 80px 60px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  transform: translate(var(--fit-x), var(--fit-y)) scale(var(--fit-scale));
+  transform-origin: 0 0;
+  transition: transform 1150ms cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+
+.sheet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E");
+}
+
+header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  border-bottom: 1.5px solid var(--ink);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+header strong {
+  font-size: 26px;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  line-height: 1.22;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.dictionary-column {
+  min-width: 0;
+  padding: 0 13px;
+}
+
+.dictionary-column:first-child {
+  padding-left: 0;
+}
+
+.dictionary-column:last-child {
+  padding-right: 0;
+}
+
+.dictionary-column + .dictionary-column {
+  border-left: 1px solid var(--rule);
+}
+
+.entry {
+  margin: 0 0 0.15em;
+  padding-left: 0.9em;
+  text-indent: -0.9em;
+}
+
+.headword {
+  font-weight: 700;
+}
+
+.part-of-speech,
+.label {
+  font-style: italic;
+}
+
+.sense-number {
+  font-weight: 700;
+}
+
+.sense {
+  border-radius: 0.15em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-color 500ms ease;
+}
+
+mark {
+  padding: 0 0.08em;
+  border-radius: 0.15em;
+  color: inherit;
+  background: transparent;
+  transition: background-color 500ms ease;
+}
+
+.loop {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.loop path {
+  fill: none;
+  opacity: 0.86;
+  stroke: #c4122f;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: var(--loop-length) var(--loop-length);
+  stroke-dashoffset: var(--loop-length);
+  mix-blend-mode: multiply;
+  transition: stroke-dashoffset 1150ms cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+
+.instant-geometry .sheet,
+.instant-geometry .loop path {
+  transition: none !important;
+}
+
+:scope[data-step='2'] .entry.target .sense-1 {
+  background-color: var(--definition);
+}
+
+:scope[data-step='2'] mark.plastic {
+  background-color: var(--plastic);
+}
+
+:scope[data-step='2'] mark.shoelace {
+  background-color: var(--shoelace);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .loop path,
+  .sense,
+  mark {
+    transition-duration: 1ms;
+  }
+}

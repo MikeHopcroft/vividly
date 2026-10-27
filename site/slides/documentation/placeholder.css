@@ -1,0 +1,107 @@
+:scope {
+  height: 100%;
+  overflow: auto;
+  padding: clamp(1.5rem, 6vh, var(--spacing-xl));
+  background:
+    linear-gradient(120deg, transparent 55%, rgb(79 195 247 / 0.08)),
+    var(--bg-primary);
+}
+
+.docs-placeholder {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+  grid-template-areas:
+    'header details'
+    'status details';
+  align-content: center;
+  width: min(100%, 72rem);
+  min-height: 100%;
+  margin-inline: auto;
+  gap: var(--spacing-xl);
+}
+
+.docs-placeholder header {
+  grid-area: header;
+}
+
+.docs-placeholder-eyebrow,
+.docs-placeholder h1,
+.docs-placeholder-promise,
+.docs-placeholder h2,
+.docs-placeholder ul,
+.docs-placeholder-status {
+  margin: 0;
+}
+
+.docs-placeholder-eyebrow {
+  color: var(--accent-warm);
+  font: 700 var(--font-size-sm) / 1.2 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.docs-placeholder h1 {
+  max-width: 13ch;
+  margin-top: var(--spacing-sm);
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 7vw, 6rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.docs-placeholder-promise {
+  max-width: 42rem;
+  margin-top: var(--spacing-lg);
+  color: var(--text-muted);
+  font-size: clamp(1.1rem, 2vw, var(--font-size-lg));
+  line-height: 1.45;
+}
+
+.docs-placeholder-details {
+  grid-area: details;
+  display: grid;
+  align-content: center;
+  gap: var(--spacing-md);
+}
+
+.docs-placeholder-details section {
+  padding: var(--spacing-lg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+}
+
+.docs-placeholder h2 {
+  color: var(--accent);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-placeholder ul {
+  display: grid;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  padding-left: 1.1rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.docs-placeholder-status {
+  grid-area: status;
+  align-self: end;
+  color: var(--accent-warm);
+  font: 700 var(--font-size-sm) / 1.2 var(--font-mono);
+}
+
+@media (max-width: 760px) {
+  .docs-placeholder {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'header'
+      'details'
+      'status';
+    align-content: start;
+  }
+}

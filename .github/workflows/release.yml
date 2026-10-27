@@ -1,0 +1,177 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_commit:
+        description: Full commit SHA on main to validate and release
+        required: true
+        type: string
+      version:
+        description: Committed package/runtime version (0.x.y)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vividly-release
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/ci.yml
+    with:
+      source_commit: ${{ inputs.source_commit }}
+
+  build:
+    name: Build and check distributions
+    needs: validate
+    runs-on: ubuntu-latest
+    env:
+      SOURCE: ${{ inputs.source_commit }}
+      VERSION: ${{ inputs.version }}
+    steps:
+      - name: Validate dispatch inputs
+        shell: bash
+        run: |
+          [[ "$SOURCE" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::Use a full source SHA"; exit 1; }
+          [[ "$VERSION" =~ ^0\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || { echo "::error::Use a 0.x.y version"; exit 1; }
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_commit }}
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+          enable-cache: true
+      - name: Install development dependencies
+        run: uv sync --locked
+
+      - name: Check source and release refs
+        shell: bash
+        run: |
+          git fetch origin \
+            +refs/heads/main:refs/remotes/origin/main \
+            +refs/heads/stable:refs/remotes/origin/stable
+          uv run --locked tools/release.py source --source "$SOURCE" --version "$VERSION"
+
+      - name: Require an unused PyPI version
+        run: uv run --locked tools/release.py pypi --source "$SOURCE" --version "$VERSION"
+
+      - name: Build and validate final distributions
+        shell: bash
+        run: |
+          dist="$RUNNER_TEMP/dist"
+          uv build --out-dir "$dist"
+          rm -f "$dist/.gitignore"
+          uvx twine check "$dist"/*
+          uvx check-wheel-contents "$dist"/*.whl
+          uv venv "$RUNNER_TEMP/wheel-smoke"
+          uv pip install --python "$RUNNER_TEMP/wheel-smoke/bin/python" "$dist"/*.whl
+          "$RUNNER_TEMP/wheel-smoke/bin/python" -c \
+            'import importlib.metadata, os; assert importlib.metadata.version("vividly") == os.environ["VERSION"]'
+          "$RUNNER_TEMP/wheel-smoke/bin/vividly" --help
+          "$RUNNER_TEMP/wheel-smoke/bin/vividly" provision "$RUNNER_TEMP/wheel-project"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: ${{ runner.temp }}/dist/
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish distributions to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/vividly/${{ inputs.version }}/
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      SOURCE: ${{ inputs.source_commit }}
+      VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_commit }}
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+      - run: uv sync --locked
+      - name: Recheck release ordering after approval
+        run: uv run --locked tools/release.py source --source "$SOURCE" --version "$VERSION" --resume
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Publish through Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          skip-existing: true
+      - name: Smoke-test installation from PyPI
+        shell: bash
+        run: |
+          uv venv "$RUNNER_TEMP/pypi-smoke"
+          for attempt in {1..6}; do
+            if uv pip install --no-cache --index-url https://pypi.org/simple \
+              --python "$RUNNER_TEMP/pypi-smoke/bin/python" "vividly==$VERSION"; then
+              break
+            fi
+            if [[ "$attempt" == 6 ]]; then exit 1; fi
+            echo "Waiting for PyPI to serve vividly $VERSION (attempt $attempt/6)"
+            sleep 10
+          done
+          "$RUNNER_TEMP/pypi-smoke/bin/python" -c \
+            'import importlib.metadata, os; assert importlib.metadata.version("vividly") == os.environ["VERSION"]'
+          "$RUNNER_TEMP/pypi-smoke/bin/vividly" --help
+          "$RUNNER_TEMP/pypi-smoke/bin/vividly" provision "$RUNNER_TEMP/pypi-project"
+
+  promote:
+    name: Tag the release and advance stable
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      SOURCE: ${{ inputs.source_commit }}
+      VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_commit }}
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+      - run: uv sync --locked
+      - name: Recheck source and release refs
+        run: uv run --locked tools/release.py source --source "$SOURCE" --version "$VERSION" --resume
+      - name: Atomically create the tag and fast-forward stable
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git show-ref --verify --quiet "refs/tags/v$VERSION"; then
+            git tag -a "v$VERSION" "$SOURCE" -m "Release v$VERSION"
+          fi
+          git push --atomic origin "refs/tags/v$VERSION" "$SOURCE:refs/heads/stable"
+
+  pages:
+    name: Deploy Pages
+    needs: promote
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-pages.yml
+    with:
+      source_commit: ${{ inputs.source_commit }}

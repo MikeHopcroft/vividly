@@ -1,0 +1,537 @@
+# Controls
+
+Status: prototype API. The controls described here are implemented, but their APIs may
+change as the prototype is tested.
+
+Vividly controls are custom HTML elements for rendering common kinds of presentation
+content. A control renders one region of a slide and does not own slide steps,
+navigation, or persistence. Most controls receive all content from the slide module.
+The thumbnail control is presentation-aware because generated thumbnail identity and
+paths belong to the active presentation manifest. The advance control is
+presentation-aware because activating it requests the next structural state, as does
+the optional completion button on the step-progress control.
+
+Vividly registers its controls before any slide mounts. Controls use light DOM, inherit
+the presentation theme, and may be restyled by a slide's stylesheet.
+
+## Common conventions
+
+Controls accept content in one of two ways:
+
+- Set `src` to a URL when the control should load a file.
+- Set `value` to a string when the slide has already loaded or generated the content.
+
+A path written directly in `src` is resolved by the browser relative to the page, not
+relative to the slide module or its data root. Resolve slide-owned paths through the
+slide context:
+
+```js
+mount(root) {
+  root.innerHTML = '<vividly-markdown></vividly-markdown>';
+  root.firstElementChild.src = this.ctx.asset('./notes.md');
+}
+```
+
+Prefer `value` when `preload()` already needs the same file:
+
+```js
+async preload() {
+  this.notes = await this.ctx.load('./notes.md');
+}
+
+mount(root) {
+  root.innerHTML = '<vividly-markdown></vividly-markdown>';
+  root.firstElementChild.value = this.notes;
+}
+```
+
+Setting `value` clears `src` as the content source; setting `src` starts a new load and
+replaces the current value when it completes. Controls discard the result of an older
+load if their source changes before that load finishes.
+
+After rendering, a control dispatches a bubbling `vividly-rendered` event. A failed
+fetch or render dispatches a bubbling `vividly-error` event whose `detail.error` is the
+original error. The control also renders a short error state rather than leaving stale
+content visible.
+
+## Advance prompt
+
+`<vividly-advance>` tells readers how to advance with Right Arrow or Space. Set
+`message` to complete the sentence:
+
+```html
+<vividly-advance message="start the demo"></vividly-advance>
+```
+
+The control renders "Press → or Space to start the demo" with the same keycap visual
+language as Vividly's keyboard help. The whole bordered prompt is a button. Clicking
+it, or focusing it and pressing Enter or Space, advances to the next structural state.
+Right Arrow retains the presentation's normal keyboard behavior.
+
+`message` defaults to `continue`. The corresponding JavaScript property is also named
+`message`. The control advances the closest containing `<vividly-presentation>` and
+does nothing when used outside a presentation.
+
+## Step readiness progress
+
+`<vividly-step-progress>` shows how far the current step's meaningful animation has
+progressed. It is not a slide-position indicator or a countdown to automatic navigation.
+
+```html
+<vividly-step-progress label="Scene readiness" advance></vividly-step-progress>
+```
+
+| Input | Purpose |
+|---|---|
+| `value` | Progress from 0 to 1; defaults to 0 |
+| `label` | Accessible progressbar name; defaults to `Step readiness` |
+| `advance` | Boolean attribute: offer a compact `Advance →` button at completion |
+
+The JavaScript properties have the same names. `advance` is boolean; omit its HTML
+attribute to disable it (`advance="false"` still enables a boolean attribute).
+Finite values outside 0–1 are clamped. The `value` setter requires a finite number and
+throws a `TypeError` otherwise. A malformed HTML `value` renders an error and dispatches
+`vividly-error`. The progressbar exposes rounded percentages and `Ready` at completion.
+
+The slide supplies progress; the control does not detect animations or run a clock.
+Update `value` every animation frame for smooth movement. Values render directly,
+without extra easing, and resets or settling take effect immediately:
+
+```js
+// In mount(root):
+this.progress = root.querySelector('vividly-step-progress');
+
+// In the animation's existing frame callback:
+this.progress.value = elapsed / duration;
+
+// When finishing the build synchronously in settleStep():
+this.progress.value = 1;
+```
+
+For chained JavaScript animations, map each phase into a contiguous portion of 0–1,
+using known durations or authored weights. Report 1 after the final meaningful reveal,
+even if ambient motion continues. Do not invent percentages for unknown-duration work.
+Reset to 0 when starting another step, prevent inactive callbacks from updating the
+control, and cancel owned animation resources on exit/unmount. Reduced-motion and
+settling paths should report completion immediately.
+
+With `advance` enabled, completion reveals a button without moving focus or changing
+layout. Before completion it is disabled, invisible, and unavailable to keyboard or
+assistive technology. It requests the closest presentation's normal `advance()` action,
+just like `<vividly-advance>`; it does not bypass settling or advance automatically.
+
+The default control is a thin full-width bar with a small button above the right end,
+inset to leave room for the shell's keyboard-help button.
+Place it explicitly in the slide layout. Customize `--v-step-progress-color`
+(default `var(--accent-warm)`) and `--v-step-progress-height` (default `3px`), or style
+the light-DOM `.v-step-progress-track`, `.v-step-progress-fill`, and
+`.v-step-progress-advance` classes. The button reserves its footprint with visibility
+rather than affecting layout. No presentation-wide display mode is provided.
+
+## Image
+
+`<vividly-image>` displays one image within the size assigned to the control.
+
+```html
+<vividly-image
+  src="./landscape.jpg"
+  alt="Mountain landscape at sunrise"
+  fit="cover"
+  position="50% 40%">
+</vividly-image>
+```
+
+| Input | Purpose |
+|---|---|
+| `src` | URL of the image to display |
+| `alt` | Alternative text; use an empty string only for a decorative image |
+| `fit` | CSS image fitting mode: `cover`, `contain`, `fill`, `none`, or `scale-down` |
+| `position` | CSS `object-position`, such as `center`, `left top`, or `50% 40%` |
+
+The corresponding JavaScript properties are `src`, `alt`, `fit`, and `position`.
+`fit` defaults to `cover`, and an unsupported value also falls back to `cover`.
+`position` defaults to `50% 50%`. The control uses the browser's `object-fit`
+algorithm, so it does not measure the viewport or choose a dimension in JavaScript.
+
+The control always fills its containing box. `cover` scales the image by whichever
+dimension is needed to cover that box and crops the other dimension. `fill` also
+covers the box but may distort the image. `contain`, `none`, and `scale-down` preserve
+the whole image or its intrinsic size and may leave uncovered space.
+
+Vividly provides a thin full-stage adapter for the common case:
+
+```yaml
+- type: slide
+  id: landscape
+  module: ../vividly/slides/image.js
+  props:
+    src: ./assets/landscape.jpg
+    alt: Mountain landscape at sunrise
+    fit: cover
+    position: 50% 40%
+```
+
+The adapter accepts either `src` for a one-step slide or a non-empty `images` array
+for a stepped slide. The two forms are mutually exclusive. String entries use the
+slide-level defaults; object entries may override `alt`, `fit`, and `position`:
+
+```yaml
+props:
+  fit: contain
+  images:
+    - src: ./assets/diagram.png
+      alt: Complete system diagram
+    - src: ./assets/detail.png
+      alt: Detail centered on the request path
+      fit: cover
+      position: 70% center
+```
+
+Each image is one presentation step. Paths are resolved through `ctx.asset()` against
+the slide instance's data root. The adapter supplies an empty `alt` value when none is
+provided, but authors should provide meaningful text whenever the image conveys
+content.
+
+## Thumbnail
+
+`<vividly-thumbnail>` displays the generated thumbnail for a presentation-local slide
+or section address. It renders the slide's canonical thumbnail by default:
+
+```html
+<vividly-thumbnail address="gallery/layered-build"></vividly-thumbnail>
+```
+
+Set `step` to render one exact zero-based step from the generated sequence:
+
+```html
+<vividly-thumbnail
+  address="gallery/layered-build"
+  step="2"
+  label="Layered build after annotations appear">
+</vividly-thumbnail>
+```
+
+| Input | Purpose |
+|---|---|
+| `address` | Presentation-local slide address, or a section address resolved to its first slide |
+| `step` | Optional exact zero-based step; omit it to use the canonical thumbnail |
+| `label` | Optional accessible name and fallback text |
+| `fallback` | Visual fallback text without exposing the thumbnail to assistive technology |
+| `loading` | Native image loading policy: `lazy` or `eager` |
+
+The corresponding JavaScript properties are `address`, `step`, `label`, `fallback`,
+and `loading`. Assigning `null` to `step` restores canonical selection. An invalid or
+unavailable step renders the stable fallback rather than substituting the canonical
+image. `loading` defaults to `lazy`.
+
+The control reads the active presentation's generated thumbnail index. It renders a
+stable fallback when the address or image is unavailable and does not load the target
+slide module. It has no click or navigation behavior; place it inside the card, link, or
+registered navigator choice that owns activation.
+
+The control is decorative when `label` is omitted. This is normally correct inside a
+navigator card whose button text already names the destination. Set `label` when the
+thumbnail itself must be exposed as an image to assistive technology. Use `fallback`
+when a decorative thumbnail needs custom placeholder text.
+
+The default aspect ratio is `16 / 9`, and the image uses `object-fit: cover`. Slide CSS
+may override the control's size, aspect ratio, border, background, or descendant image
+fitting because the control uses light DOM.
+
+## Copy buttons
+
+Markdown and code controls show copy buttons by default. Disable them with the boolean
+`no-copy` attribute, or set the JavaScript `copyable` property:
+
+```html
+<vividly-markdown src="./instructions.md"></vividly-markdown>
+<vividly-code src="./example.js" no-copy></vividly-code>
+```
+
+```js
+viewer.copyable = false; // Adds no-copy.
+viewer.copyable = true;  // Removes no-copy.
+```
+
+`copyable` defaults to `true`. As with other boolean attributes, `no-copy="false"`
+still disables copying; remove the attribute to enable it.
+
+- Markdown gives each block-level code block its own button, with or without syntax
+  highlighting. This includes indented code and raw HTML `pre > code`, not inline
+  code or `prompt` fences rendered as prose. It copies the parsed code text, preserving
+  whitespace and trailing newlines, rather than the original Markdown fence syntax.
+- The code browser copies the entire source value, not just visible, highlighted,
+  or active lines. Line numbers and highlighting markup are excluded.
+- Annotated Markdown supports the same option, including code in annotation content.
+
+The compact icon button is always available, including on touch devices, and has a
+visible keyboard focus indicator. Enter and Space activate it without advancing the
+presentation. A checkmark and polite accessible status confirm a successful write.
+Buttons occupy reserved space so they do not cover code or move with its horizontal
+scrolling.
+
+Clipboard access requires HTTPS or localhost and browser permission. If access is
+unavailable or denied, the control displays a manual-copy explanation and dispatches
+`vividly-error` with `detail.error` and `detail.operation === 'copy'`. The content stays
+visible and the button can be retried. There is no legacy clipboard fallback.
+
+Changing content, toggling the option, or reconnecting a control updates its buttons
+without duplication. `.v-code-copy`, `.v-code-copy-tools`, and
+`.v-code-copy-status` are light-DOM styling hooks; successful buttons carry
+`data-copied`, and failed status messages have `.is-error`.
+
+## Code browser
+
+`<vividly-code>` displays syntax-highlighted source code in a scrolling region.
+
+```html
+<vividly-code
+  language="javascript"
+  src="./example.js"
+  highlight-lines="4,7-10"
+  active-line="7">
+</vividly-code>
+```
+
+| Input | Purpose |
+|---|---|
+| `src` | URL of a text file to display |
+| `value` | Source text supplied as a JavaScript property |
+| `language` | Highlight.js language name; omit to use automatic detection |
+| `highlight-lines` | Comma-separated lines and inclusive ranges to emphasize |
+| `active-line` | One emphasized line representing the current point of attention |
+| `no-copy` | Disable the default whole-source copy button (`copyable = false`) |
+
+Line numbers in the public API are one-based, matching the numbers a reader sees.
+`highlight-lines="4,7-10"` highlights lines 4, 7, 8, 9, and 10. An invalid or
+out-of-range entry is ignored.
+
+The corresponding JavaScript properties are `src`, `value`, `language`,
+`highlightLines`, and `activeLine`. `highlightLines` accepts the same range string as
+the attribute or an array of one-based line numbers.
+
+Use `revealLine()` to scroll a line into view:
+
+```js
+this.code.activeLine = 18;
+this.code.revealLine(18, { block: 'center', behavior: 'smooth' });
+```
+
+The control owns scrolling within its own viewport. It does not automatically scroll
+when `activeLine` changes, because a slide may update state while hidden or may want to
+preserve the reader's manual scroll position. The slide decides when a reveal is
+appropriate, normally from `enter()` or in response to direct interaction rather than
+from `mount()`.
+
+For source embedded directly in an HTML template, escape characters such as `<` and
+`&`, or set `value` from JavaScript. The control treats its text as source code, never
+as HTML.
+
+## Markdown viewer
+
+`<vividly-markdown>` renders Markdown and optionally syntax-highlights fenced code
+blocks.
+
+```html
+<vividly-markdown src="./notes.md" highlight></vividly-markdown>
+```
+
+| Input | Purpose |
+|---|---|
+| `src` | URL of a Markdown file |
+| `value` | Markdown text supplied as a JavaScript property |
+| `highlight` | Apply Highlight.js to fenced code blocks |
+| `base-url` | Document URL for resolving relative images and links in supplied Markdown |
+| `no-copy` | Disable the default copy buttons on block-level code (`copyable = false`) |
+
+For a document loaded through `src`, relative image sources and link destinations
+resolve against the fetched document's URL, including its final URL after redirects.
+This applies to Markdown images and links and to raw HTML `img[src]` and `a[href]`.
+Absolute URLs, root-relative URLs, protocol-relative URLs, fragment-only links, empty
+URLs, and URLs with schemes such as `mailto:` or `data:` are preserved.
+
+When supplying `value`, set the `baseUrl` JavaScript property (or `base-url`
+attribute) to the document URL:
+
+```js
+const source = './introduction/notes.md';
+viewer.baseUrl = this.ctx.asset(source);
+viewer.value = await this.ctx.load(source);
+```
+
+An explicit `baseUrl` overrides the fetched source URL. Changing or removing it
+rerenders the Markdown. Without a source URL or an explicit base, inline Markdown
+keeps the browser's document-relative behavior. Assigning `value` clears the
+previous fetched source URL; an explicit `baseUrl` remains in effect.
+
+The built-in Markdown and annotated Markdown slide modules set the document URL
+automatically from `props.src` and the slide's data root. Keep images beside the
+Markdown and refer to them with paths such as `./assets/network.png`. URL rebasing
+does not alter custom-element attributes, CSS URLs, or image `srcset` values.
+
+Markdown may contain raw HTML, including custom elements:
+
+```markdown
+## Deployment
+
+<release-status source="./release.json"></release-status>
+```
+
+Use a `prompt` fence for an agent prompt embedded in Markdown:
+
+````markdown
+```prompt
+Explain how this system handles retries and partial failures.
+
+Include:
+
+- retry limits
+- backoff behavior
+- recovery from partial writes
+```
+````
+
+Vividly renders the fence as a labeled `.v-prompt` figure. Prompt contents are
+Markdown, so they may contain paragraphs, lists, emphasis, links, and other Markdown
+constructs. Shared presentation styles use readable line lengths and spacing and wrap
+long prose and tokens. Prompt fences are not syntax-highlighted.
+
+Vividly preserves that element in the rendered light DOM. It does not rename it, turn
+it into a decorative wrapper, or parse its attributes. Define slide-owned custom
+elements at module scope before mounting the control:
+
+```js
+class ReleaseStatus extends HTMLElement {
+  connectedCallback() {
+    // Render the element.
+  }
+}
+
+customElements.define('release-status', ReleaseStatus);
+```
+
+Markdown inside an arbitrary raw HTML element is not guaranteed to be parsed. A custom
+element that accepts Markdown should render that content itself or expose an explicit
+property for it.
+
+The Markdown and any raw HTML in it are trusted presentation content. The control does
+not sanitize HTML. Do not render untrusted or reader-supplied Markdown with this
+control.
+
+## Annotated Markdown viewer
+
+`<vividly-annotated-markdown>` presents a Markdown document beside a navigable list of
+annotations. It supports the same `src`, `value`, `highlight`, `base-url`, and `no-copy` inputs as
+`<vividly-markdown>`.
+
+```html
+<vividly-annotated-markdown
+  src="./design.md"
+  highlight>
+</vividly-annotated-markdown>
+```
+
+Annotations and optional header content are authored directly in the Markdown:
+
+```markdown
+<vividly-document-header title="Rendering pipeline">
+How source material becomes a visible slide.
+</vividly-document-header>
+
+# Rendering pipeline
+
+Load and normalize the presentation manifest.
+
+<vividly-annotation title="Why normalize first?">
+Normalization gives the runtime one tree shape for root and incorporated manifests.
+</vividly-annotation>
+```
+
+`<vividly-document-header>` contributes the viewer heading and supporting content.
+`<vividly-annotation>` marks its position in the document; its `title` and body become
+an entry in the annotation pane. These metadata elements are interpreted only by the
+annotated viewer. Other custom elements pass through exactly as they do in
+`<vividly-markdown>`.
+
+The control exposes:
+
+| Member | Purpose |
+|---|---|
+| `annotationCount` | Number of annotations discovered after rendering; read-only |
+| `activeAnnotation` | Zero-based index of the selected annotation, or `-1` |
+| `revealAnnotation(index, options)` | Select and scroll an annotation into view |
+
+The annotation index is zero-based so a slide can map its step directly onto the
+control. Vividly provides a thin adapter for the common case:
+
+```yaml
+- type: slide
+  id: design-notes
+  module: ../vividly/slides/annotated-markdown.js
+  data: ./design-notes
+  props:
+    src: ./document.md
+```
+
+The adapter loads the document during `preload()`, counts annotation tags without
+creating DOM, and reports that count as the slide's step count. On arrival it positions
+the panes immediately; movement between steps is smooth.
+
+Changing `activeAnnotation` updates selection without scrolling. Calling
+`revealAnnotation()` updates selection and scrolls both panes as needed. Selection by
+pointer dispatches a bubbling `vividly-annotation-change` event with
+`detail.index`. A slide may use that event to request navigation to the corresponding
+step; the control does not change the presentation step itself.
+
+The control does not capture document keyboard events and does not write to
+`localStorage`. Keyboard policy belongs to the orchestrator or a slide using
+`ctx.captureKeys()`, and persistent state belongs in `ctx.state`.
+
+## Styling controls
+
+Control styles live in the `vividly.controls` cascade layer. A slide's unlayered
+stylesheet wins over those defaults, so ordinary selectors are sufficient:
+
+```css
+vividly-code {
+  max-height: 70vh;
+}
+
+vividly-annotated-markdown {
+  grid-template-columns: minmax(14rem, 24%) 1fr;
+}
+```
+
+Controls inherit Vividly theme tokens. Prefer overriding documented custom properties
+once the prototype establishes them; use descendant selectors only when a control does
+not expose an appropriate property. Controls use light DOM deliberately, so slide
+styles can reach their rendered content.
+
+Give scrolling controls a stable size through the surrounding slide layout. A code or
+Markdown viewer cannot scroll predictably if its height is determined entirely by its
+content.
+
+## Responsibility boundary
+
+Controls render content and publish interaction state. Slide modules remain responsible
+for:
+
+- resolving data-root paths with `ctx.asset()` or loading content with `ctx.load()`;
+- declaring and implementing the slide's step axis;
+- deciding when selection changes should navigate;
+- capturing presentation keys;
+- persisting state through `ctx.state`; and
+- choosing when to scroll after a hidden slide becomes visible.
+
+This boundary allows multiple controls to appear on one slide and allows the same
+control to be used outside a stepped presentation. The advance prompt is the narrow
+exception: its purpose is to request one forward structural step from its containing
+presentation.
+
+## See also
+
+[Authoring slides](./authoring.md) — choosing a control, custom element, or slide
+module and validating the result.
+
+[Slides](./slides.md) — slide lifecycle, context, styling, and the element/module
+boundary.

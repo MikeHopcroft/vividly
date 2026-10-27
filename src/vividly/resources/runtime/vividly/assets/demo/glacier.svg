@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Angular glacier ice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#cfe6f2"/><stop offset="1" stop-color="#8fbfd9"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <path d="M0 380 L160 250 L300 360 L430 210 L580 340 L700 260 L800 330 L800 500 L0 500 Z" fill="#eaf6fb"/>
+  <path d="M160 250 L300 360 L230 500 L60 500 Z" fill="#b9dcea"/>
+  <path d="M430 210 L580 340 L520 500 L340 500 Z" fill="#a3cee2"/>
+  <path d="M700 260 L800 330 L800 500 L640 500 Z" fill="#c6e3ef"/>
+</svg>

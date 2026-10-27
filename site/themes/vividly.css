@@ -1,0 +1,7 @@
+@import url("../vividly/themes/dark.css");
+
+/* Slow only the City of Loops / Partnership boundary, in either direction. */
+.v-stage:has(> .v-leave > [data-vividly-slide="why-vividly/micro-demonstration"]):has(> .v-enter > [data-vividly-slide="why-vividly/the-partnership"]) > .v-layer,
+.v-stage:has(> .v-enter > [data-vividly-slide="why-vividly/micro-demonstration"]):has(> .v-leave > [data-vividly-slide="why-vividly/the-partnership"]) > .v-layer {
+  --transition-duration: 1000ms;
+}

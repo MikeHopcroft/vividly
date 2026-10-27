@@ -1,0 +1,18 @@
+heading: A Guided Photo Tour
+photos:
+  - src: ../../../vividly/assets/demo/aurora.svg
+    title: Aurora, 03:40
+    caption: Long exposure over the north ridge. The green veil is oxygen at altitude.
+    alt: Green aurora over a dark mountain ridge
+  - src: ../../../vividly/assets/demo/canyon.svg
+    title: Canyon at Dusk
+    caption: Three mesa layers, each a different era of sediment.
+    alt: Layered canyon mesas lit by a low sun
+  - src: ../../../vividly/assets/demo/harbor.svg
+    title: Harbor, Slack Tide
+    caption: The water goes still for about twenty minutes between tides.
+    alt: Two sailboats on flat harbor water
+  - src: ../../../vividly/assets/demo/glacier.svg
+    title: Glacier Face
+    caption: Compression turns the ice blue by squeezing the air out of it.
+    alt: Angular blue and white glacier ice

@@ -1,0 +1,353 @@
+:scope {
+  height: 100%;
+  overflow: hidden;
+  padding: clamp(1.5rem, 5vh, var(--spacing-xl));
+  background:
+    radial-gradient(circle at 18% 20%, rgb(79 195 247 / 0.14), transparent 32rem),
+    radial-gradient(circle at 84% 80%, rgb(255 183 77 / 0.1), transparent 28rem),
+    var(--bg-primary);
+}
+
+.docs-opening {
+  position: relative;
+  display: grid;
+  align-content: center;
+  width: min(100%, 84rem);
+  min-height: 100%;
+  margin-inline: auto;
+  gap: clamp(0.75rem, 1.8vh, var(--spacing-md));
+}
+
+.docs-opening-logo {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(58rem, 86vw);
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+  transform: translateY(clamp(11rem, 30vh, 19rem));
+  transform-origin: center;
+}
+
+.docs-opening.is-animated .docs-opening-logo {
+  animation: docs-opening-compose-logo 700ms 1250ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.docs-opening.is-complete .docs-opening-logo {
+  width: min(22rem, 42vw);
+  transform: translateY(0);
+}
+
+.docs-opening-message {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(1rem);
+}
+
+.docs-opening.is-animated .docs-opening-message {
+  animation: docs-opening-reveal 520ms 1650ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.docs-opening.is-complete .docs-opening-message {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.docs-opening-message h1,
+.docs-opening-message p {
+  margin: 0;
+}
+
+.docs-opening-message h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 4.8vw, 4.75rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.docs-opening-tagline {
+  margin-top: var(--spacing-lg) !important;
+  color: var(--text-muted);
+  font-size: clamp(1rem, 1.75vw, var(--font-size-lg));
+  opacity: 0;
+  transform: translateY(0.75rem);
+}
+
+.docs-opening.is-animated .docs-opening-tagline {
+  animation: docs-opening-reveal 450ms 2100ms ease both;
+}
+
+.docs-opening.is-complete .docs-opening-tagline {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.docs-opening-choices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+.docs-opening-choice {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    'ordinal . action'
+    'title title title'
+    'description description description';
+  align-content: start;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  min-height: 11rem;
+  padding: var(--spacing-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  opacity: 0;
+  transform: translateX(5rem);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.docs-opening.is-animated .docs-opening-choice {
+  animation: docs-opening-choice-in 520ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.docs-opening.is-animated .docs-opening-choice:nth-child(1) {
+  animation-delay: 2500ms;
+}
+
+.docs-opening.is-animated .docs-opening-choice:nth-child(2) {
+  animation-delay: 2650ms;
+}
+
+.docs-opening.is-animated .docs-opening-choice:nth-child(3) {
+  animation-delay: 2800ms;
+}
+
+.docs-opening.is-complete .docs-opening-choice {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.docs-opening-choice:focus-visible,
+.docs-opening-choice.is-active {
+  border-color: var(--accent);
+}
+
+.docs-opening-choice:hover {
+  background: color-mix(in srgb, var(--bg-elevated), var(--text-primary) 5%);
+}
+
+.docs-opening-choice:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.docs-opening-choice.is-active {
+  box-shadow:
+    inset 0.3rem 0 0 var(--accent),
+    0 0 0 1px rgb(79 195 247 / 0.16);
+}
+
+.docs-opening-choice-ordinal {
+  grid-area: ordinal;
+  color: var(--accent-warm);
+  font: 700 var(--font-size-sm) / 1.2 var(--font-mono);
+}
+
+.docs-opening-choice-title {
+  grid-area: title;
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.docs-opening-choice-description {
+  grid-area: description;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+.docs-opening-choice-action {
+  grid-area: action;
+  color: var(--accent);
+  font: 700 var(--font-size-sm) / 1.2 var(--font-body);
+}
+
+.docs-opening-mobile {
+  display: none;
+}
+
+.docs-opening-resources {
+  margin: var(--spacing-sm) 0 0;
+  color: var(--text-muted);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  opacity: 0;
+}
+
+.docs-opening-resources a {
+  color: var(--accent);
+  text-underline-offset: 0.2em;
+}
+
+.docs-opening-resources a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.docs-opening.is-animated .docs-opening-resources {
+  animation: docs-opening-reveal 450ms 3000ms ease both;
+}
+
+.docs-opening.is-complete .docs-opening-resources {
+  opacity: 1;
+}
+
+@keyframes docs-opening-compose-logo {
+  from {
+    width: min(58rem, 86vw);
+    transform: translateY(clamp(11rem, 30vh, 19rem));
+  }
+
+  to {
+    width: min(22rem, 42vw);
+    transform: translateY(0);
+  }
+}
+
+@keyframes docs-opening-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes docs-opening-choice-in {
+  from {
+    opacity: 0;
+    transform: translateX(5rem);
+  }
+
+  to {
+    opacity: 0.68;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 900px) {
+  :scope {
+    padding: 3.25rem clamp(1rem, 4vw, 2rem) 4rem;
+    overflow: auto;
+  }
+
+  .docs-opening {
+    align-content: start;
+    gap: 0.75rem;
+  }
+
+  .docs-opening.is-animated .docs-opening-logo,
+  .docs-opening.is-animated .docs-opening-message,
+  .docs-opening.is-animated .docs-opening-tagline,
+  .docs-opening.is-animated .docs-opening-choice,
+  .docs-opening.is-animated .docs-opening-resources {
+    animation: none;
+  }
+
+  .docs-opening.is-complete .docs-opening-logo {
+    width: min(12rem, 42vw);
+    transform: none;
+  }
+
+  .docs-opening-message h1 {
+    font-size: clamp(1.75rem, 7vw, 2.5rem);
+    line-height: 1.05;
+  }
+
+  .docs-opening-tagline {
+    margin-top: 0.75rem !important;
+    font-size: 0.9rem;
+  }
+
+  .docs-opening-choices {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .docs-opening-choice {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'title action'
+      'description description';
+    gap: 0.25rem 0.75rem;
+    min-height: 4.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .docs-opening-choice-title {
+    font-size: 1.35rem;
+  }
+
+  .docs-opening-choice-action {
+    align-self: center;
+    font-size: 1.25rem;
+  }
+
+  .docs-opening-desktop,
+  .docs-opening-choice-ordinal {
+    display: none;
+  }
+
+  .docs-opening-mobile {
+    display: inline;
+  }
+
+  .docs-opening-resources {
+    margin-top: 0.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-opening.is-animated .docs-opening-logo,
+  .docs-opening.is-animated .docs-opening-message,
+  .docs-opening.is-animated .docs-opening-tagline,
+  .docs-opening.is-animated .docs-opening-resources,
+  .docs-opening.is-animated .docs-opening-choice {
+    animation: none;
+  }
+
+  .docs-opening.is-animated .docs-opening-logo {
+    width: min(22rem, 42vw);
+    transform: translateY(0);
+  }
+
+  .docs-opening.is-animated .docs-opening-message,
+  .docs-opening.is-animated .docs-opening-tagline,
+  .docs-opening.is-animated .docs-opening-resources {
+    opacity: 1;
+    transform: translate(0);
+  }
+
+  .docs-opening.is-animated .docs-opening-choice {
+    opacity: 0.68;
+    transform: translate(0);
+  }
+
+}

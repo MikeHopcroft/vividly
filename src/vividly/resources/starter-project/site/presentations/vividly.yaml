@@ -1,0 +1,10 @@
+id: vividly
+title: My Vividly Presentation
+theme: ../vividly/themes/dark.css
+transition: dissolve
+
+nodes:
+  - type: slide
+    id: welcome
+    module: ../slides/title-card/slide.js
+    title: Welcome

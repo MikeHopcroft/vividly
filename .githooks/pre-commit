@@ -1,0 +1,35 @@
+#!/bin/sh
+
+root=$(git rev-parse --show-toplevel) || exit 1
+cd "$root" || exit 1
+
+if command -v gitleaks >/dev/null 2>&1; then
+    if ! gitleaks git --pre-commit --staged --redact --verbose --no-banner --log-level warn .; then
+        echo "Secret scan failed: remove the reported secret from the staged changes before committing." >&2
+        exit 1
+    fi
+else
+    echo "Secret scan skipped: gitleaks is not installed (see CONTRIBUTING.md)." >&2
+fi
+
+git diff --cached --quiet --no-ext-diff --no-renames -- uv.lock
+status=$?
+case "$status" in
+    0) exit 0 ;;
+    1) ;;
+    *) echo "Lockfile check failed: cannot inspect staged changes." >&2; exit 1 ;;
+esac
+
+python=.venv/bin/python
+if [ ! -x "$python" ]; then
+    python=$(command -v python3) || {
+        echo "Lockfile check requires Python 3.12+ in .venv/bin/python or on PATH as python3." >&2
+        exit 1
+    }
+fi
+if ! "$python" -I -c 'import sys; sys.exit(sys.version_info < (3, 12))'; then
+    echo "Lockfile check requires a working Python 3.12+ interpreter; update .venv or python3." >&2
+    exit 1
+fi
+
+exec "$python" -I "$root/tools/check_uv_lock.py" --staged

@@ -1,0 +1,60 @@
+:scope {
+  display: grid;
+  place-items: center;
+  padding: 120px 170px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  font-family: Baskerville, "Baskerville Old Face", "Hoefler Text", Georgia, "Times New Roman", serif;
+}
+
+figure {
+  width: min(1420px, 100%);
+  margin: 0;
+  text-align: center;
+}
+
+blockquote {
+  margin: 0;
+  font-size: clamp(64px, 4.4vw, 86px);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+figcaption {
+  margin-top: 72px;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+figcaption::before {
+  content: "\2014\00a0";
+}
+
+@media (max-width: 900px), (max-height: 600px) {
+  :scope {
+    padding: clamp(24px, 6svh, 64px) clamp(20px, 6vw, 60px);
+    overflow-y: auto;
+  }
+
+  figure {
+    min-width: 0;
+  }
+
+  blockquote {
+    font-size: clamp(28px, min(8vw, 10svh), 56px);
+  }
+
+  figcaption {
+    margin-top: clamp(24px, 6svh, 48px);
+    font-size: clamp(14px, 2.6vw, 18px);
+    letter-spacing: 0.16em;
+  }
+}

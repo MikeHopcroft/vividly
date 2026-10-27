@@ -1,0 +1,34 @@
+id: inverted
+title: Inverted
+theme: ../vividly/themes/dark.css
+transition: dissolve
+
+nodes:
+  - type: slide
+    id: introduction
+    title: About Inverted
+    module: ../vividly/slides/markdown.js
+    data: ../slides/inverted/introduction
+    props:
+      src: ./introduction.md
+
+  - type: slide
+    id: clarke-quote
+    module: ../slides/inverted/demo/clarke-quote/slide.js
+    title: Arthur C. Clarke
+  - type: slide
+    id: aglet
+    module: ../slides/inverted/demo/aglet/slide.js
+    title: Aglet
+  - type: slide
+    id: plastic-concordance
+    module: ../slides/inverted/demo/plastic-concordance/slide.js
+    title: Plastic concordance
+  - type: slide
+    id: concordance-merge
+    module: ../slides/inverted/demo/concordance-merge/slide.js
+    title: Concordance merge
+  - type: slide
+    id: aglet-definition
+    module: ../slides/inverted/demo/aglet-definition/slide.js
+    title: Aglet definition

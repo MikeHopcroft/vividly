@@ -1,0 +1,195 @@
+id: feature-tour
+title: Runtime Feature Tour
+theme: ../vividly/themes/dark.css
+transition: dissolve
+
+nodes:
+  - type: section
+    id: opening
+    title: Opening
+    children:
+      - type: slide
+        id: title-card
+        module: ../slides/feature-tour/title-card/slide.js
+        title: Title Card
+        transition: cut
+
+  - type: section
+    id: images
+    title: Working With Images
+    children:
+      - type: slide
+        id: full-bleed-image
+        module: ../vividly/slides/image.js
+        data: ../vividly/assets/demo
+        title: Full-Bleed Image
+        transition: dissolve
+        props:
+          src: ./dunes.svg
+          alt: Wind-carved sand dunes beneath a pale sky
+          fit: cover
+          position: 50% 58%
+
+      - type: slide
+        id: image-fit-modes
+        module: ../vividly/slides/image.js
+        data: ../vividly/assets/demo
+        title: Image Fit Modes
+        transition: dissolve
+        props:
+          images:
+            - src: ./orchard.svg
+              alt: Rows of trees in an orchard, contained within the stage
+              fit: contain
+            - src: ./glacier.svg
+              alt: Angular glacier ice stretched to fill the stage
+              fit: fill
+            - src: ./harbor.svg
+              alt: Boats in a calm harbor shown at intrinsic size when possible
+              fit: scale-down
+
+      - type: slide
+        id: photo-tour
+        module: ../slides/feature-tour/photo-tour/slide.js
+        title: Photo Tour
+        transition: fly
+        props:
+          heading: A Guided Photo Tour
+
+      - type: slide
+        id: contact-sheet
+        module: ../slides/feature-tour/contact-sheet/slide.js
+        title: Contact Sheet
+        transition: slide
+
+  - type: section
+    id: mechanics
+    title: Mechanics
+    children:
+      - type: slide
+        id: markdown-controls
+        module: ../slides/feature-tour/markdown-controls/slide.js
+        title: Markdown Controls
+
+      - type: slide
+        id: diagram-build
+        module: ../slides/feature-tour/diagram-build/slide.js
+        title: CSS-Driven Build
+
+      - type: slide
+        id: annotated-markdown
+        module: ../vividly/slides/annotated-markdown.js
+        data: ../slides/feature-tour/annotated-markdown
+        title: Annotated Markdown
+        props:
+          src: ./document.md
+
+  - type: slide
+    id: navigation-sequence-start
+    module: ../slides/feature-tour/navigation-sequence/slide.js
+    title: Before the Navigator
+    props:
+      label: S1
+      heading: Approach the navigator
+      detail: Repeated Right Arrow presses will traverse every section and return here in reverse.
+
+  - type: section
+    id: navigation-sequence
+    title: Continuous Navigator
+    children:
+      - type: slide
+        id: navigator
+        module: ../slides/feature-tour/sequence-navigator/slide.js
+        title: Navigation Slide
+        navigator:
+          sections:
+            - ./section-b
+            - ./section-c
+            - ./section-d
+
+      - type: section
+        id: section-b
+        title: Section B
+        children:
+          - type: slide
+            id: b1
+            module: ../slides/feature-tour/navigation-sequence/slide.js
+            title: B1
+            props:
+              label: B1
+              section: B
+              heading: Begin section B
+              detail: The first child follows directly from N with B highlighted.
+          - type: slide
+            id: b2
+            module: ../slides/feature-tour/navigation-sequence/slide.js
+            title: B2
+            props:
+              label: B2
+              section: B
+              heading: Continue through B
+              detail: Ordinary slides retain their familiar step-by-step traversal.
+          - type: slide
+            id: b3
+            module: ../slides/feature-tour/navigation-sequence/slide.js
+            title: B3
+            props:
+              label: B3
+              section: B
+              heading: Complete section B
+              detail: The next press revisits N with section C highlighted.
+
+      - type: section
+        id: section-c
+        title: Section C
+        children:
+          - type: slide
+            id: c1
+            module: ../slides/feature-tour/navigation-sequence/slide.js
+            title: C1
+            props:
+              label: C1
+              section: C
+              heading: Begin section C
+              detail: The same key enters the next highlighted sequence.
+          - type: slide
+            id: c2
+            module: ../slides/feature-tour/navigation-sequence/slide.js
+            title: C2
+            props:
+              label: C2
+              section: C
+              heading: Complete section C
+              detail: Moving forward returns to N with D highlighted.
+
+      - type: section
+        id: section-d
+        title: Section D
+        children:
+          - type: slide
+            id: d1
+            module: ../slides/feature-tour/navigation-sequence/slide.js
+            title: D1
+            props:
+              label: D1
+              section: D
+              heading: Begin section D
+              detail: The final sequence remains part of the same traversal.
+          - type: slide
+            id: d2
+            module: ../slides/feature-tour/navigation-sequence/slide.js
+            title: D2
+            props:
+              label: D2
+              section: D
+              heading: Complete section D
+              detail: One more press reaches N's completion waypoint.
+
+  - type: slide
+    id: navigation-sequence-end
+    module: ../slides/feature-tour/navigation-sequence/slide.js
+    title: After the Navigator
+    props:
+      label: S2
+      heading: Continue the presentation
+      detail: Left Arrow now walks the identical itinerary in reverse.

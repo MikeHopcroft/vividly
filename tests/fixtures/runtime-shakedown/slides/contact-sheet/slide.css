@@ -1,0 +1,45 @@
+:scope {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+}
+
+.sheet-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+}
+
+.sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+  align-content: start;
+}
+
+/* --on comes from .v-at and is 1 only on this tile's step. */
+.sheet-tile {
+  margin: 0;
+  cursor: pointer;
+  opacity: calc(0.4 + 0.6 * var(--on));
+  transform: scale(calc(0.96 + 0.04 * var(--on)));
+  outline: 2px solid rgb(79 195 247 / var(--on));
+  outline-offset: 4px;
+  border-radius: var(--radius-md);
+  transition: opacity 300ms ease, transform 300ms ease, outline-color 300ms ease;
+}
+
+.sheet-tile img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 8 / 5;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+.sheet-tile figcaption {
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}

@@ -1,0 +1,7 @@
+schema: 1
+targets:
+  pages:
+    provider: github-pages
+    remote: origin
+    branch: gh-pages
+    expected_url: https://mikehopcroft.github.io/vividly/

@@ -1,0 +1,27 @@
+id: tic-tac-toe
+title: Tic-Tac-Toe
+transition: dissolve
+
+nodes:
+  - type: slide
+    id: introduction
+    title: About Tic-Tac-Toe
+    module: ../vividly/slides/markdown.js
+    data: ../slides/tic-tac-toe/introduction
+    props:
+      src: ./introduction.md
+
+  - type: slide
+    id: demo
+    module: ../slides/tic-tac-toe/demo/slide.js
+    title: Tic-Tac-Toe MLP Math
+
+  - type: slide
+    id: inference
+    module: ../slides/tic-tac-toe/demo/inference-slide.js
+    title: Play Against the Network
+
+  - type: slide
+    id: training
+    module: ../slides/tic-tac-toe/demo/training-slide.js
+    title: Train the Network

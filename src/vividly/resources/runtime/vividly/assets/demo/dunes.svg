@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Wind-carved sand dunes">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2c078"/><stop offset="1" stop-color="#f7e0b5"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <path d="M0 260 C 200 200 320 300 520 250 S 720 200 800 240 L800 500 L0 500 Z" fill="#e0a35e"/>
+  <path d="M0 330 C 180 290 340 370 540 320 S 730 290 800 320 L800 500 L0 500 Z" fill="#c8813f"/>
+  <path d="M0 410 C 220 380 380 450 600 405 S 760 390 800 405 L800 500 L0 500 Z" fill="#a05f2c"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Layered canyon mesas at dusk">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d1f3d"/><stop offset="1" stop-color="#d97b45"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <circle cx="590" cy="200" r="52" fill="#ffd9a0" opacity=".9"/>
+  <path d="M0 300 L120 300 L120 250 L260 250 L260 310 L800 310 L800 500 L0 500 Z" fill="#8f3f2e" opacity=".85"/>
+  <path d="M0 360 L200 360 L200 330 L340 330 L340 375 L560 375 L560 345 L800 345 L800 500 L0 500 Z" fill="#6d2c22"/>
+  <path d="M0 430 L180 430 L180 405 L420 405 L420 440 L800 440 L800 500 L0 500 Z" fill="#48191a"/>
+</svg>

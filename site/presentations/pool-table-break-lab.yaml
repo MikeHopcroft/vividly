@@ -1,0 +1,15 @@
+id: pool-table-break-lab
+title: Pool Table Break Lab
+theme: ../vividly/themes/dark.css
+transition: dissolve
+
+nodes:
+  - type: slide
+    id: candidates
+    title: Billiards Break Candidates
+    module: ../slides/experiments/pool-table-break/candidates-slide.js
+
+  - type: slide
+    id: opening
+    title: Pool Table Break
+    module: ../slides/experiments/pool-table-break/slide.js
