@@ -16,11 +16,19 @@ Source tree organization:
 
 ## Python dependency and lockfile safety
 
-- Treat `uv.lock` as protected generated output. Do not create, update, normalize, or otherwise modify it unless the user explicitly requests a dependency change or lockfile refresh.
-- Run routine Python commands in locked mode, for example `uv run --locked ...` and `uv sync --locked`. Do not run plain `uv run`, `uv sync`, or `uv lock` when dependency changes are not part of the task.
-- Local `UV_*` environment variables—especially `UV_DEFAULT_INDEX`—may refer to private or environment-specific package indexes. Never allow those settings to rewrite registry URLs in `uv.lock`.
-- If a command reports that `uv.lock` is stale while running with `--locked`, stop and report the issue rather than regenerating the lockfile.
-- A corporate `UV_DEFAULT_INDEX` can disagree with the public PyPI registry recorded in `uv.lock`, even when project dependencies have not changed. Plain `uv run` can then rewrite the lockfile with organization-specific registry URLs.
-- For the setup, rationale, and policy-approved command-local publishing workaround, see [Publishing with a corporate uv index](../src/vividly/resources/reference/publishing.md#corporate-uv-index-and-a-public-lockfile). Do not disable an enforced index without authorization, unset proxy settings, or expose private index URLs or credentials.
-- Before completing work that used `uv`, check `git status --short -- uv.lock`. If the file changed unexpectedly, do not overwrite or revert pre-existing user changes; report the modification and ask how to proceed.
-- When a lockfile update is explicitly requested, confirm the intended package index first, remove environment-specific index overrides, and verify that the resulting diff contains no private registry URLs.
+- Use locked execution for routine Python commands, such as
+  `uv run --locked ...`. Do not refresh dependencies or regenerate
+  `uv.lock` unless requested.
+- A locked-command failure does not always mean dependencies changed.
+  Environment-specific package-index settings (such as
+  `UV_DEFAULT_INDEX`) can conflict with registry URLs in the lockfile.
+  Check for this possibility before proposing a lockfile refresh.
+- Respect the maintainer's configured indexes and proxies. Do not
+  override them or retry unlocked without authorization.
+- If an unlocked retry is authorized, preserve pre-existing lockfile
+  edits, report resulting changes, and leave temporary registry
+  rewrites for the maintainer to review and revert. Never stage or
+  commit those temporary changes.
+- Before completing work that used uv, check
+  `git status --short -- uv.lock`. Never expose private registry
+  URLs or credentials.
