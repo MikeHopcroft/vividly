@@ -311,11 +311,19 @@ runtime calls the first slide's `enter()` method. The screen is not a slide or h
 entry. The full keyboard-help dialog remains available with `?` after activation under
 every policy.
 
+The query parameter `vividly-skip-hints=1` skips automatic onboarding for the current
+page, including under `always`, without changing the saved reader preference.
+Other values do not suppress onboarding. Full keyboard help remains available.
+The query string precedes the route's `#`, for example
+`http://127.0.0.1:8080/?vividly-skip-hints=1#/vividly/opening`; query-like text inside
+the fragment is part of the slide address, not a page query parameter.
+
 The activation screen keeps keycap visuals and groups slide controls separately from
-browsing controls. It explains moving the highlight with arrow keys and opening the
-highlighted item with Enter, offers a Start presentation button and an any-key prompt,
-and conditionally describes the progress indicator: "If you see a yellow bar, it
-shows progress toward being ready to continue."
+browsing controls under "Moving through the presentation" and "Choosing a slide or
+section". It explains highlighting a slide or section with arrow keys and opening it
+with Enter, offers a Start presentation button and an any-key prompt, and describes
+the progress indicator: "A yellow bar shows an animation in progress. Press Space or
+→ to finish it immediately."
 Below that sentence, a small, partially filled example uses the readiness indicator's
 track and yellow fill styling. The example is static and decorative, not a live
 progress indicator, and is hidden from assistive technology.
@@ -332,7 +340,11 @@ Full keyboard help continues to expose both input methods on touch-capable devic
 A completed click or tap anywhere on the activation screen also starts the
 presentation, including its backdrop and instructional content. The preference
 checkbox and its label only change the preference; the disclosure summary only
-toggles the keyboard instructions. Neither dismisses the screen.
+toggles the keyboard instructions. A secondary "Powered by Vividly" footer link uses
+the packaged cropped SVG wordmark with "Vividly" alternative text and opens
+`https://mikehopcroft.github.io/vividly/?vividly-skip-hints=1#/vividly/opening` in a new
+tab with `noopener noreferrer`. It participates in the dialog's Tab cycle and retains
+native link activation with Enter. None of these controls dismisses the screen.
 Scrolling and swiping do not dismiss it. The dismissal event is consumed, and the
 screen continues intercepting pointer input during its 300-millisecond fade so the
 gesture cannot activate underlying controls or advance the first slide. The screen

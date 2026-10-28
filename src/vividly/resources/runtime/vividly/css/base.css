@@ -451,6 +451,33 @@
     text-align: center;
   }
 
+  .v-keyboard-hints-branding {
+    text-align: center;
+    font-size: var(--font-size-sm);
+  }
+
+  .v-keyboard-hints-branding a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--text-muted);
+  }
+
+  .v-keyboard-hints-branding img {
+    display: block;
+    width: 5rem;
+    height: auto;
+  }
+
+  .v-keyboard-hints-branding a:hover {
+    color: var(--text-primary);
+  }
+
+  .v-keyboard-hints-branding a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
   .v-keyboard-hints-shortcuts span {
     display: inline-flex;
     align-items: center;

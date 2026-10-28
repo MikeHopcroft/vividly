@@ -1940,28 +1940,28 @@ class VividlyPresentation extends HTMLElement {
           <summary>Keyboard shortcuts</summary>
           <div class="v-keyboard-hints-groups">
             <section>
-              <h2>During a slide</h2>
+              <h2>Moving through the presentation</h2>
               <dl>
                 <div><dt><kbd>Space</kbd></dt><dd>Continue to the next step</dd></div>
-                <div><dt><kbd class="v-keyboard-help-arrow" aria-label="Left Arrow">←</kbd><kbd class="v-keyboard-help-arrow" aria-label="Right Arrow">→</kbd></dt><dd>Go back / forward</dd></div>
-                <div><dt><kbd class="v-keyboard-help-arrow" aria-label="Up Arrow">↑</kbd></dt><dd>Return to the containing section</dd></div>
+                <div><dt><kbd class="v-keyboard-help-arrow" aria-label="Left Arrow">←</kbd><kbd class="v-keyboard-help-arrow" aria-label="Right Arrow">→</kbd></dt><dd>Go back / forward one step</dd></div>
+                <div><dt><kbd class="v-keyboard-help-arrow" aria-label="Up Arrow">↑</kbd></dt><dd>Go up to the section containing this slide</dd></div>
               </dl>
             </section>
             <section>
-              <h2>When browsing slides or sections</h2>
+              <h2>Choosing a slide or section</h2>
               <dl>
-                <div><dt><kbd class="v-keyboard-help-arrow" aria-label="Left Arrow">←</kbd><kbd class="v-keyboard-help-arrow" aria-label="Up Arrow">↑</kbd><kbd class="v-keyboard-help-arrow" aria-label="Down Arrow">↓</kbd><kbd class="v-keyboard-help-arrow" aria-label="Right Arrow">→</kbd></dt><dd>Move the highlight</dd></div>
-                <div><dt><kbd>Enter</kbd></dt><dd>Open the highlighted item</dd></div>
+                <div><dt><kbd class="v-keyboard-help-arrow" aria-label="Left Arrow">←</kbd><kbd class="v-keyboard-help-arrow" aria-label="Up Arrow">↑</kbd><kbd class="v-keyboard-help-arrow" aria-label="Down Arrow">↓</kbd><kbd class="v-keyboard-help-arrow" aria-label="Right Arrow">→</kbd></dt><dd>Highlight a slide or section</dd></div>
+                <div><dt><kbd>Enter</kbd></dt><dd>Open the highlighted slide or section</dd></div>
               </dl>
             </section>
           </div>
           <div class="v-keyboard-hints-shortcuts">
-            <span><kbd>Esc</kbd> Table of contents</span>
-            <span><kbd>?</kbd> Keyboard help</span>
+            <span><kbd>Esc</kbd> Open the table of contents</span>
+            <span><kbd>?</kbd> Show keyboard help</span>
           </div>
         </details>
         <p class="v-keyboard-hints-progress">
-          If you see a yellow bar, it shows progress toward being ready to continue.
+          A yellow bar shows an animation in progress. Press <b>Space</b> or <b>→</b> to finish it immediately.
           <span class="v-keyboard-hints-progress-example" aria-hidden="true">
             <span class="v-step-progress-track">
               <span class="v-step-progress-fill"></span>
@@ -1976,13 +1976,20 @@ class VividlyPresentation extends HTMLElement {
             <small class="v-touch-instructions">Tap anywhere to start.</small>
           </div>
         </div>
+        <small class="v-keyboard-hints-branding">
+          <a href="https://mikehopcroft.github.io/vividly/?vividly-skip-hints=1#/vividly/opening"
+             target="_blank" rel="noopener noreferrer">Powered by
+            <img src="${new URL('../assets/logo-cropped.svg', import.meta.url).href}"
+                 alt="Vividly">
+          </a>
+        </small>
       </div>`;
     hints.querySelector('input').addEventListener('change', (event) => {
       this._setKeyboardHintsSuppressed(event.target.checked);
     });
     hints.addEventListener('click', (event) => {
       event.stopPropagation();
-      if (event.target.closest('label, input, summary')) return;
+      if (event.target.closest('label, input, summary, a[href]')) return;
       event.preventDefault();
       this._finishKeyboardHints(true);
     });
@@ -1992,7 +1999,10 @@ class VividlyPresentation extends HTMLElement {
   _runKeyboardHintGate(index, step) {
     if (this._keyboardHintRuntimes.has(this._runtimeToken)) return Promise.resolve(true);
     this._keyboardHintRuntimes.add(this._runtimeToken);
-    if (index !== 0 || step !== 0 || this.hasAttribute('data-capture')) {
+    if (
+      index !== 0 || step !== 0 || this.hasAttribute('data-capture') ||
+      new URLSearchParams(location.search).get('vividly-skip-hints') === '1'
+    ) {
       return Promise.resolve(true);
     }
 
@@ -2128,9 +2138,10 @@ class VividlyPresentation extends HTMLElement {
   _handleKey(e) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (!this._keyboardHints.hidden) {
+      if (e.key === 'Shift') return;
       if (e.key === 'Tab') {
         const controls = [...this._keyboardHints.querySelectorAll(
-          'summary, input:not(:disabled), button:not(:disabled)'
+          'summary, input:not(:disabled), button:not(:disabled), a[href]'
         )];
         const index = controls.indexOf(document.activeElement);
         const next = e.shiftKey
@@ -2142,7 +2153,7 @@ class VividlyPresentation extends HTMLElement {
       }
       if (
         (e.key === 'Enter' || e.key === ' ') &&
-        e.target.closest('summary, input, button')
+        e.target.closest('summary, input, button, a[href]')
       ) return;
       e.preventDefault();
       if (e.key === '?') this._showKeyboardHelp();

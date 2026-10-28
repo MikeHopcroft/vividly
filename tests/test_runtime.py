@@ -2234,12 +2234,17 @@ def test_runtime_keyboard_hints_can_be_suppressed_and_restored(
     assert not page.locator("vividly-presentation").get_attribute("data-render-ready")
     assert page.locator(".v-layer:not([hidden])").count() == 0
     assert hints.get_by_text("Getting started", exact=True).is_visible()
-    assert hints.get_by_text("During a slide", exact=True).is_visible()
-    assert hints.get_by_text("When browsing slides or sections", exact=True).is_visible()
-    assert hints.get_by_text("Move the highlight", exact=True).is_visible()
-    assert hints.get_by_text("Open the highlighted item", exact=True).is_visible()
+    assert hints.get_by_text("Moving through the presentation", exact=True).is_visible()
+    assert hints.get_by_text("Go back / forward one step", exact=True).is_visible()
+    assert hints.get_by_text("Go up to the section containing this slide", exact=True).is_visible()
+    assert hints.get_by_text("Choosing a slide or section", exact=True).is_visible()
+    assert hints.get_by_text("Highlight a slide or section", exact=True).is_visible()
+    assert hints.get_by_text("Open the highlighted slide or section", exact=True).is_visible()
+    expect(hints.locator(".v-keyboard-hints-shortcuts span")).to_have_text(
+        ["Esc Open the table of contents", "? Show keyboard help"]
+    )
     assert hints.get_by_text(
-        "If you see a yellow bar, it shows progress toward being ready to continue."
+        "A yellow bar shows an animation in progress. Press Space or → to finish it immediately."
     ).is_visible()
     assert hints.get_by_text("Click anywhere or press a key to start.", exact=True).is_visible()
     assert hints.locator("kbd").all_text_contents() == [
@@ -2441,6 +2446,9 @@ def test_runtime_keyboard_hints_controls_support_keyboard_without_dismissal(
     start = hints.get_by_role("button", name="Start presentation")
     expect(start).to_be_focused()
     page.keyboard.press("Tab")
+    branding = hints.get_by_role("link", name="Powered by Vividly")
+    expect(branding).to_be_focused()
+    page.keyboard.press("Tab")
     expect(summary).to_be_focused()
     page.keyboard.press("Enter")
     expect(details).to_have_js_property("open", True)
@@ -2454,6 +2462,12 @@ def test_runtime_keyboard_hints_controls_support_keyboard_without_dismissal(
     assert hints.get_attribute("data-closing") is None
     page.keyboard.press("Shift+Tab")
     expect(summary).to_be_focused()
+    page.keyboard.press("Shift+Tab")
+    expect(branding).to_be_focused()
+    page.keyboard.press("Tab")
+    expect(summary).to_be_focused()
+    page.keyboard.press("Shift+Tab")
+    expect(branding).to_be_focused()
     page.keyboard.press("Shift+Tab")
     expect(start).to_be_focused()
     page.keyboard.press("Enter")
@@ -2525,6 +2539,84 @@ def test_runtime_keyboard_hints_do_not_show_on_deep_links(
     )
     page.wait_for_timeout(1200)
     assert page.locator(".v-keyboard-hints").is_hidden()
+    page.close()
+
+
+@pytest.mark.parametrize("activation", ["click", "touch", "keyboard"])
+def test_runtime_keyboard_hints_branding_opens_new_tab_without_dismissal(
+    browser: Browser, runtime_url: str, activation: str
+) -> None:
+    context = browser.new_context(has_touch=activation == "touch")
+    overview_url = (
+        "https://mikehopcroft.github.io/vividly/"
+        "?vividly-skip-hints=1#/vividly/opening"
+    )
+    context.route(
+        "https://mikehopcroft.github.io/vividly/**",
+        lambda route: route.fulfill(content_type="text/html", body="<p>Vividly overview</p>"),
+    )
+    page = context.new_page()
+    page.goto(f"{runtime_url}/#/vividly/opening/title-card")
+    hints = page.locator(".v-keyboard-hints")
+    branding = hints.get_by_role("link", name="Powered by Vividly")
+    logo = branding.get_by_role("img", name="Vividly")
+    expect(logo).to_be_visible()
+    expect(logo).to_have_attribute("src", f"{runtime_url}/vividly/assets/logo-cropped.svg")
+    expect(logo).to_have_js_property("complete", True)
+    assert logo.evaluate("img => img.naturalWidth > 0 && img.naturalHeight > 0")
+    expect(branding).to_have_attribute("href", overview_url)
+    expect(branding).to_have_attribute("target", "_blank")
+    expect(branding).to_have_attribute("rel", "noopener noreferrer")
+    with page.expect_popup() as popup_info:
+        if activation == "keyboard":
+            page.keyboard.press("Tab")
+            expect(branding).to_be_focused()
+            page.keyboard.press("Enter")
+        elif activation == "touch":
+            logo.tap()
+        else:
+            logo.click()
+    popup = popup_info.value
+    popup.wait_for_load_state()
+    assert popup.url == overview_url
+    assert popup.evaluate("window.opener === null")
+    expect(hints).to_be_visible()
+    assert hints.get_attribute("data-closing") is None
+    assert page.locator(".v-layer:not([hidden])").count() == 0
+    assert page.url.endswith("#/vividly/opening/title-card")
+    context.close()
+
+
+@pytest.mark.parametrize("policy", ["auto", "always"])
+@pytest.mark.parametrize("skip_value", ["1", "0"])
+def test_runtime_keyboard_hints_url_override_does_not_change_preference(
+    browser: Browser, runtime_url: str, policy: str, skip_value: str
+) -> None:
+    page = browser.new_page()
+    manifest = yaml.safe_load(
+        (FIXTURE_ROOT / "presentations/vividly.yaml").read_text(encoding="utf-8")
+    )
+    manifest["keyboardHints"] = policy
+    page.route(
+        "**/presentations/vividly.yaml",
+        lambda route: route.fulfill(content_type="application/yaml", body=json.dumps(manifest)),
+    )
+    page.goto(
+        f"{runtime_url}/?vividly-skip-hints={skip_value}#/vividly/opening/title-card"
+    )
+    hints = page.locator(".v-keyboard-hints")
+    if skip_value == "1":
+        page.locator("vividly-presentation[data-render-ready]").wait_for()
+        expect(hints).to_be_hidden()
+        page.keyboard.press("?")
+        help_overlay = page.locator(".v-keyboard-help")
+        expect(help_overlay).to_be_visible()
+        expect(
+            help_overlay.get_by_label("Show navigation hints when presentations start")
+        ).to_be_checked()
+        page.goto(f"{runtime_url}/#/vividly/opening/title-card")
+    expect(hints).to_be_visible()
+    expect(hints.get_by_label("Don't show these tips again")).not_to_be_checked()
     page.close()
 
 
