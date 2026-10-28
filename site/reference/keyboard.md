@@ -147,7 +147,7 @@ selection retains its accent and keyboard focus its outer ring.
 Navigation APIs use presentation-local addresses such as `intro/title-card`; the browser
 route prefixes that address with the catalog or system presentation ID, for example
 `#/product-tour/intro/title-card/2`. Keyboard navigation never crosses into a different
-presentation. Use the catalog or Threads menu for that boundary.
+presentation. Use the catalog to choose a different presentation.
 
 Browser Back and Forward revisit visible states chronologically, including structural
 navigator transitions and switches between presentation threads.
@@ -242,20 +242,13 @@ Press `?` or select the subtle `?` button in the corner of the presentation to o
 shortcut summary. The button becomes fully visible when hovered or focused. The overlay
 softly enters and leaves; any key or mouse click closes it.
 
-## Switching presentation threads
+## Switching presentations
 
-The Threads button selects a recent presentation thread. Recent threads are ordered by
-most recent use, and each entry identifies its presentation and current route. Select
-an entry with a pointer, or use Tab to reach the button, Arrow Up and Arrow Down to move
-through the menu, and Enter to select. Escape closes the menu.
+Use the project catalog to open another presentation. The Threads button, menu, and
+associated keyboard controls are temporarily unavailable.
 
-A thread descriptor identifies a presentation by its stable catalog ID; it does not
-point directly to an arbitrary manifest URL. Its current route is presentation-local
-and may overlap an address in another presentation without sharing state.
-
-Selecting a thread restores its latest route as a fresh presentation runtime. Browser
-Back and Forward remain chronological: they revisit every visible route, switching
-threads when the selected history entry belongs to another presentation.
+Browser Back and Forward remain chronological: they revisit every visible route,
+including routes in other presentations.
 
 ## Navigating overviews
 

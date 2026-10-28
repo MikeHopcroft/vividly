@@ -457,7 +457,7 @@ The project catalog at `#/` is outside every presentation thread. Navigating the
 records the active thread's latest route, tears down its runtime, and appends a history
 entry with no `threadId`. Existing descriptors remain available. Selecting a catalog
 entry creates a fresh thread for that presentation at its TOC; selecting an existing
-thread remains a separate thread-switcher operation.
+thread remains a separate programmatic operation.
 
 The catalog lists author-owned entries in catalog order.
 
@@ -551,14 +551,16 @@ The presentation UI keeps structural and temporal commands visibly distinct:
 - Page Up and Page Down navigate at the selected structural level
 - Enter activates an active navigator choice or rendered after continuation
 - Up Arrow calls `ctx.goUp()` only outside a navigator interval
-- a thread command creates or selects another thread
+- a programmatic thread command creates or selects another thread
 
 Browser Back and Forward remain browser commands and are not documented as structural
 up, thread return, or aside dismissal.
 
-A thread switcher lists the active thread and a bounded number of recent threads in
-most-recently-used order. Hiding older threads from this list does not destroy them or
-make their history entries unrestorable.
+The reader-facing thread switcher is temporarily suspended. No Threads button, menu,
+focusable thread controls, or thread-specific key handlers are rendered or registered,
+and overview headers reserve no space for them. The programmatic thread APIs,
+descriptors, presentation switching, and chronological browser-history restoration
+remain supported so the feature can be revisited without changing navigation semantics.
 
 ## 7. Relationship to Earlier Models
 

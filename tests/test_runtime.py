@@ -1229,20 +1229,28 @@ def test_reload_catalog_presentation_starts_one_fresh_thread(
     assert threads[0]["latestRoute"] == "shared"
 
 
-def test_documentation_entry_point_is_an_external_link(
-    browser: Browser,
-    runtime_url: str,
+@pytest.mark.parametrize("touch", [False, True])
+@pytest.mark.parametrize(
+    "route",
+    [
+        "/#/",
+        "/#/vividly/",
+        "/?vividly-skip-hints=1#/vividly/opening/title-card",
+        "/?vividly-capture=1#/vividly/opening/title-card",
+    ],
+)
+def test_thread_controls_are_not_rendered(
+    browser: Browser, runtime_url: str, touch: bool, route: str
 ) -> None:
-    page = browser.new_page()
-    page.goto(f"{runtime_url}/#/")
-    page.get_by_role("navigation", name="Project catalog").wait_for(state="visible")
-
-    page.get_by_role("button", name="Threads").click()
-    documentation = page.get_by_role("menuitem", name="Open documentation")
-
-    assert documentation.get_attribute("href") == "https://mikehopcroft.github.io/vividly/"
-    assert documentation.get_attribute("target") == "_blank"
-    assert documentation.get_attribute("rel") == "noopener noreferrer"
+    page = browser.new_page(has_touch=touch)
+    page.goto(f"{runtime_url}{route}")
+    page.locator("vividly-presentation[data-render-ready]").wait_for()
+    expect(page.locator(".v-thread-switcher, .v-thread-trigger, .v-thread-menu")).to_have_count(0)
+    expect(page.get_by_role("button", name="Threads", include_hidden=True)).to_have_count(0)
+    expect(
+        page.get_by_role("menu", name="Presentation threads", include_hidden=True)
+    ).to_have_count(0)
+    page.close()
 
 
 def test_catalog_is_threadless_and_selection_creates_fresh_thread(
@@ -2736,7 +2744,7 @@ def test_sample_navigator_traverses_every_sequence_with_arrow_keys(
     page.close()
 
 
-def test_recent_thread_switcher_supports_pointer_and_keyboard(
+def test_programmatic_thread_selection_does_not_restore_thread_controls(
     browser: Browser,
     runtime_url: str,
 ) -> None:
@@ -2761,18 +2769,10 @@ def test_recent_thread_switcher_supports_pointer_and_keyboard(
             return [first, second, third];
         }"""
     )
-    trigger = page.get_by_role("button", name="Threads")
-    assert trigger.is_visible()
-
-    trigger.click()
-    menu = page.get_by_role("menu", name="Presentation threads")
-    items = menu.get_by_role("menuitemradio")
-    assert items.count() == 4
-    assert items.nth(0).get_attribute("data-thread-id") == thread_ids[2]
-    assert items.nth(0).get_attribute("aria-checked") == "true"
-    assert len(set(items.all_text_contents())) == 4
-
-    items.nth(1).click()
+    expect(page.locator(".v-thread-switcher")).to_have_count(0)
+    page.locator("vividly-presentation").evaluate(
+        "(presentation, threadId) => presentation.selectThread(threadId)", thread_ids[1]
+    )
     page.wait_for_function(
         """threadId => {
             const presentation = document.querySelector('vividly-presentation');
@@ -2784,36 +2784,17 @@ def test_recent_thread_switcher_supports_pointer_and_keyboard(
     assert page.evaluate(
         "document.querySelector('vividly-presentation').threads[0].id"
     ) == thread_ids[1]
-    assert trigger.evaluate("element => element === document.activeElement")
-
-    trigger.press("ArrowDown")
-    focused_thread_id = page.evaluate("document.activeElement.dataset.threadId")
+    page.keyboard.press("Tab")
     page.keyboard.press("ArrowDown")
-    next_thread_id = page.evaluate("document.activeElement.dataset.threadId")
-    assert next_thread_id != focused_thread_id
     page.keyboard.press("Enter")
-    page.wait_for_function(
-        "threadId => document.querySelector('vividly-presentation')?._threadId === threadId",
-        arg=next_thread_id,
-    )
-    assert trigger.evaluate("element => element === document.activeElement")
-
-    page.set_viewport_size({"width": 360, "height": 640})
-    trigger.click()
-    menu_box = menu.bounding_box()
-    assert menu_box is not None
-    assert menu_box["x"] >= 0
-    assert menu_box["x"] + menu_box["width"] <= 360
-    assert menu_box["y"] + menu_box["height"] <= 640
-    url = page.url
-    page.keyboard.press("Escape")
-    assert menu.is_hidden()
-    assert page.url == url
-    assert trigger.evaluate("element => element === document.activeElement")
+    assert page.locator("vividly-presentation").evaluate(
+        "presentation => presentation._threadId"
+    ) == thread_ids[1]
+    expect(page.locator(".v-thread-switcher, .v-thread-menu")).to_have_count(0)
     page.close()
 
 
-def test_thread_switcher_bounds_visible_recents_without_losing_history(
+def test_thread_history_is_preserved_without_switcher(
     browser: Browser,
     runtime_url: str,
 ) -> None:
@@ -2838,12 +2819,7 @@ def test_thread_switcher_bounds_visible_recents_without_losing_history(
     )
     history_length = page.evaluate("history.length")
 
-    page.get_by_role("button", name="Threads").click()
-    visible_ids = page.get_by_role("menuitemradio").evaluate_all(
-        "items => items.map(item => item.dataset.threadId)"
-    )
-    assert len(visible_ids) == 5
-    assert identities["root"] not in visible_ids
+    expect(page.locator(".v-thread-switcher")).to_have_count(0)
 
     for expected_thread_id in reversed(identities["created"][:-1]):
         page.go_back()
@@ -2863,7 +2839,9 @@ def test_thread_switcher_bounds_visible_recents_without_losing_history(
     page.close()
 
 
-def test_thread_switcher_is_hidden_in_capture_mode(browser: Browser, runtime_url: str) -> None:
+def test_thread_creation_does_not_render_controls_in_capture_mode(
+    browser: Browser, runtime_url: str
+) -> None:
     page = browser.new_page()
     route_thread_manifests(page)
     page.goto(f"{runtime_url}/?vividly-capture=1#/vividly/opening/title-card/1")
@@ -2877,7 +2855,8 @@ def test_thread_switcher_is_hidden_in_capture_mode(browser: Browser, runtime_url
         page.locator("vividly-presentation").element_handle(),
     )
 
-    assert page.get_by_role("button", name="Threads").is_hidden()
+    expect(page.get_by_role("button", name="Threads", include_hidden=True)).to_have_count(0)
+    expect(page.locator(".v-thread-switcher")).to_have_count(0)
     page.close()
 
 
@@ -4056,10 +4035,12 @@ def test_catalog_and_toc_share_accessible_top_bar(
     ) < 2
     assert layout["identity"]["bottom"] <= layout["breadcrumbs"]["top"]
     modes_box = toc_header.locator(".v-overview-modes").bounding_box()
-    threads_box = page.locator(".v-thread-trigger").bounding_box()
+    header_box = toc_header.bounding_box()
     assert modes_box is not None
-    assert threads_box is not None
-    assert modes_box["x"] + modes_box["width"] <= threads_box["x"]
+    assert header_box is not None
+    assert abs(
+        modes_box["x"] + modes_box["width"] - header_box["x"] - header_box["width"]
+    ) < 1
 
     page.set_viewport_size({"width": 360, "height": 640})
     responsive_layout = toc_header.evaluate(
@@ -4085,13 +4066,17 @@ def test_catalog_and_toc_share_accessible_top_bar(
         >= responsive_layout["breadcrumbs"]["bottom"]
     )
     responsive_modes_box = toc_header.locator(".v-overview-modes").bounding_box()
-    responsive_threads_box = page.locator(".v-thread-trigger").bounding_box()
+    responsive_header_box = toc_header.bounding_box()
     assert responsive_modes_box is not None
-    assert responsive_threads_box is not None
+    assert responsive_header_box is not None
     assert (
         responsive_modes_box["y"]
-        >= responsive_threads_box["y"] + responsive_threads_box["height"]
+        >= responsive_layout["breadcrumbs"]["bottom"]
     )
+    assert abs(
+        responsive_modes_box["x"] + responsive_modes_box["width"]
+        - responsive_header_box["x"] - responsive_header_box["width"]
+    ) < 1
 
     slide_page = browser.new_page()
     slide_page.goto(f"{runtime_url}/#/vividly/opening/title-card")

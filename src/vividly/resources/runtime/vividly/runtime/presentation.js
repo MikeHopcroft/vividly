@@ -9,7 +9,6 @@ import { Slide, DYNAMIC } from './slide.js';
 import { TouchNavigation } from './touch.js';
 import { loadManifest } from './manifest.js';
 import { loadCatalog } from './catalog.js';
-import { PUBLIC_DOCUMENTATION_URL } from './config.js';
 import {
   DependencyRegistry,
   DependencyTable,
@@ -28,7 +27,6 @@ const STEP_SETTLING_CONSUME = 'consume';
 const NAVIGATION_HUD_DURATION_MS = 1600;
 const KEYBOARD_HELP_TRANSITION_MS = 160;
 const KEYBOARD_HINT_FADE_MS = 300;
-const MAX_RECENT_THREADS = 5;
 const THUMBNAIL_REVISION_PATTERN = /^[0-9a-f]{64}$/;
 const EMPTY_THUMBNAIL_SEQUENCE = Object.freeze([]);
 
@@ -95,13 +93,11 @@ class VividlyPresentation extends HTMLElement {
     });
     this._keyboardHelp = this._buildKeyboardHelp();
     this._keyboardHints = this._buildKeyboardHints();
-    this._threadSwitcher = this._buildThreadSwitcher();
     this.append(
       this._catalogView,
       this._stage,
       this._toc,
       this._navigationHud,
-      this._threadSwitcher,
       this._helpTrigger,
       this._keyboardHints,
       this._keyboardHelp
@@ -187,9 +183,8 @@ class VividlyPresentation extends HTMLElement {
       });
     };
     this._onKeyDown = (e) => this._handleKey(e);
-    this._onDocumentClick = (event) => {
+    this._onDocumentClick = () => {
       if (!this._keyboardHelp.hidden) this._hideKeyboardHelp(false);
-      if (!this._threadSwitcher.contains(event.target)) this._hideThreadSwitcher();
     };
     window.addEventListener('hashchange', this._onHashChange);
     window.addEventListener('popstate', this._onPopState);
@@ -200,7 +195,6 @@ class VividlyPresentation extends HTMLElement {
     await this._autoAdvanceInitialRoute();
     if (this._presentationId) this._recordCatalogActivation(this._presentationId);
     if (this._threadId) this._recordThreadLabel(this._threadId);
-    this._refreshThreadSwitcher();
   }
 
   get threads() {
@@ -277,7 +271,6 @@ class VividlyPresentation extends HTMLElement {
     return this._serializeThreadSwitch(async () => {
       await this._switchThread(descriptor);
       this._threads.set(threadId, descriptor);
-      this._refreshThreadSwitcher();
       return threadId;
     });
   }
@@ -459,8 +452,6 @@ class VividlyPresentation extends HTMLElement {
       history.pushState(this._historyState(), '', this._hashForRoute(descriptor.latestRoute));
     }
     this._lastHash = location.hash;
-    this._hideThreadSwitcher();
-    this._refreshThreadSwitcher();
   }
 
   _restoreHistoryEntry(state, route) {
@@ -483,7 +474,6 @@ class VividlyPresentation extends HTMLElement {
           descriptor.latestRoute = this._currentRoute();
           descriptor.lastActivatedAt = this._nextActivationTime();
           this._recordThreadLabel(descriptor.id);
-          this._refreshThreadSwitcher();
           return;
         }
         await this._switchThread(descriptor, { route, writeHistory: false });
@@ -501,7 +491,6 @@ class VividlyPresentation extends HTMLElement {
         root.latestRoute = this._currentRoute();
         root.lastActivatedAt = this._nextActivationTime();
         this._recordThreadLabel(root.id);
-        this._refreshThreadSwitcher();
       } else {
         await this._switchThread(root, { route, writeHistory: false });
       }
@@ -614,133 +603,6 @@ class VividlyPresentation extends HTMLElement {
     };
   }
 
-  _buildThreadSwitcher() {
-    const switcher = document.createElement('div');
-    switcher.className = 'v-thread-switcher';
-    switcher.hidden = true;
-    switcher.addEventListener('keydown', (event) => this._handleThreadSwitcherKey(event));
-
-    const trigger = document.createElement('button');
-    trigger.type = 'button';
-    trigger.className = 'v-thread-trigger';
-    trigger.textContent = 'Threads';
-    trigger.setAttribute('aria-haspopup', 'menu');
-    trigger.setAttribute('aria-expanded', 'false');
-    trigger.addEventListener('click', (event) => {
-      event.stopPropagation();
-      if (this._threadMenu.hidden) this._showThreadSwitcher();
-      else this._hideThreadSwitcher();
-    });
-
-    const menu = document.createElement('div');
-    menu.className = 'v-thread-menu';
-    menu.setAttribute('role', 'menu');
-    menu.setAttribute('aria-label', 'Presentation threads');
-    menu.hidden = true;
-
-    switcher.append(trigger, menu);
-    this._threadTrigger = trigger;
-    this._threadMenu = menu;
-    return switcher;
-  }
-
-  _refreshThreadSwitcher() {
-    if (!this._threadSwitcher) return;
-    const threads = this.threads;
-    this._threadSwitcher.hidden = false;
-    this._threadMenu.replaceChildren();
-
-    const documentation = document.createElement('a');
-    documentation.role = 'menuitem';
-    documentation.className = 'v-thread-documentation';
-    documentation.textContent = 'Open documentation';
-    documentation.href = PUBLIC_DOCUMENTATION_URL;
-    documentation.target = '_blank';
-    documentation.rel = 'noopener noreferrer';
-    documentation.addEventListener('click', () => {
-      this._hideThreadSwitcher();
-    });
-    this._threadMenu.appendChild(documentation);
-
-    const separator = document.createElement('div');
-    separator.className = 'v-thread-separator';
-    separator.setAttribute('role', 'separator');
-    this._threadMenu.appendChild(separator);
-
-    for (const thread of threads.slice(0, MAX_RECENT_THREADS)) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.role = 'menuitemradio';
-      button.dataset.threadId = thread.id;
-      button.setAttribute('aria-checked', String(thread.id === this._threadId));
-
-      const presentationTitle = document.createElement('strong');
-      presentationTitle.textContent = thread.presentationTitle || 'Presentation';
-      const detail = document.createElement('span');
-      detail.textContent = `${thread.routeTitle || thread.latestRoute || 'Table of contents'} · ${thread.id.slice(0, 6)}`;
-      button.append(presentationTitle, detail);
-      button.addEventListener('click', () => {
-        this.selectThread(thread.id)
-          .then(() => {
-            this._hideThreadSwitcher();
-            this._threadTrigger.focus({ preventScroll: true });
-          })
-          .catch((error) => console.error('[vividly]', error));
-      });
-      this._threadMenu.appendChild(button);
-    }
-  }
-
-  _showThreadSwitcher() {
-    if (this._threadId) this._recordThreadLabel(this._threadId);
-    this._refreshThreadSwitcher();
-    if (this._threadSwitcher.hidden || this.hasAttribute('data-capture')) return;
-    this._threadMenu.hidden = false;
-    this._threadTrigger.setAttribute('aria-expanded', 'true');
-    this._threadMenu.querySelector('[role="menuitem"]')?.focus({ preventScroll: true });
-  }
-
-  _hideThreadSwitcher() {
-    if (!this._threadMenu || this._threadMenu.hidden) return;
-    this._threadMenu.hidden = true;
-    this._threadTrigger.setAttribute('aria-expanded', 'false');
-  }
-
-  _handleThreadSwitcherKey(event) {
-    if (event.target === this._threadTrigger) {
-      if (['Enter', ' '].includes(event.key)) event.stopPropagation();
-      if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        event.stopPropagation();
-        this._showThreadSwitcher();
-      }
-      return;
-    }
-    const items = [
-      ...this._threadMenu.querySelectorAll('[role="menuitem"], [role="menuitemradio"]'),
-    ];
-    const index = items.indexOf(document.activeElement);
-    if (['Enter', ' '].includes(event.key)) {
-      event.stopPropagation();
-      return;
-    }
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      event.stopPropagation();
-      this._hideThreadSwitcher();
-      this._threadTrigger.focus({ preventScroll: true });
-      return;
-    }
-    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    let next = index;
-    if (event.key === 'Home') next = 0;
-    else if (event.key === 'End') next = items.length - 1;
-    else next = (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
-    items[next]?.focus({ preventScroll: true });
-  }
-
   _hashForRoute(route) {
     const prefix = `#/${this._presentationId}`;
     return route ? `${prefix}/${route}` : `${prefix}/`;
@@ -829,7 +691,6 @@ class VividlyPresentation extends HTMLElement {
       this._threads.set(threadId, descriptor);
       if (!this._rootThreadId) this._rootThreadId = threadId;
       history.replaceState(this._historyState(), '', location.href);
-      this._refreshThreadSwitcher();
       return;
     }
     if (route.view === 'toc') {
@@ -909,7 +770,6 @@ class VividlyPresentation extends HTMLElement {
     this._threadId = null;
     this._showCatalog();
     history.replaceState(this._historyState(), '', location.href);
-    this._refreshThreadSwitcher();
     await this._settleRender(generation, this._catalogView);
   }
 
