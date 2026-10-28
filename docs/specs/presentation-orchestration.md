@@ -336,6 +336,14 @@ visible on touch-capable devices, and all navigation methods remain enabled. The
 reader can toggle the disclosure with a click, tap, Enter, or Space without dismissing
 onboarding. Its state is retained while the screen is open, including across resizes.
 Full keyboard help continues to expose both input methods on touch-capable devices.
+Its footer includes a Documentation link to
+`https://mikehopcroft.github.io/vividly/?vividly-skip-hints=1#/vividly/documentation/overview`
+and the same SVG "Powered by Vividly" overview link used by onboarding. Both open in
+new tabs with `noopener noreferrer` without dismissing help or navigating the current
+presentation. Tab and Shift+Tab cycle through enabled help controls; Enter and Space
+retain native control behavior. Clicking the hint-preference control does not dismiss
+help either. Escape, other non-control keys, or clicks outside the controls dismiss it
+without navigating, restoring focus for keyboard dismissal.
 
 A completed click or tap anywhere on the activation screen also starts the
 presentation, including its backdrop and instructional content. The preference
@@ -1283,6 +1291,9 @@ painted left edge of the `V` aligns with the bar while leaving the canonical log
 unchanged. The TOC uses 32 pixels of top padding and 24 pixels on its other sides at
 ordinary widths. Narrow layouts may add rows and reduce padding to preserve readable
 breadcrumbs and reachable controls without horizontal overflow.
+The catalog and TOC logos are keyboard-focusable links to the same public Vividly
+overview as the onboarding branding, with the same new-tab and hint-suppression
+behavior. Activating a logo must not activate a selected catalog or TOC item.
 
 Keeping the bar outside the content body leaves its navigation and controls visible
 while a long catalog, outline, or grid scrolls. Keyboard selection remains visible

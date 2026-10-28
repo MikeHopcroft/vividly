@@ -2551,47 +2551,81 @@ def test_runtime_keyboard_hints_do_not_show_on_deep_links(
 
 
 @pytest.mark.parametrize("activation", ["click", "touch", "keyboard"])
-def test_runtime_keyboard_hints_branding_opens_new_tab_without_dismissal(
-    browser: Browser, runtime_url: str, activation: str
+@pytest.mark.parametrize(
+    "surface", ["hints", "help-branding", "help-documentation", "catalog", "toc"]
+)
+def test_public_site_links_open_new_tabs_without_changing_current_view(
+    browser: Browser, runtime_url: str, activation: str, surface: str
 ) -> None:
-    context = browser.new_context(has_touch=activation == "touch")
+    context = browser.new_context(
+        has_touch=activation == "touch",
+        viewport={"width": 390, "height": 844}
+        if activation == "touch" else {"width": 1280, "height": 800},
+    )
+    address = "documentation/overview" if surface == "help-documentation" else "opening"
     overview_url = (
         "https://mikehopcroft.github.io/vividly/"
-        "?vividly-skip-hints=1#/vividly/opening"
+        f"?vividly-skip-hints=1#/vividly/{address}"
     )
     context.route(
         "https://mikehopcroft.github.io/vividly/**",
         lambda route: route.fulfill(content_type="text/html", body="<p>Vividly overview</p>"),
     )
     page = context.new_page()
-    page.goto(f"{runtime_url}/#/vividly/opening/title-card")
-    hints = page.locator(".v-keyboard-hints")
-    branding = hints.get_by_role("link", name="Powered by Vividly")
-    logo = branding.get_by_role("img", name="Vividly")
-    expect(logo).to_be_visible()
-    expect(logo).to_have_attribute("src", f"{runtime_url}/vividly/assets/logo-cropped.svg")
-    expect(logo).to_have_js_property("complete", True)
-    assert logo.evaluate("img => img.naturalWidth > 0 && img.naturalHeight > 0")
-    expect(branding).to_have_attribute("href", overview_url)
-    expect(branding).to_have_attribute("target", "_blank")
-    expect(branding).to_have_attribute("rel", "noopener noreferrer")
+    if surface == "hints":
+        page.goto(f"{runtime_url}/#/vividly/opening/title-card")
+        container = page.locator(".v-keyboard-hints")
+    elif surface.startswith("help-"):
+        page.goto(f"{runtime_url}/?vividly-skip-hints=1#/vividly/opening/title-card")
+        page.locator("vividly-presentation[data-render-ready]").wait_for()
+        page.keyboard.press("?")
+        container = page.locator(".v-keyboard-help")
+    else:
+        route = "#/" if surface == "catalog" else "#/vividly/"
+        page.goto(f"{runtime_url}/{route}")
+        page.locator("vividly-presentation[data-render-ready]").wait_for()
+        container = page.locator(".v-catalog" if surface == "catalog" else ".v-toc")
+    name = (
+        "Documentation" if surface == "help-documentation"
+        else "Vividly" if surface in {"catalog", "toc"}
+        else "Powered by Vividly"
+    )
+    link = container.get_by_role("link", name=name, exact=True)
+    target = link
+    if surface != "help-documentation":
+        logo = link.get_by_role("img", name="Vividly")
+        expect(logo).to_be_visible()
+        asset = "logo.svg" if surface in {"catalog", "toc"} else "logo-cropped.svg"
+        expect(logo).to_have_attribute("src", f"{runtime_url}/vividly/assets/{asset}")
+        expect(logo).to_have_js_property("complete", True)
+        assert logo.evaluate("img => img.naturalWidth > 0 && img.naturalHeight > 0")
+        target = logo
+    expect(link).to_have_attribute("href", overview_url)
+    expect(link).to_have_attribute("target", "_blank")
+    expect(link).to_have_attribute("rel", "noopener noreferrer")
+    source_url = page.url
+    if activation == "keyboard":
+        for _ in range(12):
+            if link.evaluate("element => element === document.activeElement"):
+                break
+            page.keyboard.press("Tab")
+        expect(link).to_be_focused()
     with page.expect_popup() as popup_info:
         if activation == "keyboard":
-            page.keyboard.press("Tab")
-            expect(branding).to_be_focused()
             page.keyboard.press("Enter")
         elif activation == "touch":
-            logo.tap()
+            target.tap()
         else:
-            logo.click()
+            target.click()
     popup = popup_info.value
     popup.wait_for_load_state()
     assert popup.url == overview_url
     assert popup.evaluate("window.opener === null")
-    expect(hints).to_be_visible()
-    assert hints.get_attribute("data-closing") is None
-    assert page.locator(".v-layer:not([hidden])").count() == 0
-    assert page.url.endswith("#/vividly/opening/title-card")
+    expect(container).to_be_visible()
+    assert container.get_attribute("data-closing") is None
+    if surface == "hints":
+        assert page.locator(".v-layer:not([hidden])").count() == 0
+    assert page.url == source_url
     context.close()
 
 
@@ -4624,6 +4658,54 @@ def test_outline_steps_follow_persisted_thumbnail_and_expansion_preferences(
     ) == "true"
     assert page.locator(".v-toc-outline .v-outline-step:visible").count() > 0
     assert presentation.evaluate("(element) => element._leaves.every((leaf) => !leaf.rec)")
+    page.close()
+
+
+@pytest.mark.parametrize("policy", ["auto", "always"])
+def test_keyboard_help_controls_support_keyboard_without_dismissal(
+    browser: Browser, runtime_url: str, policy: str
+) -> None:
+    page = browser.new_page()
+    manifest = yaml.safe_load(
+        (FIXTURE_ROOT / "presentations/vividly.yaml").read_text(encoding="utf-8")
+    )
+    manifest["keyboardHints"] = policy
+    page.route(
+        "**/presentations/vividly.yaml",
+        lambda route: route.fulfill(content_type="application/yaml", body=json.dumps(manifest)),
+    )
+    page.goto(f"{runtime_url}/?vividly-skip-hints=1#/vividly/opening/title-card")
+    page.locator("vividly-presentation[data-render-ready]").wait_for()
+    trigger = page.get_by_role("button", name="Keyboard shortcuts")
+    trigger.click()
+    help_overlay = page.locator(".v-keyboard-help")
+    expect(help_overlay).to_be_focused()
+    checkbox = help_overlay.get_by_label("Show navigation hints when presentations start")
+    documentation = help_overlay.get_by_role("link", name="Documentation")
+    branding = help_overlay.get_by_role("link", name="Powered by Vividly")
+    page.keyboard.press("Tab")
+    if policy == "auto":
+        expect(checkbox).to_be_focused()
+        page.keyboard.press("Space")
+        expect(checkbox).not_to_be_checked()
+        expect(help_overlay).to_be_visible()
+        checkbox.click()
+        expect(checkbox).to_be_checked()
+        assert help_overlay.get_attribute("data-closing") is None
+        page.keyboard.press("Tab")
+    else:
+        expect(checkbox).to_be_disabled()
+    expect(documentation).to_be_focused()
+    page.keyboard.press("Tab")
+    expect(branding).to_be_focused()
+    page.keyboard.press("Tab")
+    expect(checkbox if policy == "auto" else documentation).to_be_focused()
+    page.keyboard.press("Shift+Tab")
+    expect(branding).to_be_focused()
+    page.keyboard.press("Escape")
+    expect(help_overlay).to_be_hidden()
+    expect(trigger).to_be_focused()
+    assert page.url.endswith("#/vividly/opening/title-card")
     page.close()
 
 

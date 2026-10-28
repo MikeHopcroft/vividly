@@ -240,7 +240,14 @@ On a compact Mac keyboard, Fn+Up produces Page Up and Fn+Down produces Page Down
 
 Press `?` or select the subtle `?` button in the corner of the presentation to open a
 shortcut summary. The button becomes fully visible when hovered or focused. The overlay
-softly enters and leaves; any key or mouse click closes it.
+softly enters and leaves. Its footer provides **Documentation** and **Powered by
+Vividly** links that open in new tabs, leaving your presentation and help open.
+The TOC and catalog logos also link to the Vividly overview in a new tab.
+These public-site links skip the destination's getting-started hints.
+
+Tab and Shift+Tab cycle through the help controls; Enter activates a focused link,
+and Space toggles the navigation-hints checkbox. Using these controls does not close
+help. Press Escape, another non-control key, or click outside the controls to close it.
 
 ## Switching presentations
 

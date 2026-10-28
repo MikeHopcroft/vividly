@@ -358,29 +358,32 @@
     text-align: center;
   }
 
-  .v-keyboard-hints-branding {
+  .v-powered-by {
     text-align: center;
     font-size: var(--font-size-sm);
   }
 
-  .v-keyboard-hints-branding a {
+  .v-powered-by a {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
-    color: var(--text-muted);
   }
 
-  .v-keyboard-hints-branding img {
+  .v-powered-by img {
     display: block;
     width: 5rem;
     height: auto;
   }
 
-  .v-keyboard-hints-branding a:hover {
+  .v-public-link {
+    color: var(--text-muted);
+  }
+
+  .v-public-link:hover {
     color: var(--text-primary);
   }
 
-  .v-keyboard-hints-branding a:focus-visible {
+  .v-public-link:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
@@ -435,6 +438,16 @@
 
   .v-keyboard-help[data-closing] .v-keyboard-help-panel {
     animation: v-keyboard-help-panel-out 160ms ease-in forwards;
+  }
+
+  .v-keyboard-help-links {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm) var(--spacing-md);
+    margin-top: var(--spacing-md);
+    font-size: var(--font-size-sm);
   }
 
   .v-keyboard-help h2,

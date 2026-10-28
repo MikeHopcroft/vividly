@@ -9,6 +9,7 @@ import { Slide, DYNAMIC } from './slide.js';
 import { TouchNavigation } from './touch.js';
 import { loadManifest } from './manifest.js';
 import { loadCatalog } from './catalog.js';
+import { PUBLIC_DOCUMENTATION_URL } from './config.js';
 import {
   DependencyRegistry,
   DependencyTable,
@@ -1700,6 +1701,33 @@ class VividlyPresentation extends HTMLElement {
     this._navigationHud.hidden = true;
   }
 
+  _createVividlyLink(address) {
+    const url = new URL(PUBLIC_DOCUMENTATION_URL);
+    url.searchParams.set('vividly-skip-hints', '1');
+    url.hash = `/vividly/${address}`;
+    const link = document.createElement('a');
+    link.className = 'v-public-link';
+    link.href = url.href;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') event.stopPropagation();
+    });
+    return link;
+  }
+
+  _createBranding() {
+    const branding = document.createElement('small');
+    branding.className = 'v-powered-by';
+    const link = this._createVividlyLink('opening');
+    const logo = document.createElement('img');
+    logo.src = new URL('../assets/logo-cropped.svg', import.meta.url).href;
+    logo.alt = 'Vividly';
+    link.append('Powered by ', logo);
+    branding.append(link);
+    return branding;
+  }
+
   _buildKeyboardHelp() {
     const overlay = document.createElement('div');
     overlay.className = 'v-keyboard-help';
@@ -1750,10 +1778,20 @@ class VividlyPresentation extends HTMLElement {
           <input type="checkbox">
           Show navigation hints when presentations start
         </label>
-        <p>Press any key or click anywhere to close.</p>
+        <p>Press Esc or click outside the controls to close.</p>
+        <div class="v-keyboard-help-links"></div>
       </div>`;
+    const documentation = this._createVividlyLink('documentation/overview');
+    documentation.textContent = 'Documentation';
+    overlay.querySelector('.v-keyboard-help-links').append(
+      documentation,
+      this._createBranding()
+    );
     overlay.querySelector('.v-keyboard-help-hints input').addEventListener('change', (event) => {
       this._setKeyboardHintsSuppressed(!event.target.checked);
+    });
+    overlay.addEventListener('click', (event) => {
+      if (event.target.closest('a[href], label, input')) event.stopPropagation();
     });
     return overlay;
   }
@@ -1836,14 +1874,8 @@ class VividlyPresentation extends HTMLElement {
             <small class="v-touch-instructions">Tap anywhere to start.</small>
           </div>
         </div>
-        <small class="v-keyboard-hints-branding">
-          <a href="https://mikehopcroft.github.io/vividly/?vividly-skip-hints=1#/vividly/opening"
-             target="_blank" rel="noopener noreferrer">Powered by
-            <img src="${new URL('../assets/logo-cropped.svg', import.meta.url).href}"
-                 alt="Vividly">
-          </a>
-        </small>
       </div>`;
+    hints.querySelector('.v-keyboard-hints-panel').append(this._createBranding());
     hints.querySelector('input').addEventListener('change', (event) => {
       this._setKeyboardHintsSuppressed(event.target.checked);
     });
@@ -1995,32 +2027,35 @@ class VividlyPresentation extends HTMLElement {
 
   // --- keyboard -----------------------------------------------------------
 
+  _handleDialogControlKey(e, dialog) {
+    if (e.key === 'Shift') return true;
+    if (e.key === 'Tab') {
+      const controls = [...dialog.querySelectorAll(
+        'summary, input:not(:disabled), button:not(:disabled), a[href]'
+      )];
+      const index = controls.indexOf(document.activeElement);
+      const next = e.shiftKey
+        ? (index > 0 ? index - 1 : controls.length - 1)
+        : (index + 1) % controls.length;
+      e.preventDefault();
+      controls[next].focus();
+      return true;
+    }
+    return (e.key === 'Enter' || e.key === ' ') &&
+      !!e.target.closest('summary, input, button, a[href]');
+  }
+
   _handleKey(e) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (!this._keyboardHints.hidden) {
-      if (e.key === 'Shift') return;
-      if (e.key === 'Tab') {
-        const controls = [...this._keyboardHints.querySelectorAll(
-          'summary, input:not(:disabled), button:not(:disabled), a[href]'
-        )];
-        const index = controls.indexOf(document.activeElement);
-        const next = e.shiftKey
-          ? (index > 0 ? index - 1 : controls.length - 1)
-          : (index + 1) % controls.length;
-        e.preventDefault();
-        controls[next].focus();
-        return;
-      }
-      if (
-        (e.key === 'Enter' || e.key === ' ') &&
-        e.target.closest('summary, input, button, a[href]')
-      ) return;
+      if (this._handleDialogControlKey(e, this._keyboardHints)) return;
       e.preventDefault();
       if (e.key === '?') this._showKeyboardHelp();
       else this._finishKeyboardHints(true);
       return;
     }
     if (!this._keyboardHelp.hidden) {
+      if (this._handleDialogControlKey(e, this._keyboardHelp)) return;
       e.preventDefault();
       this._hideKeyboardHelp();
       return;
@@ -2343,8 +2378,8 @@ class VividlyPresentation extends HTMLElement {
     const header = document.createElement('header');
     header.className = 'v-overview-header';
 
-    const identity = document.createElement('div');
-    identity.className = 'v-overview-identity';
+    const identity = this._createVividlyLink('opening');
+    identity.classList.add('v-overview-identity');
     const identityImage = document.createElement('img');
     identityImage.className = 'v-overview-identity-image';
     identityImage.src = new URL('../assets/logo.svg', import.meta.url).href;
