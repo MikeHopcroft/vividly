@@ -79,6 +79,7 @@ export default class GettingStartedPage extends Slide {
       </section>`;
     const shell = root.querySelector('.guide-shell');
     shell.classList.toggle('guide-tutorial', this.tutorialStyle);
+    shell.classList.toggle('guide-documentation', this.page.id === 'documentation');
     shell.classList.toggle('guide-walkthrough', Boolean(this.page.tutorial));
     this.scroll = root.querySelector('.guide-scroll');
     this.main = root.querySelector('main');

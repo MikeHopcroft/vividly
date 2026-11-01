@@ -36,7 +36,28 @@ in CI before deploying. Run `vividly thumbnails` locally to preview them.
 
 ## Release to PyPI and deploy Pages
 
-1. Commit the shared package/runtime version and all source changes. Do not change
+1. Prepare the shared package/runtime version from the repository root:
+
+   ```bash
+   uv run --locked python -m tools.bump_version 0.0.4
+   ```
+
+   The script updates `pyproject.toml`, the runtime selector in `vividly.yaml`,
+   `src/vividly/resources/runtime/vividly/version.txt`, and only the root editable
+   package's version in `uv.lock`, then invokes the existing runtime-manifest
+   generator. It preserves unrelated file content and does not resolve or upgrade
+   dependencies, change indexes, commit, tag, push, or dispatch a release. Repeating
+   the same version is allowed; decreasing it or starting from mismatched versions
+   is rejected. A manifest-generation failure restores the original file contents.
+
+   The lockfile must already satisfy the public-source policy. A lockfile containing
+   local registry rewrites is rejected before any writes; resolve those changes
+   separately without discarding existing work. The script never bypasses configured
+   indexes. If locked execution itself fails, resolve that environment or dependency
+   mismatch explicitly rather than retrying unlocked.
+
+   Commit the resulting shared package/runtime version and all intended source
+   changes, and get the selected source commit onto remote `main`. Do not change
    versions during a release.
 2. Dispatch the Release workflow with a full committed source SHA and its committed
    version, either from **Actions → Release → Run workflow** on **main**, or with the

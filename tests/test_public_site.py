@@ -422,6 +422,49 @@ def test_guided_introduction_step_navigation(chromium: None) -> None:
                 _wait_for_public_route(page, "vividly", address)
                 expect(shell.locator(".guide-sidebar")).to_have_count(0)
                 expect(shell.locator(".guide-progress")).to_have_count(0)
+            article = shell.locator(".guide-article")
+            assert article.locator("pre code").evaluate(
+                "element => getComputedStyle(element).color"
+            ) == "rgb(157, 219, 173)"
+            expect(article.locator("pre code")).to_have_text(
+                "Make me a Vividly slide "
+                "(https://mikehopcroft.github.io/vividly/reference/agentic-bootstrap.md) "
+                "that explains how an abacus works."
+            )
+            assert article.evaluate(
+                """element => {
+                    const children = [...element.querySelector('vividly-markdown').children];
+                    const prompt = children.findIndex(child => child.tagName === 'PRE');
+                    const start = children.findIndex(child => child.textContent === 'Start');
+                    return prompt > 0 && prompt < start
+                        && children[prompt - 1].textContent.includes(
+                            'Most users never need to read this documentation')
+                        && children[prompt + 1].textContent.includes('behind-the-scenes');
+                }"""
+            )
+            for width in (1920, 390):
+                page.set_viewport_size({"width": width, "height": 1080})
+                expect(article).to_be_visible()
+                assert shell.locator(".guide-scroll").evaluate(
+                    "element => element.scrollWidth <= element.clientWidth"
+                )
+                page.goto(f"{base_url}/#/vividly/make-something/choose-your-path")
+                _wait_for_public_route(page, "vividly", "make-something/choose-your-path")
+                footer = page.locator(".v-layer:not([hidden]) .card-navigator-footer")
+                link = footer.get_by_role("link", name="Documentation")
+                expect(link).to_have_attribute("href", "#/vividly/documentation/overview")
+                expect(footer).to_be_visible()
+                if width == 1920:
+                    link.focus()
+                    page.keyboard.press("Enter")
+                else:
+                    link.click()
+                _wait_for_public_route(page, "vividly", "documentation/overview")
+                page.go_back()
+                _wait_for_public_route(page, "vividly", "make-something/choose-your-path")
+                expect(footer).to_be_visible()
+                page.go_forward()
+                _wait_for_public_route(page, "vividly", "documentation/overview")
             assert not errors
             browser.close()
     finally:

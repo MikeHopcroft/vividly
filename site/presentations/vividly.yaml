@@ -114,6 +114,9 @@ nodes:
           eyebrow: Get Started
           heading: How would you like to begin?
           introduction: Two ways to make your first interactive presentation. Choose the approach that suits you.
+          footerLink:
+            text: Documentation →
+            href: "#/vividly/documentation/overview"
           descriptions:
             - Already comfortable with a coding agent? Give it a prompt to set up Vividly and create your first presentation.
             - Prefer a guided introduction? Work through installation, creation, preview, refinement, and publishing step by step.

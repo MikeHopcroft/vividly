@@ -47,6 +47,14 @@ export default class CardNavigatorSlide extends Slide {
     if (sections.length === 0 && externalCards.length === 0) {
       throw new Error('Card navigator requires sections or external cards');
     }
+    const footerLink = this.ctx.props.footerLink;
+    if (footerLink !== undefined && (
+      !footerLink ||
+      typeof footerLink.text !== 'string' || !footerLink.text.trim() ||
+      typeof footerLink.href !== 'string' || !footerLink.href.startsWith('#/')
+    )) {
+      throw new Error('Card navigator footerLink requires text and a presentation route');
+    }
     this.sections = sections;
     this.descriptions = descriptions;
     this.images = images;
@@ -129,6 +137,18 @@ export default class CardNavigatorSlide extends Slide {
     });
 
     layout.append(header, grid);
+    if (this.ctx.props.footerLink) {
+      const footer = document.createElement('footer');
+      footer.className = 'card-navigator-footer';
+      const link = document.createElement('a');
+      link.href = this.ctx.props.footerLink.href;
+      link.textContent = this.ctx.props.footerLink.text;
+      link.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') event.stopPropagation();
+      });
+      footer.append(link);
+      layout.append(footer);
+    }
     root.append(layout);
     if (!this.ctx.navigator) {
       this.ctx.captureKeys((event) => this.captureExternalCardKey(event));

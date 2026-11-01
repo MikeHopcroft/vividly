@@ -1,5 +1,13 @@
 **New here? [Make your first interactive slide](#/make-something/choose-your-path).** Choose an agent-led start or a guided walkthrough from installation to a shareable link.
 
+Most users never need to read this documentation. Just tell your coding agent something like:
+
+```text
+Make me a Vividly slide (https://mikehopcroft.github.io/vividly/reference/agentic-bootstrap.md) that explains how an abacus works.
+```
+
+If you're curious about the behind-the-scenes details, feel free to browse the following links.
+
 ## Start
 
 - [Install Vividly](#/make-something/get-started/install) - the recommended setup and a pip alternative.

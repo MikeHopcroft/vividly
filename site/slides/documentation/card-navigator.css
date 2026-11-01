@@ -55,6 +55,21 @@
   gap: var(--spacing-md);
 }
 
+.card-navigator-footer {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.card-navigator-footer a {
+  color: var(--accent);
+  text-underline-offset: 0.22em;
+}
+
+.card-navigator-footer a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
 .card-navigator-card {
   display: grid;
   grid-template-columns: auto 1fr auto;
