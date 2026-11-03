@@ -36,15 +36,7 @@ nodes:
   - type: slide
     id: color-schemes
     title: Color Schemes
-    module: ../slides/documentation/placeholder.js
-    props:
-      eyebrow: Labs / Color
-      title: Color Schemes
-      promise: Explore color combinations while developing a presentation's visual language.
-      planned:
-        - Adapt the existing color-swatches prototype
-        - Try palettes and compare their effect
-      status: Interactive color scheme placeholder
+    module: ../slides/labs/color-schemes/slide.js
 
   - type: slide
     id: movie-poster-development
