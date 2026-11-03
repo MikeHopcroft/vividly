@@ -24,14 +24,20 @@ const CANDIDATES = [
     turns: 34, late: 21, regions: 7, cluster: 5, seconds: 3.73 },
 ];
 
-export function createBreakCandidates(root) {
+export function createBreakCandidates(root, {
+  heading = 'Billiards break candidates',
+  introduction = "Six candidates from a 256-seed search, plus the current seed 7 for comparison. "
+    + 'These use the actual slide simulation and rendering. Stills show the settled result; '
+    + "use Replay to judge the motion. The presentation's default seed is unchanged.",
+} = {}) {
+  if (typeof heading !== 'string' || typeof introduction !== 'string') {
+    throw new TypeError('Break gallery heading and introduction must be strings.');
+  }
   root.innerHTML = `
     <div class="break-comparison">
       <header>
-        <h1>Billiards break candidates</h1>
-        <p>Six candidates from a 256-seed search, plus the current seed 7 for comparison.
-          These use the actual slide simulation and rendering. Stills show the settled result;
-          use Replay to judge the motion. The presentation's default seed is unchanged.</p>
+        <h1></h1>
+        <p data-introduction></p>
         <div class="controls">
           <button data-play-all type="button">Replay all</button>
           <button data-settle-all type="button">Settle all</button>
@@ -48,6 +54,8 @@ export function createBreakCandidates(root) {
       </header>
       <main class="candidates"></main>
     </div>`;
+  root.querySelector('h1').textContent = heading;
+  root.querySelector('[data-introduction]').textContent = introduction;
   const main = root.querySelector('.candidates');
   const events = new AbortController();
   const options = { signal: events.signal };

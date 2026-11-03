@@ -8,7 +8,7 @@ export const meta = {
 
 export default class BreakCandidates extends Slide {
   mount(root) {
-    this.comparison = createBreakCandidates(root);
+    this.comparison = createBreakCandidates(root, this.ctx.props);
   }
 
   enter() {

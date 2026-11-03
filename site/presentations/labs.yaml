@@ -23,15 +23,10 @@ nodes:
   - type: slide
     id: pool-table-breaks
     title: Pool Table Breaks
-    module: ../slides/documentation/placeholder.js
+    module: ../slides/experiments/pool-table-break/candidates-slide.js
     props:
-      eyebrow: Labs / Gallery
-      title: Pool Table Breaks
-      promise: Explore a gallery of pool table breaks and the creative choices behind them.
-      planned:
-        - A gallery of break examples
-        - Compare visual approaches and iterations
-      status: Gallery placeholder
+      heading: Pool Table Breaks
+      introduction: "A creative workflow: generate variations, compare the motion, then choose a starting point. Six candidates from a 256-seed search sit alongside the original seed 7. Each uses the same simulation and rendering; only the seed changes. Stills show the settled result. Replay individual breaks or the whole gallery, and scroll to compare all seven."
 
   - type: slide
     id: color-schemes
