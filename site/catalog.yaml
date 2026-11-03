@@ -29,3 +29,6 @@ presentations:
   - id: city-of-loops-lab
     title: City of Loops Lab
     manifest: ./presentations/city-of-loops-lab.yaml
+  - id: labs
+    title: Labs
+    manifest: ./presentations/labs.yaml

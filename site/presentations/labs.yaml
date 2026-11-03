@@ -1,0 +1,73 @@
+id: labs
+title: Labs
+theme: ../vividly/themes/dark.css
+transition: cut
+keyboardHints: auto
+
+nodes:
+  - type: slide
+    id: intro
+    title: Labs
+    module: ../slides/documentation/placeholder.js
+    props:
+      eyebrow: Creative presentation workflows
+      title: Labs
+      promise: Experiments in developing presentations, from first idea to finished slide.
+      planned:
+        - Pool table breaks gallery
+        - Color scheme exploration
+        - Movie poster development
+        - Agentic image prompting
+      status: Intro placeholder - future example navigator
+
+  - type: slide
+    id: pool-table-breaks
+    title: Pool Table Breaks
+    module: ../slides/documentation/placeholder.js
+    props:
+      eyebrow: Labs / Gallery
+      title: Pool Table Breaks
+      promise: Explore a gallery of pool table breaks and the creative choices behind them.
+      planned:
+        - A gallery of break examples
+        - Compare visual approaches and iterations
+      status: Gallery placeholder
+
+  - type: slide
+    id: color-schemes
+    title: Color Schemes
+    module: ../slides/documentation/placeholder.js
+    props:
+      eyebrow: Labs / Color
+      title: Color Schemes
+      promise: Explore color combinations while developing a presentation's visual language.
+      planned:
+        - Adapt the existing color-swatches prototype
+        - Try palettes and compare their effect
+      status: Interactive color scheme placeholder
+
+  - type: slide
+    id: movie-poster-development
+    title: Movie Poster Development
+    module: ../slides/documentation/placeholder.js
+    props:
+      eyebrow: Labs / Design
+      title: Movie Poster Development
+      promise: Follow a poster concept through creative exploration and refinement.
+      planned:
+        - Establish the initial concept
+        - Show iterations and the developing design
+      status: Movie poster development placeholder
+
+  - type: slide
+    id: agentic-image-prompting
+    title: Agentic Image Prompting
+    module: ../slides/documentation/placeholder.js
+    props:
+      eyebrow: Labs / Image workflows
+      title: Agentic Image Prompting
+      promise: Develop images collaboratively through references, prompts, and successive refinements.
+      planned:
+        - Example images -> text prompt -> text modifications -> new image
+        - Prompting for progressive image builds
+      status: Agentic image prompting placeholder
