@@ -36,15 +36,10 @@ nodes:
   - type: slide
     id: movie-poster-development
     title: Movie Poster Development
-    module: ../slides/documentation/placeholder.js
+    module: ../slides/labs/movie-poster-development/slide.js
+    data: ../slides/labs/movie-poster-development
     props:
-      eyebrow: Labs / Design
-      title: Movie Poster Development
-      promise: Follow a poster concept through creative exploration and refinement.
-      planned:
-        - Establish the initial concept
-        - Show iterations and the developing design
-      status: Movie poster development placeholder
+      src: ./document.md
 
   - type: slide
     id: agentic-image-prompting
