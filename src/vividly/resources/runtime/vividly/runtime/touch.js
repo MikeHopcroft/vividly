@@ -111,7 +111,7 @@ export class TouchNavigation {
   available() {
     const p = this.presentation;
     return this.visible() && !this.pending.size && p.hasAttribute('data-render-ready') &&
-      p._keyboardHints.hidden && p._keyboardHelp.hidden && p._threadMenu.hidden &&
+      p._keyboardHints.hidden && p._keyboardHelp.hidden &&
       !p.querySelector('dialog[open], [aria-modal="true"]:not([hidden])');
   }
 
