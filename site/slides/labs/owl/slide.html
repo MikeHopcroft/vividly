@@ -1,0 +1,66 @@
+<main class="owl-lab">
+  <header>
+    <p class="owl-eyebrow">Labs / Drawing in parallel</p>
+    <h1>One owl, multiple pens.</h1>
+    <p class="owl-introduction">I wanted to use an anamorphic wire sculpture to illustrate how motion can reveal new structures and concepts. The first iteration (shown on the left) took too long to draw, yet seemed rushed and complicated. It felt as though the rapid pen movements were distracting from the reveal at the end.</p>
+    <p class="owl-introduction">I was curious whether using multiple pens would allow me to create the perception of a slower pace while also reducing the total animation time.</p>
+  </header>
+
+  <div class="owl-controls" role="group" aria-label="Owl animation settings">
+    <label>Pens
+      <input name="pens" type="number" min="1" max="24" step="1" value="3" required>
+    </label>
+    <label>Drawing time (seconds)
+      <input name="duration" type="number" min="0.1" max="30" step="0.1" value="1.5" required>
+    </label>
+    <button type="button" data-rerun>Rerun</button>
+    <span role="status" aria-live="polite"></span>
+  </div>
+
+  <div class="owl-comparison">
+    <section class="owl-panel" aria-label="One pen comparison">
+      <h2>1 pen</h2>
+      <svg viewBox="180 0 840 760" role="img" aria-label="Owl wire sculpture drawn with one pen">
+        <defs>
+          <linearGradient x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#fff8e8"></stop>
+            <stop offset=".48" stop-color="#f5c36a"></stop>
+            <stop offset="1" stop-color="#bb713d"></stop>
+          </linearGradient>
+          <filter x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="4" result="blur"></feGaussianBlur>
+            <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+          </filter>
+        </defs>
+        <ellipse class="owl-pool" cx="612" cy="640" rx="330" ry="38"></ellipse>
+        <path class="owl-wire owl-shadow"></path>
+        <path class="owl-wire owl-glow"></path>
+        <path class="owl-wire owl-body"></path>
+        <g class="owl-tips"></g>
+      </svg>
+    </section>
+    <section class="owl-panel" aria-label="Multiple pen comparison">
+      <h2 data-multiple-heading>3 pens</h2>
+      <svg viewBox="180 0 840 760" role="img" aria-label="Owl wire sculpture drawn with the selected number of pens">
+        <defs>
+          <linearGradient x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#fff8e8"></stop>
+            <stop offset=".48" stop-color="#f5c36a"></stop>
+            <stop offset="1" stop-color="#bb713d"></stop>
+          </linearGradient>
+          <filter x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="4" result="blur"></feGaussianBlur>
+            <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+          </filter>
+        </defs>
+        <ellipse class="owl-pool" cx="612" cy="640" rx="330" ry="38"></ellipse>
+        <path class="owl-wire owl-shadow"></path>
+        <path class="owl-wire owl-glow"></path>
+        <path class="owl-wire owl-body"></path>
+        <g class="owl-tips"></g>
+      </svg>
+    </section>
+  </div>
+  <p class="owl-note">Changes rerun both drawings automatically. Each pen draws an equal share of the wire.
+    Drawing defaults to the original 1.5 seconds, followed by its 0.15-second pause and 1.2-second rotation.</p>
+</main>

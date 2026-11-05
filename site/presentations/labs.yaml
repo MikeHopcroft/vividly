@@ -15,6 +15,7 @@ nodes:
       promise: Experiments in developing presentations, from first idea to finished slide.
       planned:
         - Pool table breaks gallery
+        - Owl drawing with one pen or many
         - Color scheme exploration
         - Movie poster development
         - Agentic image prompting
@@ -27,6 +28,11 @@ nodes:
     props:
       heading: Pool Table Breaks
       introduction: "A creative workflow: generate variations, compare the motion, then choose a starting point. Six candidates from a 256-seed search sit alongside the original seed 7. Each uses the same simulation and rendering; only the seed changes. Stills show the settled result. Replay individual breaks or the whole gallery, and scroll to compare all seven."
+
+  - type: slide
+    id: owl
+    title: Owl
+    module: ../slides/labs/owl/slide.js
 
   - type: slide
     id: color-schemes

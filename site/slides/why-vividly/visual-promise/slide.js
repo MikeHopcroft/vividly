@@ -8,16 +8,16 @@ export const meta = {
 };
 
 const BREAK_SEED = 80;
-const OWL_DRAW_DURATION = 1500;
-const OWL_HOLD_DURATION = 150;
-const OWL_ALIGN_DURATION = 1200;
+export const OWL_DRAW_DURATION = 1500;
+export const OWL_HOLD_DURATION = 150;
+export const OWL_ALIGN_DURATION = 1200;
 const OWL_QUESTION_DURATION = 400;
 const OWL_SAMPLE_COUNT = 240;
 const OWL_START_YAW = 1.18;
 const OWL_START_PITCH = -0.22;
 const SVG_NS = 'http://www.w3.org/2000/svg';
 let owlResourceSerial = 0;
-const OWL_PATH = `
+export const OWL_PATH = `
   M 177 20
   C 155 43 180 59 197 78
   C 211 93 190 111 205 130
@@ -294,7 +294,7 @@ export default class VisualPromise extends Slide {
   }
 }
 
-function sliceOwl(points, start, end) {
+export function sliceOwl(points, start, end) {
   const lengths = [0];
   for (let index = 1; index < points.length; index += 1) {
     lengths.push(lengths[index - 1] + Math.hypot(
@@ -323,7 +323,7 @@ function sliceOwl(points, start, end) {
   return start > end ? section.reverse() : section;
 }
 
-function sampleOwl(source) {
+export function sampleOwl(source) {
   const sampler = document.createElementNS(SVG_NS, 'path');
   sampler.setAttribute('d', source.getAttribute('d'));
   const length = sampler.getTotalLength();
@@ -358,7 +358,7 @@ function owlDepthAt(t) {
   );
 }
 
-function projectOwl(point, alignment) {
+export function projectOwl(point, alignment) {
   const easedAlignment = easeInOutCubic(alignment);
   const yaw = OWL_START_YAW * (1 - easedAlignment);
   const pitch = OWL_START_PITCH * (1 - easedAlignment);
@@ -379,7 +379,7 @@ function projectOwl(point, alignment) {
   };
 }
 
-function easeInOutCubic(value) {
+export function easeInOutCubic(value) {
   return value < 0.5
     ? 4 * value ** 3
     : 1 - ((-2 * value + 2) ** 3) / 2;
