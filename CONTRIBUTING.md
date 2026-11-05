@@ -25,6 +25,16 @@ Use locked mode for routine development. If uv reports that the lockfile is stal
 resolve the dependency mismatch explicitly rather than regenerating it as part of
 an unrelated change.
 
+### GitHub Codespaces
+
+The [devcontainer configuration](.devcontainer/devcontainer.json) uses a
+Python 3.12 Bookworm image with uv and Node.js LTS, rather than the larger
+universal image. Creation synchronizes locked dependencies and installs Chromium
+with its Linux system dependencies. Port 8080 is forwarded for the Vividly preview.
+
+For an existing Codespace, run **Codespaces: Rebuild Container** from the VS Code
+Command Palette to apply configuration changes.
+
 ### Using another package registry
 
 If your environment requires a package mirror or another registry, configure it
