@@ -25,6 +25,69 @@ Use locked mode for routine development. If uv reports that the lockfile is stal
 resolve the dependency mismatch explicitly rather than regenerating it as part of
 an unrelated change.
 
+### Using another package registry
+
+If your environment requires a package mirror or another registry, configure it
+in your user-level `uv.toml` for persistent use, rather than this repository.
+The recommendation is the same on macOS, Linux, and Windows; only the configuration
+location and shell syntax differ:
+
+| Platform | User configuration location |
+| --- | --- |
+| macOS / Linux | `$XDG_CONFIG_HOME/uv/uv.toml`, or `~/.config/uv/uv.toml` when unset |
+| Windows | `%APPDATA%\uv\uv.toml` |
+
+For example:
+
+```toml
+[[index]]
+url = "https://packages.example.org/simple"
+default = true
+```
+
+`default = true` replaces PyPI as the default index rather than adding another
+index alongside it.
+
+For a temporary override or CI, use `UV_DEFAULT_INDEX` instead. In bash or zsh on
+macOS or Linux, set it for one command:
+
+```sh
+UV_DEFAULT_INDEX=https://packages.example.org/simple uv sync --locked
+```
+
+In PowerShell on Windows, set it for the current session:
+
+```powershell
+$env:UV_DEFAULT_INDEX = "https://packages.example.org/simple"
+uv sync --locked
+```
+
+For a single invocation on any platform, use the command-line option:
+
+```console
+uv sync --locked --default-index https://packages.example.org/simple
+```
+
+Command-line options take precedence over environment variables, which take
+precedence over configuration files. An existing `UV_DEFAULT_INDEX` can therefore
+override your user configuration. See
+[uv's configuration documentation](https://docs.astral.sh/uv/concepts/configuration-files/)
+for details. Keep credentials separate from the registry URL, using your
+organization's authentication mechanism or
+[named-index credential environment variables](https://docs.astral.sh/uv/concepts/indexes/#providing-credentials-directly).
+
+Changing the configured registry can make `uv sync --locked` report that the
+lockfile needs updating even when dependency requirements have not changed.
+Check the registry configuration before treating this as a dependency mismatch.
+If your required registry is incompatible with the committed lockfile, you may
+intentionally run `uv sync` without `--locked` to create a registry-specific local
+lockfile. Review the resulting `uv.lock` changes and do not commit registry-specific
+rewrites. When restoring the public lockfile, remove only changes introduced by
+this workaround, preserving any pre-existing edits. Subsequent locked commands,
+including `uv run --locked`, may remain incompatible with your registry
+configuration; syncing and then restoring the lockfile does not resolve that
+mismatch. Do not put registry credentials in tracked files.
+
 ### Activate the pre-commit hook
 
 The tracked [pre-commit hook](.githooks/pre-commit) runs two offline checks:
