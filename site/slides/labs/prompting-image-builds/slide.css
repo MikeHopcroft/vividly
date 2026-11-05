@@ -1,0 +1,76 @@
+:scope {
+  height: 100%;
+  overflow: auto;
+  padding: clamp(1.25rem, 3vh, 3rem);
+}
+
+vividly-markdown {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  font-size: clamp(1rem, 2.5vh, 1.5rem);
+  line-height: 1.5;
+}
+
+vividly-markdown h1 {
+  margin-bottom: var(--spacing-md);
+  font-size: clamp(1.75rem, 4vh, 2.5rem);
+}
+
+vividly-markdown .conversation-speaker {
+  margin-block: var(--spacing-md) var(--spacing-xs);
+}
+
+vividly-markdown .v-prompt {
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+  font-size: clamp(0.875rem, 2.4vh, 1.125rem);
+}
+
+.image-build-previews {
+  display: grid;
+  grid-template-columns: repeat(2, 40%);
+  justify-content: center;
+  gap: var(--spacing-xl);
+  margin-block: var(--spacing-md);
+}
+
+.image-build-example {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.image-build-previews figure:not(.v-prompt) {
+  min-width: 0;
+  margin: auto 0 0;
+  padding-top: var(--spacing-lg);
+}
+
+.image-build-previews img {
+  display: block;
+  width: 75%;
+  max-height: 20vh;
+  margin-inline: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
+.image-build-previews figcaption {
+  margin-top: var(--spacing-sm);
+  color: var(--text-muted);
+  font-size: var(--font-size-md);
+  text-align: center;
+}
+
+.image-build-next {
+  margin-top: auto;
+  color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .image-build-previews {
+    gap: var(--spacing-md);
+  }
+}

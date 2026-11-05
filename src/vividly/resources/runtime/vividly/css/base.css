@@ -39,6 +39,7 @@
 
   .v-stage {
     position: relative;
+    isolation: isolate;
     height: 100%;
     overflow: hidden;
   }
@@ -590,6 +591,11 @@
   }
 
   /* --- transitions --- */
+
+  [data-transition='dissolve'].v-enter,
+  [data-transition='dissolve'].v-leave {
+    mix-blend-mode: plus-lighter;
+  }
 
   [data-transition='dissolve'].v-enter {
     animation: v-fade-in var(--transition-duration) ease-out;

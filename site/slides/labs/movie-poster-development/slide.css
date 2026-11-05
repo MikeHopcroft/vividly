@@ -21,19 +21,6 @@ vividly-markdown > p:not(.conversation-speaker) {
   margin-block: var(--spacing-md);
 }
 
-vividly-markdown .conversation-speaker {
-  margin-block: var(--spacing-lg) var(--spacing-sm);
-  color: var(--accent-warm);
-  font: 700 0.8rem / 1.4 var(--font-mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-vividly-markdown .conversation-speaker--designer {
-  color: var(--accent);
-  text-align: right;
-}
-
 vividly-markdown .conversation-response {
   box-sizing: border-box;
   width: 95%;
@@ -44,20 +31,7 @@ vividly-markdown .conversation-response {
   background: color-mix(in srgb, var(--accent-warm) 10%, var(--bg-elevated));
 }
 
-vividly-markdown .v-prompt {
-  width: min(85%, 60ch);
-  margin: 0 0 var(--spacing-lg) auto;
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
-  border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
-  background: color-mix(in srgb, var(--accent) 10%, var(--bg-elevated));
-}
-
-vividly-markdown .v-prompt figcaption {
-  display: none;
-}
-
-vividly-markdown .conversation-response > :is(p, ul, ol, pre, blockquote),
-vividly-markdown .v-prompt-content > :is(p, ul, ol, pre, blockquote) {
+vividly-markdown .conversation-response > :is(p, ul, ol, pre, blockquote) {
   margin-block: 0 0.6em;
 }
 
@@ -66,7 +40,6 @@ vividly-markdown .conversation-response > :first-child {
 }
 
 vividly-markdown .conversation-response > :last-child,
-vividly-markdown .v-prompt-content > :last-child,
 vividly-markdown li > p {
   margin-bottom: 0;
 }
@@ -86,7 +59,6 @@ vividly-markdown img {
 }
 
 @media (max-width: 600px) {
-  vividly-markdown .v-prompt,
   vividly-markdown .conversation-response {
     width: 100%;
   }

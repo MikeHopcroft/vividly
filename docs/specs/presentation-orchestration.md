@@ -1011,6 +1011,10 @@ runtime marks the incoming layer `.v-enter` and every visible outgoing layer
 means adding a rule. `slide` moves the incoming and outgoing layers by their full width
 without changing opacity.
 
+`dissolve` blends complementary incoming and outgoing opacities additively inside
+an isolated stage. Unchanged opaque pixels retain their brightness throughout the
+transition instead of exposing the stage background at the midpoint.
+
 A transition belongs to the **boundary immediately before a slide**. Moving forward
 from A to B uses B's transition; moving backward from B to A uses the same transition
 in reverse. For a non-adjacent jump, the later endpoint owns the transition, preserving

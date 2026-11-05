@@ -59,3 +59,34 @@ nodes:
         - Example images -> text prompt -> text modifications -> new image
         - Prompting for progressive image builds
       status: Agentic image prompting placeholder
+
+  - type: slide
+    id: prompting-image-builds
+    title: Prompting Image Builds
+    transition: dissolve
+    module: ../slides/labs/prompting-image-builds/slide.js
+    data: ../slides/labs/prompting-image-builds
+    props:
+      src: ./document.md
+
+  - type: slide
+    id: prompting-image-builds-first
+    title: Image Build - First Image
+    transition: dissolve
+    module: ../vividly/slides/image.js
+    data: ../slides/labs/prompting-image-builds
+    props:
+      src: ./assets/first.png
+      alt: First image build
+      fit: cover
+
+  - type: slide
+    id: prompting-image-builds-second
+    title: Image Build - Second Image
+    transition: dissolve
+    module: ../vividly/slides/image.js
+    data: ../slides/labs/prompting-image-builds
+    props:
+      src: ./assets/second.png
+      alt: Second image build
+      fit: cover

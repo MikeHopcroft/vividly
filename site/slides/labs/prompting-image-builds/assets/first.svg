@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <title>First image build placeholder</title>
+  <rect width="1920" height="1080" fill="#1e2228"/>
+  <rect x="48" y="48" width="1824" height="984" rx="16" fill="none" stroke="#4fc3f7" stroke-width="4" stroke-dasharray="16 16"/>
+  <g fill="#e8eaed" font-family="sans-serif" text-anchor="middle">
+    <text x="960" y="520" font-size="96">First image</text>
+    <text x="960" y="610" font-size="36">Replace with your first image build</text>
+  </g>
+</svg>

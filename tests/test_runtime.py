@@ -5,10 +5,12 @@ import http.server
 import json
 import threading
 from collections.abc import Iterator
+from io import BytesIO
 from typing import Any
 
 import pytest
 import yaml
+from PIL import Image
 from playwright.sync_api import Browser, Error, Page, Position, expect, sync_playwright
 from runtime_site import (
     FIXTURE_ROOT,
@@ -5268,6 +5270,58 @@ def test_transitions_belong_to_navigation_boundaries(
         {"name": "slide", "direction": "forward"},
         {"name": "slide", "direction": "backward"},
     ]
+    page.close()
+
+
+@pytest.mark.parametrize("direction", ["forward", "backward"])
+def test_dissolve_preserves_brightness(
+    browser: Browser,
+    runtime_url: str,
+    direction: str,
+) -> None:
+    page = browser.new_page()
+    page.goto(f"{runtime_url}/#/vividly/")
+    page.wait_for_function(
+        "() => document.querySelector('vividly-presentation')?.hasAttribute('data-render-ready')"
+    )
+    page.evaluate(
+        """direction => {
+            const stage = document.createElement('div');
+            stage.id = 'dissolve-test';
+            stage.className = 'v-stage';
+            stage.style.cssText = 'position:fixed;inset:0;width:100px;height:100px;z-index:10000';
+            const order = direction === 'forward'
+                ? ['v-leave', 'v-enter'] : ['v-enter', 'v-leave'];
+            for (const className of order) {
+                const layer = document.createElement('div');
+                layer.className = `v-layer ${className}`;
+                layer.dataset.transition = 'dissolve';
+                layer.dataset.direction = direction;
+                layer.style.background = 'rgb(120, 160, 200)';
+                stage.append(layer);
+            }
+            document.body.append(stage);
+            stage.getAnimations({subtree:true}).forEach(animation => animation.pause());
+        }""",
+        direction,
+    )
+    stage = page.locator("#dissolve-test")
+    for progress in [0, 0.25, 0.5, 0.75, 1]:
+        stage.evaluate(
+            """(stage, progress) => {
+                stage.getAnimations({subtree:true}).forEach(animation => {
+                    animation.currentTime = animation.effect.getTiming().duration * progress;
+                });
+            }""",
+            progress,
+        )
+        with Image.open(BytesIO(stage.screenshot())) as image:
+            pixel = image.convert("RGB").getpixel((50, 50))
+            assert isinstance(pixel, tuple)
+            assert all(
+                abs(actual - expected) <= 1
+                for actual, expected in zip(pixel, (120, 160, 200), strict=True)
+            ), (direction, progress, pixel)
     page.close()
 
 
