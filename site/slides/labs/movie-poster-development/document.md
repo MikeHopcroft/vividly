@@ -1,10 +1,8 @@
 # Movie Poster Development
 
-I was using movie posters to illustrate a concept and didn't want to use copyrighted material, so I asked an agent to make the posters.
+I needed some movie posters to illustrate a concept and didn't want to use copyrighted material, so I asked an agent to make the posters, using a two-step process - first generate fictitious synopses, and then from the synopses, generate the posters. 
 
-To begin the experiment, I used a two step process - first generate fictitious synopses, and then from the synopses, generate the posters. 
-
-I started with spy thrillers:
+I started by experimenting with spy thrillers:
 
 <!--
 Narration stays outside the conversation panels as ordinary Markdown.
