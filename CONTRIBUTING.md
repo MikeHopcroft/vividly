@@ -25,6 +25,18 @@ Use locked mode for routine development. If uv reports that the lockfile is stal
 resolve the dependency mismatch explicitly rather than regenerating it as part of
 an unrelated change.
 
+### Line endings
+
+[.gitattributes](.gitattributes) keeps text files in LF format on checkout, including
+on Windows. [.editorconfig](.editorconfig) asks compatible editors to save files
+with LF line endings and a final newline. Enable EditorConfig support in your
+editor so new text files follow these settings before they are added to Git.
+
+Git detects binary files automatically; explicit binary rules also protect the
+image formats currently used here. When adding a new binary format, add an
+explicit rule if Git might misidentify it as text. Binary contents must remain
+unchanged.
+
 ### Activate the pre-commit hook
 
 The tracked [pre-commit hook](.githooks/pre-commit) runs two offline checks:
