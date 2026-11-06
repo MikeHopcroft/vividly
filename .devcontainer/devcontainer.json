@@ -1,13 +1,16 @@
 {
     "name": "Vividly",
-    "image": "mcr.microsoft.com/devcontainers/universal:6.1.7-noble",
+    "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
     "features": {
         "ghcr.io/devcontainer-community/devcontainer-features/astral.sh-uv:1": {
             "version": "latest",
             "shellautocompletion": true
+        },
+        "ghcr.io/devcontainers/features/node:2": {
+            "version": "lts"
         }
     },
-    "postCreateCommand": "uv sync --locked && uv run playwright install chromium",
+    "postCreateCommand": "uv sync --locked && uv run --locked playwright install --with-deps chromium",
     "forwardPorts": [
         8080
     ],
