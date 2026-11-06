@@ -213,11 +213,18 @@ def test_publishes_root_then_linear_replacement_and_no_op(tmp_path: Path) -> Non
         "show",
         f"{first.publication_commit}:.nojekyll",
     ).stdout == ""
-    assert _bare_git(
-        fixture.remote,
-        "show",
-        f"{first.publication_commit}:CNAME",
-    ).stdout == "slides.example.com\n"
+    cname = subprocess.run(
+        [
+            "git",
+            "--git-dir",
+            str(fixture.remote),
+            "show",
+            f"{first.publication_commit}:CNAME",
+        ],
+        capture_output=True,
+        check=True,
+    ).stdout
+    assert cname == b"slides.example.com\n"
     metadata_text = _bare_git(
         fixture.remote,
         "show",

@@ -37,6 +37,18 @@ image formats currently used here. When adding a new binary format, add an
 explicit rule if Git might misidentify it as text. Binary contents must remain
 unchanged.
 
+The [runtime manifest generator](tools/build_runtime_manifest.py) rejects CRLF in
+known text formats under the runtime and reference resource roots. It lists every
+offending file and leaves the manifest unchanged. Save those files with LF line
+endings and rerun the generator. When adding a new text format, extend its
+`TEXT_EXTENSIONS` set; other formats are hashed without line-ending validation.
+The generated manifest itself is excluded from input validation so regeneration
+can repair its line endings.
+
+The manifest generator and [public reference synchronizer](tools/sync_public_reference.py)
+always write LF output. The synchronizer's `--check` compares bytes, so it also
+detects CRLF in generated public reference files.
+
 ### Activate the pre-commit hook
 
 The tracked [pre-commit hook](.githooks/pre-commit) runs two offline checks:

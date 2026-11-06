@@ -24,13 +24,13 @@ def expected_files() -> dict[str, str]:
 def synchronized() -> bool:
     """Return whether the public reference exactly matches canonical inputs."""
     expected = expected_files()
-    actual_names = (
+    actual_names: set[str] = (
         {path.name for path in DESTINATION_ROOT.glob("*.md") if path.is_file()}
         if DESTINATION_ROOT.is_dir()
         else set()
     )
     return actual_names == set(expected) and all(
-        (DESTINATION_ROOT / name).read_text(encoding="utf-8") == content
+        (DESTINATION_ROOT / name).read_bytes() == content.encode("utf-8")
         for name, content in expected.items()
     )
 
@@ -45,7 +45,7 @@ def synchronize() -> None:
                 raise ValueError(f"refusing to delete unknown public reference file: {existing}")
             existing.unlink()
     for name, content in expected.items():
-        (DESTINATION_ROOT / name).write_text(content, encoding="utf-8")
+        (DESTINATION_ROOT / name).write_text(content, encoding="utf-8", newline="\n")
 
 
 def main() -> int:

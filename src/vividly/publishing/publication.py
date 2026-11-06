@@ -150,7 +150,9 @@ def _add_publication_files(
 ) -> None:
     (candidate / ".nojekyll").write_bytes(b"")
     if target.custom_domain is not None:
-        (candidate / "CNAME").write_text(f"{target.custom_domain}\n", encoding="ascii")
+        (candidate / "CNAME").write_text(
+            f"{target.custom_domain}\n", encoding="ascii", newline="\n"
+        )
     (candidate / "vividly-publication.json").write_bytes(_metadata(identity))
 
 
