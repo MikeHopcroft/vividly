@@ -40,13 +40,13 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: start;
+  align-items: stretch;
   gap: 32px 24px;
 }
-.break-comparison article { width: min(100%, var(--table-width)); background: var(--bg-elevated, #202428); border-radius: 10px; overflow: hidden; }
-.break-comparison .description { padding: 16px; min-height: 220px; }
+.break-comparison article { display: flex; flex-direction: column; width: min(100%, var(--table-width)); background: var(--bg-elevated, #202428); border-radius: 10px; overflow: hidden; }
+.break-comparison .description { flex: 1; padding: 16px; min-height: 220px; }
 .break-comparison h2 { margin: 0 0 8px; font-size: 1.25rem; }
 .break-comparison article p { margin: 8px 0; }
 .break-comparison .metrics { font-size: .875rem; color: var(--text-muted, #aab4bd); }
 .break-comparison .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
-.break-comparison canvas { display: block; width: 100%; aspect-ratio: 2056 / 1228; }
+.break-comparison canvas { display: block; flex: none; width: 100%; aspect-ratio: 2056 / 1228; }

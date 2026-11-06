@@ -901,7 +901,17 @@ def test_pool_break_candidates_navigation_controls_and_standalone_page(
             _wait_for_public_route(page, "pool-table-break-lab", "candidates")
             root = page.locator(".v-layer:not([hidden]) .break-comparison")
             seeds = (80, 235, 190, 214, 19, 117, 7)
+            aligned_tables = """root => {
+                const rows = new Map();
+                for (const card of root.querySelectorAll('article')) {
+                    const top = card.getBoundingClientRect().top;
+                    if (!rows.has(top)) rows.set(top, []);
+                    rows.get(top).push(card.querySelector('canvas').getBoundingClientRect().top);
+                }
+                return [...rows.values()].every(tops => Math.max(...tops) - Math.min(...tops) < 1);
+            }"""
             expect(root.locator("canvas")).to_have_count(len(seeds))
+            assert root.evaluate(aligned_tables)
             assert root.evaluate("element => element.scrollWidth <= element.clientWidth")
             for seed in seeds:
                 link = root.get_by_role("link", name=f"Open seed {seed} in the slide")
@@ -923,6 +933,7 @@ def test_pool_break_candidates_navigation_controls_and_standalone_page(
                 ).getBoundingClientRect().width > 700"""
             )
             page.get_by_role("button", name="Settle all", exact=True).click()
+            assert root.evaluate(aligned_tables)
             assert not comparison.evaluate("comparison => comparison.settle()")
             page.get_by_role("button", name="Replay all", exact=True).click()
             page.get_by_role("heading", name="Billiards break candidates", exact=True).click()
@@ -945,8 +956,13 @@ def test_pool_break_candidates_navigation_controls_and_standalone_page(
                 f"{base_url}/slides/experiments/pool-table-break/break-candidates.html"
             )
             expect(page.locator(".break-comparison canvas")).to_have_count(len(seeds))
+            assert page.locator(".break-comparison").evaluate(aligned_tables)
             page.get_by_role("button", name="Replay seed 235", exact=True).click()
             page.get_by_role("button", name="Settle all", exact=True).click()
+            page.goto(f"{base_url}/#/labs/pool-table-breaks")
+            _wait_for_public_route(page, "labs", "pool-table-breaks")
+            expect(root.locator("canvas")).to_have_count(len(seeds))
+            assert root.evaluate(aligned_tables)
             assert not errors
             browser.close()
     finally:
