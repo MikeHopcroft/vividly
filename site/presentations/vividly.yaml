@@ -67,6 +67,7 @@ nodes:
             - ./inverted
             - ./cheese-context
             - ./life
+            - ./mandelbrot
         props:
           eyebrow: Gallery
           heading: See what Vividly can do
@@ -76,11 +77,13 @@ nodes:
             - Discover inverted indexes through dictionary close-ups, concordances, and animated merging.
             - See how changing context can expose an agent to different fragments of a project.
             - Watch four local rules produce stable forms, oscillators, gliders, and long-lived complexity.
+            - Zoom and pan through the Mandelbrot set to explore the detail hidden in one simple rule.
           images:
             - ../tic-tac-toe/introduction/assets/gallery-card.png
             - ../inverted/introduction/assets/gallery-card.png
             - ../cheese-context/introduction/assets/gallery-card.png
             - ../life/introduction/assets/gallery-card.png
+            - ../mandelbrot/introduction/assets/gallery-card.png
 
       - type: presentation
         id: tic-tac-toe
@@ -97,6 +100,10 @@ nodes:
       - type: presentation
         id: life
         manifest: ./life.yaml
+
+      - type: presentation
+        id: mandelbrot
+        manifest: ./mandelbrot.yaml
 
   - type: section
     id: make-something

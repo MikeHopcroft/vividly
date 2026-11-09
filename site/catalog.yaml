@@ -23,6 +23,9 @@ presentations:
   - id: inverted
     title: Inverted
     manifest: ./presentations/inverted.yaml
+  - id: mandelbrot
+    title: Mandelbrot Explorer
+    manifest: ./presentations/mandelbrot.yaml
   - id: pool-table-break-lab
     title: Pool Table Break Lab
     manifest: ./presentations/pool-table-break-lab.yaml

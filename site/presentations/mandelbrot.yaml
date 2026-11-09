@@ -1,0 +1,20 @@
+id: mandelbrot
+title: Mandelbrot Explorer
+theme: ../vividly/themes/dark.css
+transition: dissolve
+
+nodes:
+  - type: slide
+    id: introduction
+    title: About the Mandelbrot Explorer
+    module: ../vividly/slides/markdown.js
+    data: ../slides/mandelbrot/introduction
+    props:
+      src: ./introduction.md
+
+  - type: slide
+    id: explorer
+    title: Mandelbrot Explorer
+    module: ../slides/mandelbrot/demo/slide.js
+    thumbnail:
+      step: 0

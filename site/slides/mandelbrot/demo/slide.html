@@ -1,0 +1,27 @@
+<canvas
+  id="view"
+  tabindex="-1"
+  data-vividly-touch-ignore
+  aria-label="Mandelbrot set viewer. Click to zoom in."
+></canvas>
+<div id="lens" aria-hidden="true"><span></span></div>
+<div id="progress" aria-hidden="true"></div>
+
+<div id="panel">
+  <p id="formula">z ↦ z<sup>2</sup> + c</p>
+  <p id="mag">1× magnification</p>
+  <p id="compare">Click anywhere near the edge of the black shape to zoom in.</p>
+  <p id="tech"></p>
+</div>
+
+<div id="hint">Click to zoom · drag to pan · scroll changes zoom step · right-click goes back</div>
+
+<div id="controls">
+  <button id="bBack" type="button" title="Return to the previous Mandelbrot view">Back</button>
+  <button id="bTour" type="button" title="Dive into a preset point">Dive</button>
+  <button id="bColor" type="button" title="Change colours">Colours</button>
+  <button id="bReset" type="button" title="Start over">Start over</button>
+  <button id="bCopy" type="button" title="Copy viewport parameters" hidden>Copy view</button>
+  <button id="bFull" type="button" title="Full screen">Full screen</button>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
