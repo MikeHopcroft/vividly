@@ -21,7 +21,7 @@ export function createTicTacToeSlide(mode = "presentation") {
       adoptDemoStyles();
       root.classList.add("tic-tac-toe-demo", "vividly-hosted");
       this.demo.mount(root);
-      this.ctx.captureKeys(event => captureFocusedControlKey(root, event));
+      this.ctx.captureKeys(event => this.demo.captureKey(event) || captureFocusedControlKey(root, event));
     }
 
     enter({ step = 0 } = {}) {

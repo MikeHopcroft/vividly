@@ -25,3 +25,13 @@ nodes:
     id: training
     module: ../slides/tic-tac-toe/demo/training-slide.js
     title: Train the Network
+
+  - type: slide
+    id: movies
+    module: ../slides/tic-tac-toe/movies/slide.js
+    title: Movie Recommendations
+
+  - type: slide
+    id: tokens
+    module: ../slides/tic-tac-toe/tokens/slide.js
+    title: Next-Token Prediction

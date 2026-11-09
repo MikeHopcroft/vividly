@@ -13,16 +13,18 @@ export class StageCamera {
   #resizeObserver;
   #eventController = new AbortController();
   #onChange;
+  #minimumScale;
   #animation = null;
   #animationRollback = null;
   #animationFrame = 0;
   #destroyed = false;
 
-  constructor(viewport, camera, targets, onChange = () => {}) {
+  constructor(viewport, camera, targets, onChange = () => {}, { minimumScale = 0.15 } = {}) {
     this.#viewport = viewport;
     this.#camera = camera;
     this.#targets = targets;
     this.#onChange = onChange;
+    this.#minimumScale = minimumScale;
     this.#resizeObserver = new ResizeObserver(() => {
       if (!this.#destroyed) this.reframe();
     });
@@ -167,7 +169,7 @@ export class StageCamera {
     const scale = clamp(Math.min(
       (width - padding * 2) / Math.max(1, bounds.width),
       (height - padding * 2) / Math.max(1, bounds.height),
-    ), 0.15, 5);
+    ), this.#minimumScale, 5);
     return {
       scale,
       x: width / 2 - (bounds.left + bounds.width / 2) * scale,

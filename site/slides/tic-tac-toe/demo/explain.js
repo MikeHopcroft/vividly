@@ -31,20 +31,24 @@ export const EXPLAIN_BEATS = [
     caption: "Hidden values clipped to zero contribute nothing through W₂; only active hidden units remain.",
   },
   {
-    id: "logit-0",
-    caption: "Output 0 takes a dot product of the hidden values and its weights, then adds its bias.",
+    id: "output-column-0",
+    caption: "The first active hidden value scales its W₂ᵀ column and contributes to all nine logits.",
   },
   {
-    id: "logit-1",
-    caption: "Output 1 repeats the dot product to produce the next candidate-move score.",
+    id: "output-column-1",
+    caption: "The next active hidden value scales its column and adds another contribution to all nine logits.",
   },
   {
-    id: "logits-rest",
-    caption: "The remaining outputs produce one logit for each board position.",
+    id: "output-columns-rest",
+    caption: "The remaining columns contribute in parallel; adding the output biases completes all nine logits.",
   },
   {
     id: "argmax",
     caption: "Legal argmax selects the highest-scoring empty square and returns that move to the board.",
+  },
+  {
+    id: "column-explorer",
+    caption: "Explore how one hidden activation scales a column of W₂ᵀ. Drag the activation through positive and negative values; release to restore. The network stays unchanged.",
   },
 ];
 
@@ -65,6 +69,27 @@ function prefix(values, count) {
   return result;
 }
 
+function outputColumnGroups(hidden) {
+  const active = Array.from(hidden.keys()).filter(unit => hidden[unit] > 0);
+  const first = active[0] ?? 0;
+  const second = active.find(unit => unit > first) ?? first + 1;
+  return [
+    [first],
+    second < hidden.length ? [second] : [],
+    Array.from({ length: Math.max(0, hidden.length - second - 1) }, (_, index) => second + 1 + index),
+  ];
+}
+
+function columnContributions(params, hidden, columns, includeBias = false) {
+  const values = includeBias ? Float32Array.from(params.bb) : new Float32Array(params.OUT);
+  for (const unit of columns) {
+    for (let output = 0; output < params.OUT; output += 1) {
+      values[output] += hidden[unit] * params.Wb[unit * params.OUT + output];
+    }
+  }
+  return values;
+}
+
 function expressionState(activePart) {
   if (!activePart) return Object.fromEntries(EXPRESSION_PARTS.map(part => [part, "normal"]));
   const activeIndex = EXPRESSION_ORDER.indexOf(activePart);
@@ -78,7 +103,7 @@ function activeExpressionPart(beat) {
   if (beat >= 1 && beat <= 4) return "hidden";
   if (beat === 5) return "activation";
   if (beat >= 6 && beat <= 9) return "output";
-  if (beat === 10) return "decision";
+  if (beat >= 10) return "decision";
   return null;
 }
 
@@ -117,6 +142,7 @@ export function createExplainController({ pipeline, viewport, onChange = () => {
       showOutput: false,
       w1: {},
       w2: {},
+      h: {},
     };
 
     if (beat >= 1) presentation.w1.mutedRows = inactiveInputRows;
@@ -133,13 +159,19 @@ export function createExplainController({ pipeline, viewport, onChange = () => {
     }
 
     if (beat >= 6) presentation.w2.mutedColumns = inactiveHiddenColumns;
-    if (beat === 7) {
-      presentation.logits = prefix(logits, 1);
-      presentation.w2.spotlightRows = [0];
-    } else if (beat === 8) {
-      presentation.logits = prefix(logits, 2);
-      presentation.w2.spotlightRows = [1];
-    } else if (beat >= 9) {
+    if (beat >= 7 && beat <= 9) {
+      const groups = outputColumnGroups(hidden);
+      const selected = groups[beat - 7];
+      const processed = groups.slice(0, beat - 6).flat();
+      presentation.logits = beat === 9
+        ? Float32Array.from(logits)
+        : columnContributions(pipeline.model.params, hidden, processed);
+      if (selected.length) {
+        const range = [selected[0], selected.at(-1)];
+        presentation.w2.spotlightColumnRange = range;
+        presentation.h.spotlightColumnRange = range;
+      }
+    } else if (beat >= 10) {
       presentation.logits = Float32Array.from(logits);
     }
 
@@ -263,56 +295,47 @@ export function createExplainController({ pipeline, viewport, onChange = () => {
     return particles;
   }
 
-  function outputParticles(outputs, accumulator) {
+  function outputParticles(units, accumulator, includeBias) {
     const { hidden } = pipeline.getComputation();
-    const { H, OUT, Wb, bb } = pipeline.model.params;
-    const activeUnits = [];
-    let productScale = 1e-6;
-    for (let unit = 0; unit < H; unit += 1) {
-      if (Math.abs(hidden[unit]) < 1e-4) continue;
-      activeUnits.push(unit);
-      for (let output = 0; output < OUT; output += 1) {
-        productScale = Math.max(productScale, Math.abs(hidden[unit] * Wb[unit * OUT + output]));
-      }
-    }
+    const { OUT, Wb, bb } = pipeline.model.params;
 
     const particles = [];
     const base = performance.now();
-    const single = outputs.length === 1;
+    const single = units.length === 1;
     const startDelay = single ? 120 : 40;
     const stagger = single ? 45 : 28;
     const flight = duration(single ? 640 : 600);
     const radius = fx.cellRadius(pipeline.elements.w2);
 
-    for (const output of outputs) {
+    for (let output = 0; output < OUT; output += 1) {
       const outputDelay = single ? 0 : (output * 43) % 81;
       const target = fx.center(pipeline.elements.logits, output, 0);
-      activeUnits.forEach((unit, index) => {
+      units.forEach((unit, index) => {
         const value = hidden[unit] * Wb[unit * OUT + output];
         particles.push({
           source: fx.center(pipeline.elements.w2, output, unit),
           target,
           value,
-          scale: productScale,
-          linear: true,
+          scale: pipeline.elements.w2.options.scale,
           radius,
           start: base + duration(startDelay + outputDelay + index * stagger),
           duration: flight,
           onLand: () => { accumulator[output] += value; },
         });
       });
-      const bias = bb[output];
-      particles.push({
-        source: fx.center(pipeline.elements.b2, output, 0),
-        target,
-        value: bias,
-        scale: productScale,
-        linear: true,
-        radius,
-        start: base + duration(startDelay + outputDelay + activeUnits.length * stagger),
-        duration: flight,
-        onLand: () => { accumulator[output] += bias; },
-      });
+      if (includeBias) {
+        const bias = bb[output];
+        particles.push({
+          source: fx.center(pipeline.elements.b2, output, 0),
+          target,
+          value: bias,
+          scale: pipeline.elements.b2.options.scale,
+          radius,
+          start: base + duration(startDelay + outputDelay + units.length * stagger),
+          duration: flight,
+          onLand: () => { accumulator[output] += bias; },
+        });
+      }
     }
     return particles;
   }
@@ -387,7 +410,7 @@ export function createExplainController({ pipeline, viewport, onChange = () => {
     if (completed && generation === animationGeneration) applyBeat(6);
   }
 
-  async function animateOutputs(beat, outputs, generation) {
+  async function animateOutputs(beat, generation) {
     const target = buildBeatState(beat);
     const previous = buildBeatState(beat - 1);
     const accumulator = Float32Array.from(previous.logits);
@@ -395,7 +418,8 @@ export function createExplainController({ pipeline, viewport, onChange = () => {
     setStage(beat, target);
     animating = true;
     onChange(getState());
-    const completed = await fx.launch(outputParticles(outputs, accumulator), () => {
+    const units = outputColumnGroups(pipeline.getComputation().hidden)[beat - 7];
+    const completed = await fx.launch(outputParticles(units, accumulator, beat === 9), () => {
       if (generation === animationGeneration) {
         pipeline.patchExplanationState({ logits: Float32Array.from(accumulator) });
       }
@@ -420,12 +444,7 @@ export function createExplainController({ pipeline, viewport, onChange = () => {
       animateHiddenUnits(4, units, generation);
     } else if (target === 5) animateRelu(generation);
     else if (target === 6) animateMaskW2(generation);
-    else if (target === 7) animateOutputs(7, [0], generation);
-    else if (target === 8) animateOutputs(8, [1], generation);
-    else {
-      const outputs = Array.from({ length: pipeline.model.params.OUT - 2 }, (_, index) => index + 2);
-      animateOutputs(9, outputs, generation);
-    }
+    else animateOutputs(target, generation);
   }
 
   async function reverseMaskW1(generation) {

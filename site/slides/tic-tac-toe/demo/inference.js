@@ -159,13 +159,9 @@ export function createInferenceController({ pipeline, viewport, onChange = () =>
   }
 
   function layerTwoParticles(computation, accumulator, activeGeneration) {
-    const { Wb, bb, H, OUT } = pipeline.model.params;
+    const { Wb, bb, OUT } = pipeline.model.params;
     const activeHidden = [];
     computation.hidden.forEach((value, index) => { if (value > 0) activeHidden.push(index); });
-    let scale = maximumAbsolute(bb);
-    for (let output = 0; output < OUT; output += 1) {
-      for (const hidden of activeHidden) scale = Math.max(scale, Math.abs(computation.hidden[hidden] * Wb[hidden * OUT + output]));
-    }
     const radius = fx.cellRadius(pipeline.elements.w2);
     const started = performance.now() + 40;
     const particles = [];
@@ -175,14 +171,16 @@ export function createInferenceController({ pipeline, viewport, onChange = () =>
       activeHidden.forEach((hidden, order) => {
         const value = computation.hidden[hidden] * Wb[hidden * OUT + output];
         particles.push({
-          source: fx.center(pipeline.elements.w2, output, hidden), target, value, scale, radius,
+          source: fx.center(pipeline.elements.w2, output, hidden), target, value,
+          scale: pipeline.elements.w2.options.scale, radius,
           start: started + delay + order * 24, duration: 560,
           onLand: () => { if (activeGeneration === generation) accumulator[output] += value; },
         });
       });
       const bias = bb[output];
       particles.push({
-        source: fx.center(pipeline.elements.b2, output, 0), target, value: bias, scale, radius,
+        source: fx.center(pipeline.elements.b2, output, 0), target, value: bias,
+        scale: pipeline.elements.b2.options.scale, radius,
         start: started + delay + activeHidden.length * 24, duration: 560,
         onLand: () => { if (activeGeneration === generation) accumulator[output] += bias; },
       });

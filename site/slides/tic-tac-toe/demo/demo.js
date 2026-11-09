@@ -1,5 +1,6 @@
 import { StageCamera } from "./camera.js";
 import { createCalloutOverlay } from "./callouts.js";
+import { createColumnExplorer } from "./column-explorer.js";
 import { createPresentationDirector } from "./director.js";
 import { createExplainController, EXPLAIN_BEATS } from "./explain.js";
 import { createInferenceController } from "./inference.js";
@@ -7,7 +8,7 @@ import { loadCatalog } from "./model.js";
 import { createTrainingController } from "./training.js";
 import { createPipelineStage, STAGE_PRESETS } from "./view.js";
 
-export const TIC_TAC_TOE_DEMO_STEPS = 21;
+export const TIC_TAC_TOE_DEMO_STEPS = 22;
 const DEMO_MODES = new Set(["presentation", "inference", "training"]);
 
 export function createTicTacToeDemo() {
@@ -80,6 +81,10 @@ export function createTicTacToeDemo() {
     settleStep() {
       assertActive();
       return mountedDemo?.settleStep() ?? false;
+    },
+    captureKey(event) {
+      assertActive();
+      return mountedDemo?.captureKey(event) ?? false;
     },
     exit() {
       if (!mountedDemo) return;
@@ -270,10 +275,11 @@ const EXPLANATION_STATUS = {
   "hidden-rest": "Compute the remaining hidden units",
   relu: "Apply ReLU",
   "select-w2": "Select the active W₂ columns",
-  "logit-0": "Compute logit 0",
-  "logit-1": "Compute logit 1",
-  "logits-rest": "Compute the remaining logits",
+  "output-column-0": "Accumulate the first active W₂ column",
+  "output-column-1": "Accumulate the next active W₂ column",
+  "output-columns-rest": "Accumulate the remaining W₂ columns and biases",
   argmax: "Choose the legal move",
+  "column-explorer": "Explore one hidden unit's contribution",
 };
 
 const SUMMARY_CALLOUTS = [
@@ -342,6 +348,7 @@ let inferenceReturnModel = null;
 let inferenceReturnCalloutCount = 0;
 let camera;
 let callouts;
+let columnExplorer;
 let director;
 let calloutCount = 0;
 let calloutTransition = null;
@@ -390,7 +397,16 @@ function renderController(state) {
   enterInferenceButton.disabled = state.animating || state.beat !== EXPLAIN_BEATS.length - 1;
   summaryButton.classList.toggle("active", calloutCount > 0);
   summaryButton.textContent = calloutCount ? "Hide summary callouts" : "Show summary callouts";
+  updateColumnExplorer();
   callouts?.update();
+}
+
+function updateColumnExplorer() {
+  const explorerBeat = explain?.getState().beatInfo.id === "column-explorer";
+  columnExplorer?.setVisible(
+    mode === "explanation" && !calloutCount && explorerBeat,
+    { clearHighlights: explorerBeat },
+  );
 }
 
 function formatMove(move) {
@@ -603,6 +619,7 @@ function enterTechnicalScene(id, from) {
 
 function showMode(nextMode) {
   mode = nextMode;
+  if (mode !== "explanation") columnExplorer?.setVisible(false);
   const presenting = mode === "technical" || mode === "explanation";
   title.textContent = mode === "inference"
     ? "Network inference"
@@ -619,6 +636,7 @@ function showMode(nextMode) {
 }
 
 function renderCallouts() {
+  updateColumnExplorer();
   if (calloutCount) callouts?.show(SUMMARY_CALLOUTS.slice(0, calloutCount));
   else callouts?.hide();
 }
@@ -735,7 +753,9 @@ function updateCameraReadout(cameraState) {
 }
 
 function replacePipeline(model, board) {
+  columnExplorer?.destroy();
   pipeline = createPipelineStage(stageHost, model, board);
+  columnExplorer = createColumnExplorer({ pipeline });
   camera.setTargets(pipeline.targets);
   callouts.setTargets(pipeline.targets);
   camera.frame(PIPELINE_TARGETS, { padding: 44 });
@@ -766,8 +786,10 @@ function createStage(model, board = INITIAL_BOARD, beat = 0, { frame = entered }
     inference.detach();
     inference = null;
   }
+  columnExplorer?.destroy();
   if (explain) explain.detach();
   pipeline = createPipelineStage(stageHost, model, board);
+  columnExplorer = createColumnExplorer({ pipeline });
   explain = createExplainController({ pipeline, viewport, onChange: renderController });
   explain.enter({ beat });
   if (camera) camera.setTargets(pipeline.targets);
@@ -977,6 +999,7 @@ function settleStep() {
   changed = explain?.finish() || changed;
   changed = inference?.finish() || changed;
   changed = training?.finish() || changed;
+  changed = columnExplorer?.finish() || changed;
   return changed;
 }
 
@@ -986,6 +1009,7 @@ function enter() {
 
 function exit() {
   settleStep();
+  columnExplorer?.setVisible(false);
   if (training?.getState().running) training.stop();
   entered = false;
 }
@@ -993,6 +1017,8 @@ function exit() {
 function unmount() {
   exit();
   eventController.abort();
+  columnExplorer?.destroy();
+  columnExplorer = null;
   if (training) {
     training.detach({ restoreModel: false });
     training = null;
@@ -1058,7 +1084,11 @@ listen(summaryButton, "click", () => {
   renderController(explain.getState());
 });
 listen(stageHost, "pipeline-board-change", () => {
-  if (mode === "explanation") explain.enter({ beat: 0 });
+  if (mode !== "explanation") return;
+  const state = explain.getState();
+  const exploring = state.beatInfo.id === "column-explorer" && !calloutCount;
+  explain.enter({ beat: exploring ? state.beat : 0 });
+  if (exploring) columnExplorer.refresh();
 });
 
 for (const model of registry.list()) {
@@ -1100,6 +1130,7 @@ return Object.freeze({
   setStep,
   setMode,
   settleStep,
+  captureKey: event => entered && columnExplorer.captureKey(event),
   navigate,
   replayStep,
   exit,

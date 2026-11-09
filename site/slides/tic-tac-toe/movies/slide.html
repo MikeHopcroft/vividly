@@ -1,0 +1,69 @@
+<header class="movie-header">
+  <h1>Same network · bigger board</h1>
+  <div class="equation" role="img" aria-label="Recommendation equals argmax over unseen movies of ReLU of x W1 plus b1, times W2 plus b2">
+    <span data-formula="argmax">rec = argmax<sub>unseen</sub>(</span><span data-formula="relu">ReLU(</span><span data-formula="x">x</span><span data-formula="w1">W<sub>1</sub></span><span data-formula="b1"> + b<sub>1</sub>)</span><span data-formula="w2">W<sub>2</sub> + b<sub>2</sub></span><span data-formula="argmax">)</span>
+  </div>
+</header>
+
+<div class="movie-viewport" data-vividly-touch-ignore aria-label="Movie recommendation diagram. Drag to pan and scroll to zoom.">
+  <div class="movie-camera">
+    <main class="movie-stage">
+      <div class="inputs">
+        <section class="card liked-card">
+          <p class="caption">Input</p>
+          <h2>Liked movies</h2>
+          <div class="liked-grid"></div>
+        </section>
+        <section class="card input-vector-card">
+          <h2 class="label"><b>x</b><sup>T</sup> <span>(9,500 × 1)</span></h2>
+          <svg class="matrix input-vector" role="img" aria-label="Multi-hot input of 9,500 values, with ones at the four liked movie IDs"></svg>
+          <p class="note">multi-hot:<br><b>4 ones</b>, 9,496 zeros</p>
+        </section>
+        <div class="network">
+          <section class="card first-column">
+            <h2 class="label"><b>W<sub>1</sub></b> <span>(9,500 × 48) · one row per movie · 18 of 9,500 rows shown</span></h2>
+            <svg class="matrix input-weights" role="img" aria-label="W1: 9,500 rows by 48 columns. Four selected rows correspond to the liked movies; 18 rows shown"></svg>
+            <p class="note">Because x is multi-hot, <b>xW<sub>1</sub> just adds up the 4 highlighted rows</b>,<br>the same way x picked 9 rows in tic-tac-toe.</p>
+          </section>
+          <section class="card first-column">
+            <h2 class="label"><b>b<sub>1</sub></b> <span>(1 × 48)</span></h2>
+            <svg class="matrix hidden-bias" role="img" aria-label="48 illustrative hidden biases"></svg>
+          </section>
+          <section class="card first-column">
+            <h2 class="label"><b>h</b> <span>(1 × 48)</span> = ReLU(xW<sub>1</sub> + b<sub>1</sub>)</h2>
+            <div class="hidden-strip"><svg class="matrix hidden-vector" role="img" aria-label="48 illustrative nonnegative hidden activations"></svg></div>
+          </section>
+          <section class="card first-column">
+            <h2 class="label"><b>W<sub>2</sub><sup>T</sup></b> <span>(9,500 × 48) · one row per movie · 21 of 9,500 rows shown</span></h2>
+            <svg class="matrix output-weights" role="img" aria-label="W2 transpose: 9,500 rows by 48 columns. 21 rows shown, including the winning movie"></svg>
+          </section>
+          <section class="card output-bias-card">
+            <h2 class="label"><b>b<sub>2</sub><sup>T</sup></b></h2>
+            <svg class="matrix output-bias" role="img" aria-label="Illustrative output biases, abbreviated to align with W2 transpose"></svg>
+          </section>
+          <section class="card logit-card">
+            <h2 class="label"><b>logits</b><sup>T</sup></h2>
+            <svg class="matrix logits" role="img" aria-label="Illustrative movie scores. Four already-liked movies are masked despite higher logits; Cold Case, Warm Room wins among unseen movies with 8.54"></svg>
+          </section>
+        </div>
+      </div>
+      <div class="score-arrow" aria-hidden="true">Score<div>→</div></div>
+      <section class="recommendations">
+        <header class="wall-header">
+          <p class="caption">Output · logits</p>
+          <h2>One score per movie</h2>
+          <p>46 of 9,500 shown <strong>Argmax over unseen</strong></p>
+        </header>
+        <div class="movie-wall" aria-label="46 distinct illustrative movie scores, surrounded by decorative repeated posters">
+          <div class="winner-focus" aria-hidden="true"></div>
+          <p class="more-movies"></p>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<footer class="movie-footer">
+  <div><p class="scene-caption" aria-live="polite"></p><p class="fixture-note">Illustrative weights and scores · Repeated perimeter posters are decorative, not additional recommendations.</p></div>
+  <div class="camera-controls"><span class="step-readout"></span><span>Drag to pan · Scroll to zoom</span><button type="button" class="reset-view">Reset view</button></div>
+</footer>

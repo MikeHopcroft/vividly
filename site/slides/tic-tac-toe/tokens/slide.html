@@ -1,0 +1,67 @@
+<main class="token-stage">
+  <header>
+    <h1 class="eyebrow">Same network · a board of words</h1>
+    <div class="equation" role="img" aria-label="Next token equals argmax of ReLU of x W1 plus b1, times W2 plus b2">
+      <span class="muted">next = argmax(</span>ReLU(<b>x</b>W<sub>1</sub> + b<sub>1</sub>)<span class="equation-output">W<sub>2</sub> + b<sub>2</sub></span><span class="muted">)</span>
+    </div>
+  </header>
+
+  <div class="diagram-row">
+    <section class="card input-card">
+      <h2 class="label"><b>Input</b> <span>· last 5 tokens</span></h2>
+      <div class="token-slots"></div>
+      <p class="note">A board with <b>5 cells</b>, each holding one of <b>50,257 tokens</b>.<br>Tic-tac-toe: 9 cells × 3 states.</p>
+    </section>
+
+    <section class="card input-vector-card">
+      <h2 class="label"><b>x</b><sup>T</sup></h2>
+      <svg class="matrix input-vector" role="img" aria-label="Five concatenated one-hot blocks, one per token position; five ones in 251,285 values"></svg>
+      <p class="note">5 ones</p>
+    </section>
+
+    <div class="network">
+      <section class="card first-column">
+        <h2 class="label"><b>W<sub>1</sub></b> <span>(5 · 50,257 × 48) · one block per position · 3 rows shown per block</span></h2>
+        <svg class="matrix input-weights" role="img" aria-label="W1: 251,285 rows by 48 columns. Five position blocks, each highlighting the row selected by its token ID"></svg>
+        <p class="note">One lit row per block, at that token’s ID. Separate blocks mean <b>position matters</b>:<br>“dog bites man” ≠ “man bites dog”.</p>
+      </section>
+      <section class="card first-column">
+        <h2 class="label"><b>b<sub>1</sub></b> <span>(1 × 48)</span></h2>
+        <svg class="matrix hidden-bias" role="img" aria-label="48 illustrative hidden-layer biases"></svg>
+      </section>
+      <section class="card first-column">
+        <h2 class="label"><b>h</b> <span>(1 × 48)</span> = ReLU(xW<sub>1</sub> + b<sub>1</sub>)</h2>
+        <div class="hidden-strip">
+          <svg class="matrix hidden-vector" role="img" aria-label="48 illustrative nonnegative hidden activations after ReLU"></svg>
+        </div>
+      </section>
+      <section class="card first-column">
+        <h2 class="label"><b>W<sub>2</sub><sup>T</sup></b> <span>(50,257 × 48) · one row per token · 6 of 50,257 rows shown</span></h2>
+        <svg class="matrix output-weights" role="img" aria-label="W2 transpose: 50,257 rows by 48 columns. First three and last three rows shown, with 50,251 rows omitted"></svg>
+      </section>
+      <section class="card output-bias-card">
+        <h2 class="label"><b>b<sub>2</sub><sup>T</sup></b></h2>
+        <svg class="matrix output-bias" role="img" aria-label="50,257 output biases, abbreviated to the first three and last three"></svg>
+      </section>
+    </div>
+
+    <div class="score-arrow" aria-hidden="true">Score<div>→</div></div>
+
+    <section class="card output-card">
+      <p class="caption">Output · logits</p>
+      <h2 class="output-title">One score per token in the vocabulary</h2>
+      <div class="output-heading"><span>top 12 of 50,257 logits</span><strong>Argmax</strong></div>
+      <ol class="token-scores" aria-label="Illustrative token candidates ranked by logit"></ol>
+      <div class="completion">
+        <h3 class="caption">Completion</h3>
+        <p class="sentence"></p>
+        <p class="loop">↻ Slide the window forward one token and run it again.</p>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p><b>Toy fixed-context MLP, not a transformer.</b> Transformers add attention and use MLP sublayers.</p>
+    <p>GPT-2 vocabulary · Quoted tokens preserve leading spaces · Weights, activations, and scores are illustrative, not live inference.</p>
+  </footer>
+</main>

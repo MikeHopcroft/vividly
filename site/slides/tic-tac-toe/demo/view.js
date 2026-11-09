@@ -13,6 +13,7 @@ const COLORS = {
   decrease: "hsl(47 92% 48%)",
 };
 const EPSILON = 1e-4;
+const SPOTLIGHT_STROKE = 3.2;
 const SCALE = { w1: 2, b1: 2, hidden: 5, w2: 2.4, b2: 2.4 };
 const ELEMENT_NAMES = ["expression", "board", "x", "w1", "b1", "h", "w2", "b2", "logits", "argmax", "output"];
 export const EXPRESSION_PARTS = ["hidden", "activation", "output", "decision"];
@@ -38,6 +39,7 @@ function matrixSvg(options) {
   const width = columns * cell;
   const height = rows * cell;
   const radius = cell / 2 - 0.45;
+  const spotlightInset = SPOTLIGHT_STROKE / 2;
   const maximum = options.scale ?? maximumAbsolute(data);
   const highlights = options.highlights ? new Set(options.highlights) : null;
   let svg = `<svg viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" aria-hidden="true">`;
@@ -76,10 +78,18 @@ function matrixSvg(options) {
     svg += `<rect x="${column * cell}" y="0" width="${cell}" height="${height}" fill="rgba(246,248,251,.82)"/>`;
   }
   for (const row of options.spotlightRows ?? []) {
-    svg += `<rect x=".8" y="${row * cell + .8}" width="${width - 1.6}" height="${cell - 1.6}" fill="none" stroke="${COLORS.hit}" stroke-width="1.6"/>`;
+    svg += `<rect x="${spotlightInset}" y="${row * cell + spotlightInset}" width="${width - SPOTLIGHT_STROKE}" height="${cell - SPOTLIGHT_STROKE}" fill="none" stroke="${COLORS.hit}" stroke-width="${SPOTLIGHT_STROKE}"/>`;
   }
   for (const column of options.spotlightColumns ?? []) {
-    svg += `<rect x="${column * cell + .8}" y=".8" width="${cell - 1.6}" height="${height - 1.6}" fill="none" stroke="${COLORS.hit}" stroke-width="1.6"/>`;
+    svg += `<rect x="${column * cell + spotlightInset}" y="${spotlightInset}" width="${cell - SPOTLIGHT_STROKE}" height="${height - SPOTLIGHT_STROKE}" fill="none" stroke="${COLORS.hit}" stroke-width="${SPOTLIGHT_STROKE}"/>`;
+  }
+  if (options.spotlightColumnRange) {
+    const [first, last] = options.spotlightColumnRange;
+    svg += `<rect x="${first * cell + spotlightInset}" y="${spotlightInset}" width="${(last - first + 1) * cell - SPOTLIGHT_STROKE}" height="${height - SPOTLIGHT_STROKE}" fill="none" stroke="${COLORS.hit}" stroke-width="${SPOTLIGHT_STROKE}"/>`;
+  }
+  if (options.spotlightCell) {
+    const [row, column] = options.spotlightCell;
+    svg += `<rect class="matrix-cell-spotlight" x="${column * cell + spotlightInset}" y="${row * cell + spotlightInset}" width="${cell - SPOTLIGHT_STROKE}" height="${cell - SPOTLIGHT_STROKE}" fill="none" stroke="${COLORS.hit}" stroke-width="${SPOTLIGHT_STROKE}"/>`;
   }
   return `${svg}</svg>`;
 }
@@ -89,7 +99,8 @@ class MlpMatrix extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot.innerHTML = `<style>
-      :host{display:inline-block;line-height:0}
+      :host{display:inline-block;line-height:0;cursor:crosshair}
+      :host([representation=schematic]){cursor:inherit}
       .frame{display:grid}
       .rich,.schematic{grid-area:1/1;transition:opacity 180ms ease}
       .schematic{display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;color:#263247;white-space:nowrap;overflow:visible;font-family:ui-sans-serif,system-ui}
@@ -170,7 +181,8 @@ class MlpBoard extends HTMLElement {
         const index = row * 3 + column;
         const value = board[index];
         const classes = [value === 1 ? "x" : value === 2 ? "o" : "", index === highlight ? "hit" : ""].filter(Boolean).join(" ");
-        const label = value === 1 ? "X" : value === 2 ? "O" : index === highlight ? "●" : "";
+        const label = value === 1 ? "X" : value === 2 ? "O"
+          : index === highlight && this.options.highlightEmpty !== false ? "●" : "";
         html += `<td data-index="${index}" class="${classes}" style="width:${cell}px;height:${cell}px;font-size:${Math.round(cell * .62)}px">${label}</td>`;
       }
       html += "</tr>";
@@ -248,8 +260,9 @@ class MlpStage extends HTMLElement {
       ::slotted([slot=b1]){grid-column:3;grid-row:3}
       ::slotted([slot=h]){grid-column:3;grid-row:4}
       ::slotted([slot=w2]){grid-column:3;grid-row:5}
+      ::slotted([slot=explorer]){grid-column:4;grid-row:2/5;align-self:start}
       ::slotted([slot=right]){grid-column:4;grid-row:5;display:flex;align-items:flex-start;gap:12px}
-    </style><div class="grid"><slot name="expression"></slot><slot name="board"></slot><slot name="x"></slot><slot name="w1"></slot><slot name="b1"></slot><slot name="h"></slot><slot name="w2"></slot><slot name="right"></slot></div>`;
+    </style><div class="grid"><slot name="expression"></slot><slot name="board"></slot><slot name="x"></slot><slot name="w1"></slot><slot name="b1"></slot><slot name="h"></slot><slot name="w2"></slot><slot name="explorer"></slot><slot name="right"></slot></div>`;
   }
 }
 
@@ -306,13 +319,15 @@ function bindBoardHover(board, input) {
   });
 }
 
-function bindLogitHover(logits, output, getBoard) {
-  logits.addEventListener("mousemove", event => {
-    const rect = logits.getBoundingClientRect();
-    const row = Math.max(0, Math.min(8, Math.floor((event.clientY - rect.top) * 9 / rect.height)));
-    output.set({ board: getBoard(), highlight: row, dataBackground: true });
+function bindMatrixBoardHover(matrix, board, getBoard, rowToCell, restore) {
+  matrix.addEventListener("mousemove", event => {
+    if (matrix.getAttribute("representation") === "schematic") return;
+    const rect = matrix.getBoundingClientRect();
+    const { rows } = matrix.getGridShape();
+    const row = Math.max(0, Math.min(rows - 1, Math.floor((event.clientY - rect.top) * rows / rect.height)));
+    board.set({ board: getBoard(row), highlight: rowToCell(row) });
   });
-  logits.addEventListener("mouseleave", () => output.dispatchEvent(new CustomEvent("restore-output")));
+  matrix.addEventListener("mouseleave", restore);
 }
 
 export function createPipelineStage(host, model, initialBoard = new Array(9).fill(0)) {
@@ -371,22 +386,31 @@ export function createPipelineStage(host, model, initialBoard = new Array(9).fil
     const emptyOutput = state?.values.output === "empty";
     const shownMove = explanationState ? explanationState.move : emptyArgmax ? -1 : move;
 
-    elements.board.set({ board, cell: 30 });
+    elements.board.set({ board, cell: 30, highlightEmpty: false });
     elements.x.set({ data: input });
     elements.w1.set({
       mutedRows: explanationState?.w1?.mutedRows ?? null,
       mutedColumns: null,
       spotlightRows: null,
       spotlightColumns: explanationState?.w1?.spotlightColumns ?? null,
+      spotlightCell: explanationState?.w1?.spotlightCell ?? null,
     });
     elements.w2.set({
       mutedRows: null,
       mutedColumns: explanationState?.w2?.mutedColumns ?? null,
       spotlightRows: explanationState?.w2?.spotlightRows ?? null,
       spotlightColumns: null,
+      spotlightColumnRange: explanationState?.w2?.spotlightColumnRange ?? null,
     });
-    elements.h.set({ data: explanationState?.hidden ?? (emptyH ? new Float32Array(params.H) : results.hidden) });
-    elements.logits.set({ data: explanationState?.logits ?? (emptyLogits ? new Float32Array(9) : results.logits), scale: Math.max(1e-6, maximumAbsolute(results.logits)) });
+    elements.h.set({
+      data: explanationState?.hidden ?? (emptyH ? new Float32Array(params.H) : results.hidden),
+      spotlightColumnRange: explanationState?.h?.spotlightColumnRange ?? null,
+    });
+    elements.logits.set({
+      data: explanationState?.logits ?? (emptyLogits ? new Float32Array(9) : results.logits),
+      scale: null,
+      spotlightColumnRange: explanationState?.logitsOptions?.spotlightColumnRange ?? null,
+    });
     const shownArgmax = new Float32Array(9);
     if (shownMove >= 0) shownArgmax[shownMove] = 1;
     elements.argmax.set({ data: shownArgmax });
@@ -436,9 +460,17 @@ export function createPipelineStage(host, model, initialBoard = new Array(9).fil
       explanationState.hidden = patch.hidden;
       elements.h.set({ data: patch.hidden });
     }
+    if (patch.h) {
+      explanationState.h = { ...explanationState.h, ...patch.h };
+      elements.h.set(explanationState.h);
+    }
     if (patch.logits) {
       explanationState.logits = patch.logits;
-      elements.logits.set({ data: patch.logits, scale: Math.max(1e-6, maximumAbsolute(results.logits)) });
+      elements.logits.set({ data: patch.logits, scale: null });
+    }
+    if (patch.logitsOptions) {
+      explanationState.logitsOptions = { ...explanationState.logitsOptions, ...patch.logitsOptions };
+      elements.logits.set(explanationState.logitsOptions);
     }
   }
 
@@ -520,7 +552,13 @@ export function createPipelineStage(host, model, initialBoard = new Array(9).fil
   });
   elements.output.addEventListener("restore-output", updateValues);
   bindBoardHover(elements.board, elements.x);
-  bindLogitHover(elements.logits, elements.output, () => board);
+  const restoreOutput = () => elements.output.dispatchEvent(new CustomEvent("restore-output"));
+  const getDisplayedOutputBoard = () => elements.output.options.board;
+  bindMatrixBoardHover(elements.logits, elements.output, getDisplayedOutputBoard, row => row, restoreOutput);
+  bindMatrixBoardHover(elements.w2, elements.output, getDisplayedOutputBoard, row => row, restoreOutput);
+  bindMatrixBoardHover(elements.w1, elements.board,
+    row => board.map((value, cell) => cell === Math.floor(row / 3) ? row % 3 : value),
+    row => Math.floor(row / 3), () => elements.board.set({ board, highlight: -1 }));
 
   setState({});
   return {

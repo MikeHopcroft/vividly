@@ -1,0 +1,99 @@
+:scope {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  background: #eef1f5;
+  color: #1f2937;
+  font-family: var(--font-sans, Inter, ui-sans-serif, system-ui, sans-serif);
+  --token-positive: hsl(2 72% 52%);
+  --token-negative: hsl(226 66% 52%);
+  --token-data: #fbf3c4;
+  --token-data-edge: #d9c76a;
+  --token-accent: #3355d6;
+  --token-green: #3f9a4f;
+  --token-green-background: #e6f4e8;
+  --token-muted: #6b7280;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+h1, h2, h3, p, ol { margin: 0; padding: 0; }
+
+.token-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--token-scale, 1));
+  transform-origin: center;
+}
+
+header { position: absolute; inset: 30px 0 auto; text-align: center; }
+.eyebrow { color: var(--token-accent); font-size: 15px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.equation { margin-top: 6px; font-size: 50px; font-weight: 700; letter-spacing: -.01em; }
+.equation .muted { color: #a9b0bc; }
+.equation sub { font-size: .55em; }
+.equation-output { padding: 0 8px; border-radius: 12px; background: #e3e9fb; color: var(--token-accent); }
+
+.diagram-row { position: absolute; top: 146px; left: 48px; right: 48px; display: flex; align-items: flex-start; gap: 14px; }
+.card { flex-shrink: 0; padding: 16px 18px; border-radius: 14px; background: white; box-shadow: 0 1px 2px rgb(16 24 40 / 6%), 0 6px 18px rgb(16 24 40 / 6%); }
+.label { height: 24px; color: #4b5563; font-size: 15px; font-weight: 400; white-space: nowrap; }
+.label b { color: #1f2937; }
+.label span { color: #8993a5; }
+.note { max-width: 624px; margin-top: 10px; color: var(--token-muted); font-size: 14px; line-height: 1.4; }
+.note b { color: #1f2937; }
+.caption { color: var(--token-accent); font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.matrix { display: block; overflow: visible; cursor: crosshair; }
+.matrix text { fill: var(--token-muted); font: 11.5px var(--font-sans, ui-sans-serif, system-ui, sans-serif); }
+.positive { fill: var(--token-positive); }
+.negative { fill: var(--token-negative); }
+.matrix .row-index { fill: #8993a5; font: 11px ui-monospace, monospace; text-anchor: end; }
+.matrix .selected-row .row-index { fill: #1f2937; font-weight: 700; }
+.matrix .row-highlight { fill: var(--token-data); stroke: #e3d27a; stroke-width: 1.2; }
+.matrix .row-gap { stroke: #c7ced9; stroke-dasharray: 3 4; }
+.matrix .block-divider { stroke: #aeb6c2; stroke-width: 1.2; }
+.matrix .gap-pill { fill: white; stroke: #c7ced9; }
+.matrix .gap-label { fill: #4b5563; font-size: 11px; text-anchor: middle; }
+.matrix .ellipsis { fill: #8993a5; font-size: 16px; text-anchor: middle; }
+.matrix .binary-value { fill: var(--token-data); stroke: var(--token-data-edge); }
+.matrix .binary-value.active { fill: #1f2937; stroke: #1f2937; }
+.matrix .zero-activation { fill: none; stroke: var(--token-data-edge); }
+
+.input-card { width: 212px; }
+.token-slots { position: relative; }
+.token-slot { position: absolute; left: 0; right: 0; padding: 8px 10px; border: 2px solid #1f2937; border-radius: 8px; background: white; }
+.slot-meta { display: flex; justify-content: space-between; color: #8993a5; font-size: 11px; }
+.token-position { font-weight: 700; }
+.token-id { font-family: ui-monospace, monospace; }
+.token-text { display: block; margin-top: 3px; color: #1f2937; font: 600 24px ui-monospace, monospace; white-space: pre; }
+.input-card .note { margin-top: 12px; }
+.input-vector-card { width: 70px; padding-left: 14px; padding-right: 14px; }
+.network { display: grid; grid-template-columns: auto auto; align-items: start; gap: 12px; }
+.network .first-column { grid-column: 1; }
+.hidden-strip { display: table; margin-left: 47px; border: 1.5px solid #e3d27a; border-radius: 6px; background: var(--token-data); line-height: 0; }
+.output-bias-card { grid-column: 2; grid-row: 4; }
+.score-arrow { width: 64px; flex-shrink: 0; align-self: center; color: #7b8494; font-size: 13px; font-weight: 700; letter-spacing: .14em; text-align: center; text-transform: uppercase; }
+.score-arrow div { margin-top: 4px; font-size: 34px; font-weight: 400; letter-spacing: 0; }
+
+.output-card { width: 560px; padding: 18px 22px; }
+.output-title { margin: 4px 0 14px; font-size: 22px; font-weight: 700; }
+.output-heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; padding-top: 12px; border-top: 1px solid #e4e8ef; color: var(--token-muted); font-size: 14px; }
+.output-heading strong { color: var(--token-green); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+.token-scores { list-style: none; }
+.token-score { display: grid; grid-template-columns: 150px 1fr 64px; align-items: center; gap: 12px; padding: 6px 8px; border: 2px solid transparent; border-radius: 8px; }
+.token-score code { justify-self: start; padding: 3px 8px; border-radius: 5px; background: #f1f3f7; font: 17px ui-monospace, monospace; white-space: pre; }
+.score-bar { height: 10px; border-radius: 5px; background: #edf0f4; }
+.score-bar span { display: block; height: 100%; border-radius: 5px; background: #6b7a90; }
+.score-value { font: 700 16px ui-monospace, monospace; text-align: right; }
+.token-score.winner { border-color: var(--token-green); background: var(--token-green-background); }
+.winner code { background: white; color: var(--token-green); font-weight: 700; }
+.winner .score-bar span { background: var(--token-green); }
+.winner .score-value { color: var(--token-green); }
+.completion { margin-top: 16px; padding-top: 14px; border-top: 1px solid #e4e8ef; }
+.completion .caption { color: var(--token-muted); }
+.sentence { margin-top: 8px; font-size: 30px; font-weight: 600; white-space: pre-wrap; }
+.sentence mark { padding: 0 6px; border: 2px solid var(--token-green); border-radius: 7px; background: var(--token-green-background); color: var(--token-green); }
+.loop { margin-top: 8px; color: var(--token-muted); font-size: 14px; }
+
+footer { position: absolute; left: 48px; right: 48px; bottom: 14px; color: var(--token-muted); font-size: 14px; line-height: 1.5; text-align: center; }
+footer b { color: #1f2937; }
