@@ -6,6 +6,13 @@ or the [agentic bootstrap instructions](src/vividly/resources/reference/agentic-
 
 ## Development setup
 
+On Windows, start with the [Windows quickstart](WINDOWS-QUICKSTART.md). It separates
+CLI-only installation from the full contributor toolchain and explains how to
+use an organization-required package registry without rewriting the shared lockfile.
+If you used its export-based setup, keep using `uv run --no-sync` in place of
+`uv run --locked` throughout this guide. The locked setup below assumes the
+lockfile's public package sources are permitted in your environment.
+
 Use Python 3.12 or later and [uv](https://docs.astral.sh/uv/) for environment and
 dependency management. Clone the repository and synchronize its locked dependencies:
 
