@@ -1,6 +1,7 @@
 # Presentation Orchestration Spec
 
-Status: implemented, except for the open questions and unimplemented items in §10.
+Status: implemented, except for the open questions and unimplemented items in §10
+and the linked implementation-pending Viewer Settings contract.
 Covers the slide module contract and the orchestrator that drives it. Thumbnail
 generation is covered where it meets the runtime contract; general bundling,
 narration, and deployment are out of scope.
@@ -13,6 +14,11 @@ where this document's general routing rules meet those features.
 Touch gestures, interaction-owned regions, and visible touch navigation controls
 are specified in [Touch Navigation](touch-navigation.md). That accepted contract
 is implementation-pending and reuses this document's navigation and settling rules.
+
+The settings overlay, its gear and Help entry points, and site-scoped navigation
+visibility and initial-hint preferences are specified in
+[Viewer Settings](viewer-settings.md). Settings is a modal overlay, not a browser
+route, and does not change presentation history or slide lifecycle.
 
 ## 1. Principles
 
@@ -311,6 +317,12 @@ runtime calls the first slide's `enter()` method. The screen is not a slide or h
 entry. The full keyboard-help dialog remains available with `?` after activation under
 every policy.
 
+The **Show initial hint dialog** checkbox in
+[Viewer Settings](viewer-settings.md#4-initial-hint-dialog) edits the same saved
+reader preference as the onboarding and Help controls. These controls remain
+synchronized; the manifest's `always` and `never` policies continue to override,
+without overwriting, that preference.
+
 The query parameter `vividly-skip-hints=1` skips automatic onboarding for the current
 page, including under `always`, without changing the saved reader preference.
 Other values do not suppress onboarding. Full keyboard help remains available.
@@ -342,7 +354,9 @@ and the same SVG "Powered by Vividly" overview link used by onboarding. Both ope
 new tabs with `noopener noreferrer` without dismissing help or navigating the current
 presentation. Tab and Shift+Tab cycle through enabled help controls; Enter and Space
 retain native control behavior. Clicking the hint-preference control does not dismiss
-help either. Escape, other non-control keys, or clicks outside the controls dismiss it
+help either. Its Settings button opens the
+[Settings overlay](viewer-settings.md#1-panel-and-access) in place of Help;
+closing Settings returns to Help. Escape, other non-control keys, or clicks outside the controls dismiss Help
 without navigating, restoring focus for keyboard dismissal.
 
 A completed click or tap anywhere on the activation screen also starts the
@@ -1282,7 +1296,7 @@ breadcrumb navigation trail. The catalog marks its Catalog crumb as current. A
 presentation table of contents links its Catalog crumb to `#/` and marks the
 presentation-title crumb as current. Presentation-specific display controls appear
 only in the table of contents. The top bar is hidden while a slide is presented;
-keyboard help and thread controls retain their separately specified behavior.
+keyboard help, Settings, and thread controls retain their separately specified behavior.
 
 At ordinary widths, the bar uses two rows. The packaged Vividly logo is at the left of
 the first row and the Outline/Grid mode selector is at the right. Breadcrumbs are at

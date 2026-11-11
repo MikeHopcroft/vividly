@@ -9,6 +9,8 @@ destinations and browser history remain governed by
 [Presentation Threads and Browser History](presentation-threads.md); step motion
 and settling remain governed by
 [Presentation Orchestration](presentation-orchestration.md#step-animation-settling).
+The [Viewer Settings](viewer-settings.md) contract adds an implementation-pending
+visibility preference that supersedes the original always-visible hybrid policy.
 The implementation sequence and device-validation work are tracked in the
 [mobile touch navigation plan](../plans/mobile-touch-navigation.md).
 
@@ -169,7 +171,7 @@ a new candidate. Do not resume a canceled candidate or reinterpret its remaining
 movement. Release associated listeners, timers, and pointer state at the matching
 lifecycle boundary.
 
-Onboarding, help, dialogs, and menus have priority over gestures and the touch bar.
+Onboarding, help, Settings, dialogs, and menus have priority over gestures and the touch bar.
 While one owns input, disable presentation touch commands; its normal dismissal or
 activation must not also navigate the presentation.
 
@@ -215,11 +217,15 @@ honor cancellation rather than attempting to recover the gesture.
 
 ## 6. Visible navigation and accessibility
 
-On touch-capable devices, including hybrid devices, show a compact persistent
-bottom-center navigation bar while a slide is presented. Detect touch capability,
-not phone user-agent strings or screen width; a hybrid's mouse use must not hide
-the controls. Show no bar or reserved footprint on devices without touch capability,
-in overview views, or during thumbnail capture.
+Show a compact persistent bottom-center navigation bar while a slide is presented,
+subject to **Navigation controls: Auto / Show / Hide** in
+[Viewer Settings](viewer-settings.md#3-navigation-controls). Auto shows it on
+touch-capable devices unless the primary pointer is fine and supports hover.
+Show enables it even on non-touch devices; Hide disables it even on touch devices.
+Detect capabilities, not phone user-agent strings, screen width, or recent input.
+Show no bar or reserved footprint when the preference hides it, in overview views,
+or during thumbnail capture. Hidden controls do not disable eligible slide swipes.
+Settings remains reachable independently of the bar.
 
 The bar contains native buttons in Previous, Next, Up / Contents order and a
 separate upward-swipe grip. Keep the grip beside the buttons in the same compact
@@ -234,7 +240,7 @@ a visible cue and touch-aware help, not an icon with no explanation.
 
 Reserve the footer's footprint outside the authored slide viewport rather than
 covering slide controls or captions. Include device safe areas and the 24-pixel
-gesture-start edge exclusion in placement. Coordinate existing runtime help and
+gesture-start edge exclusion in placement. Coordinate runtime Help, Settings, and
 thread controls with the footer so they do not overlap its targets. Reserve no
 space while the bar is absent. Broader slide responsiveness remains separate work.
 
@@ -257,9 +263,11 @@ Onboarding keeps touch instructions visible on touch-capable devices and places
 keyboard instructions in an expandable **Keyboard shortcuts** section. Its initial
 collapsed or expanded state depends on viewport width, not inferred keyboard
 availability; the reader can always expand it without dismissing onboarding.
-Discovering gestures must not require a hardware keyboard. Keep the existing
-onboarding preference policy; add touch instructions rather than a new preference
-or manifest flag. Respect reduced motion and preserve pinch zoom.
+Discovering gestures must not require a hardware keyboard. The initial-hint setting
+in [Viewer Settings](viewer-settings.md#4-initial-hint-dialog) reuses the existing
+onboarding preference and preserves manifest and query overrides. Touch instructions
+do not introduce a separate preference or manifest flag. Respect reduced motion
+and preserve pinch zoom.
 
 ## 7. Required focused verification
 
@@ -277,7 +285,8 @@ Implementation tests must cover:
   zoomed-page panning, viewport changes, overlays, and route changes;
 - click suppression for the originating swipe without suppressing a later tap;
 - correct history writes, boundary no-ops, focus, labels, target sizes, and footer
-  layout; no bar in overviews/captures or on devices without touch capability;
+  layout; no bar in overviews/captures; Auto/Show/Hide visibility and unchanged
+  slide gestures when the bar is hidden, as specified in Viewer Settings;
 - unchanged keyboard behavior, mouse/pen interactions, and navigator-card taps.
 
 Synthetic pointer tests establish recognizer logic, not native browser ownership.
