@@ -23,8 +23,42 @@ uv tool install --editable .
 uv tool update-shell
 ```
 
-Restart your terminal application. For VS Code's integrated terminal, fully quit
-and reopen VS Code. Then, from the repository root:
+Complete the setup for your platform below.
+
+<details>
+<summary>Windows PowerShell: update your current PATH</summary>
+
+Add uv's tool directory to the current session:
+
+```powershell
+$env:PATH = "$(uv tool dir --bin);$env:PATH"
+```
+
+**Simply opening a new PowerShell terminal in an already-running VS Code instance
+is not sufficient to ensure a refreshed PATH.** It can inherit VS Code's older
+PATH; the same applies to a new tab in an already-running Windows Terminal.
+
+On Windows, `uv tool update-shell` updates the saved user PATH for future
+processes. As a child process, uv cannot change the environment of the PowerShell
+or VS Code process that launched it. It may therefore report "already in PATH"
+even though the current terminal cannot find the command.
+
+The PowerShell assignment above updates the current session immediately. It asks
+uv for the actual tool directory, including custom configurations, and preserves
+the existing PATH. It does not replace the persistent setup done by
+`uv tool update-shell`.
+
+</details>
+
+<details>
+<summary>macOS/Linux: restart your shell</summary>
+
+On macOS/Linux, restart your shell to load the configuration updated by
+`uv tool update-shell`.
+
+</details>
+
+Then, from the repository root:
 
 ```console
 vividly --help
