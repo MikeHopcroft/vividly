@@ -101,9 +101,14 @@
     opacity: 0.5;
   }
 
-  vividly-presentation[data-touch-navigation] .v-help-trigger {
+  vividly-presentation[data-touch-navigation] .v-help-trigger,
+  vividly-presentation[data-touch-navigation] .v-settings-trigger {
     bottom: calc(var(--v-touch-footer) + 8px);
     right: max(8px, env(safe-area-inset-right));
+  }
+
+  vividly-presentation[data-touch-navigation] .v-settings-trigger {
+    right: calc(max(8px, env(safe-area-inset-right)) + 48px);
   }
 
   vividly-presentation[data-touch-navigation] .v-navigation-hud {
@@ -185,19 +190,20 @@
     color: var(--border);
   }
 
-  .v-help-trigger {
+  .v-help-trigger,
+  .v-settings-trigger {
     position: fixed;
-    right: var(--spacing-md);
-    bottom: var(--spacing-md);
+    right: max(var(--spacing-md), env(safe-area-inset-right));
+    bottom: max(var(--spacing-md), env(safe-area-inset-bottom));
     z-index: 20;
     display: grid;
     place-items: center;
-    width: 2rem;
-    height: 2rem;
+    width: 48px;
+    height: 48px;
     padding: 0;
-    border: 1px solid var(--border);
+    border: 0;
     border-radius: 50%;
-    background: var(--bg-elevated);
+    background: transparent;
     color: var(--text-primary);
     cursor: pointer;
     font: 700 var(--font-size-md) / 1 var(--font-body);
@@ -205,9 +211,103 @@
     transition: opacity 120ms ease-out;
   }
 
+  .v-help-trigger::before,
+  .v-settings-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    z-index: -1;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    pointer-events: none;
+  }
+
+  .v-settings-trigger {
+    right: calc(max(var(--spacing-md), env(safe-area-inset-right)) + 48px);
+  }
+
+  .v-settings-trigger svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
   .v-help-trigger:hover,
-  .v-help-trigger:focus-visible {
+  .v-help-trigger:focus-visible,
+  .v-settings-trigger:hover,
+  .v-settings-trigger:focus-visible {
     opacity: 1;
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .v-settings {
+    width: min(32rem, calc(100% - 32px));
+    max-height: calc(100dvh - 32px);
+    margin: auto;
+    padding: var(--spacing-lg);
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    box-shadow: 0 1rem 3rem rgb(0 0 0 / 45%);
+    font: inherit;
+  }
+
+  .v-settings::backdrop {
+    background: rgb(0 0 0 / 68%);
+  }
+
+  .v-settings-panel {
+    display: grid;
+    gap: var(--spacing-sm);
+  }
+
+  .v-settings-panel h2,
+  .v-settings-panel p {
+    margin: 0;
+  }
+
+  .v-settings-panel p {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .v-settings-hints {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-height: 48px;
+  }
+
+  .v-settings select,
+  .v-settings button {
+    min-height: 48px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font: inherit;
+  }
+
+  .v-help-settings {
+    min-height: 48px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    text-decoration: underline;
+  }
+
+  .v-settings :focus-visible,
+  .v-help-settings:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
@@ -258,6 +358,8 @@
 
   .v-keyboard-hints[hidden],
   .v-keyboard-help[hidden],
+  vividly-presentation[data-capture] .v-settings-trigger,
+  vividly-presentation[data-capture] .v-settings,
   vividly-presentation[data-capture] .v-help-trigger,
   vividly-presentation[data-capture] .v-keyboard-hints,
   vividly-presentation[data-capture] .v-keyboard-help {
@@ -804,6 +906,9 @@
     min-height: 0;
     overflow: auto;
     padding-inline-end: var(--spacing-sm);
+  }
+
+  :is(.v-overview-body, .v-keyboard-help-panel, .v-keyboard-hints-panel, .v-settings) {
     scrollbar-color: var(--border) transparent;
     scrollbar-gutter: stable;
     scrollbar-width: thin;
@@ -813,29 +918,29 @@
     display: none;
   }
 
-  .v-overview-body:hover,
-  .v-overview-body:focus-within {
+  :is(.v-overview-body, .v-keyboard-help-panel, .v-keyboard-hints-panel, .v-settings):hover,
+  :is(.v-overview-body, .v-keyboard-help-panel, .v-keyboard-hints-panel, .v-settings):focus-within {
     scrollbar-color: var(--text-muted) transparent;
   }
 
-  .v-overview-body::-webkit-scrollbar {
+  :is(.v-overview-body, .v-keyboard-help-panel, .v-keyboard-hints-panel, .v-settings)::-webkit-scrollbar {
     width: 0.6rem;
     height: 0.6rem;
   }
 
-  .v-overview-body::-webkit-scrollbar-track {
+  :is(.v-overview-body, .v-keyboard-help-panel, .v-keyboard-hints-panel, .v-settings)::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .v-overview-body::-webkit-scrollbar-thumb {
+  :is(.v-overview-body, .v-keyboard-help-panel, .v-keyboard-hints-panel, .v-settings)::-webkit-scrollbar-thumb {
     border: 0.15rem solid transparent;
     border-radius: 999px;
     background: var(--border);
     background-clip: padding-box;
   }
 
-  .v-overview-body:hover::-webkit-scrollbar-thumb,
-  .v-overview-body:focus-within::-webkit-scrollbar-thumb {
+  :is(.v-overview-body, .v-keyboard-help-panel, .v-keyboard-hints-panel, .v-settings):hover::-webkit-scrollbar-thumb,
+  :is(.v-overview-body, .v-keyboard-help-panel, .v-keyboard-hints-panel, .v-settings):focus-within::-webkit-scrollbar-thumb {
     background-color: var(--text-muted);
   }
 

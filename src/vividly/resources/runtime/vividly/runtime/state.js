@@ -1,12 +1,14 @@
 // Reader state, namespaced by slide address, in one localStorage entry.
 
 export class StateStore {
-  constructor(catalogUrl, presentationId) {
+  constructor(catalogUrl, presentationId, onError) {
+    this._onError = onError;
     this._key = `vividly:${new URL(catalogUrl).href}:${presentationId}`;
     try {
       this._data = JSON.parse(localStorage.getItem(this._key) || '{}');
-    } catch {
+    } catch (error) {
       this._data = {};
+      this._onError?.(error);
     }
   }
 
@@ -30,7 +32,8 @@ export class StateStore {
   _flush() {
     try {
       localStorage.setItem(this._key, JSON.stringify(this._data));
-    } catch {
+    } catch (error) {
+      this._onError?.(error);
       // Storage unavailable or full; reader state is best-effort.
     }
   }

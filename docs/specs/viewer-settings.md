@@ -1,6 +1,6 @@
 # Viewer Settings
 
-Status: accepted interaction contract, 2026-11-11; implementation pending.
+Status: implemented, 2026-11-11; physical hybrid-device validation pending.
 
 This specification defines a runtime-owned settings control panel for reader
 preferences. It complements [Presentation Orchestration](presentation-orchestration.md)
@@ -19,13 +19,16 @@ Provide both entry points:
 
 - A native gear button immediately beside the existing `?` Help button, with the
   accessible name and tooltip **Settings**.
-- A **Settings** button inside the Help overlay.
+- A **Settings** action inside the Help overlay, styled like the neighboring
+  footer links while retaining native button semantics.
 
 The gear remains reachable in slide, table-of-contents, and catalog views,
 independently of the navigation-controls preference. It must not be a child of
 the hideable navigation bar. Coordinate it with Help, thread controls, safe areas,
 and any navigation footer so their targets do not overlap. Its target is at least
-48 by 48 CSS pixels. Hide it during thumbnail capture.
+48 by 48 CSS pixels. Help and Settings use equal-sized, vertically centered compact
+circles within their matching targets; the gear artwork must not dominate the
+question mark. Hide the gear during thumbnail capture.
 
 Opening Settings from Help replaces Help rather than stacking two active modals.
 Closing Settings returns to Help and focuses its Settings button. Opening from
@@ -45,6 +48,9 @@ and presentation gestures are unavailable. Cancel any gesture already in progres
 Opening or closing the panel must not replay pending input. The panel scrolls
 within the visible viewport on small screens and preserves pinch zoom and visible
 keyboard-focus indicators.
+Settings, Help, and onboarding retain visible native scrollbars when needed,
+using the runtime's theme-colored thumb and transparent track rather than the
+operating system's default light scrollbar treatment.
 
 ## 2. Preference scope and persistence
 

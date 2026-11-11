@@ -9,7 +9,7 @@ destinations and browser history remain governed by
 [Presentation Threads and Browser History](presentation-threads.md); step motion
 and settling remain governed by
 [Presentation Orchestration](presentation-orchestration.md#step-animation-settling).
-The [Viewer Settings](viewer-settings.md) contract adds an implementation-pending
+The [Viewer Settings](viewer-settings.md) contract adds a
 visibility preference that supersedes the original always-visible hybrid policy.
 The implementation sequence and device-validation work are tracked in the
 [mobile touch navigation plan](../plans/mobile-touch-navigation.md).

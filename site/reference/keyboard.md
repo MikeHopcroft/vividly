@@ -15,12 +15,34 @@ slide; they do not skip directly to another slide. On a navigator, forward swipi
 enters the selected section like Space, rather than moving selection like Right
 Arrow. Tap a section card to choose a different section.
 
-A persistent **Previous** / **Next** bar below the slide offers the same traversal.
+A **Previous** / **Next** bar below the slide offers the same traversal.
 It reserves its own space rather than covering slide content and is absent from
 the catalog, table of contents, and thumbnail captures. While navigation is pending
 or a dialog/menu owns input, the bar is disabled and swipes are ignored, not queued.
 After rendering is ready, swipes and buttons retain the animation-settling behavior
 described below.
+
+## Viewer settings
+
+Open **Settings** using the gear beside `?`, or the Settings button inside Help.
+Settings opens over the current view without changing the slide or browser history.
+Changes apply immediately and are saved for presentations sharing the same catalog
+in this browser. Close the panel with Close, Escape, or a click on its backdrop.
+
+**Navigation controls** offers **Auto**, **Show**, and **Hide**. Auto shows the
+footer on touch-capable devices unless the primary pointer supports precise
+pointing and hover, as on a laptop-style SurfaceBook. Show and Hide override
+detection. Hide reclaims the footer space but keeps slide swipes, keyboard
+navigation, and clickers working. The gear remains available even with the
+footer hidden. The footer never appears in overview views or thumbnail captures.
+
+**Show initial hint dialog** controls automatic navigation tips under the default
+`keyboardHints: auto` policy. It shares the preference used by onboarding and Help;
+manifest `always` and `never` policies override it without replacing your saved
+choice. Enabling it does not immediately reopen onboarding. Help remains available
+regardless of the setting.
+
+## Touch gesture recognition
 
 Use a deliberate horizontal movement of at least 48 CSS pixels within one second,
 with horizontal displacement at least twice the vertical displacement. Start at
@@ -44,7 +66,8 @@ interaction root:
 This presence-only attribute excludes the element and its entire subtree from
 presentation gestures without changing its own input handling or CSS. Even a value
 of `"false"` excludes the subtree. Custom elements can put the attribute on their
-host, and a slide can mark its whole root; the navigation bar remains available.
+host, and a slide can mark its whole root; the navigation bar can still be enabled
+in Settings.
 Pointer capture alone does not opt an interaction out. An interactive region still
 declares its own browser gesture policy, such as the `touch-action` required for a
 camera drag.

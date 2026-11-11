@@ -38,11 +38,15 @@ export class TouchNavigation {
     const { signal } = this.controller;
     const capture = { capture: true, signal };
     this.coarsePointer = matchMedia('(any-pointer: coarse)');
+    this.finePointer = matchMedia('(pointer: fine)');
+    this.hover = matchMedia('(hover: hover)');
     this.capable = navigator.maxTouchPoints > 0 || this.coarsePointer.matches;
-    this.coarsePointer.addEventListener('change', () => {
-      this.capable = navigator.maxTouchPoints > 0 || this.coarsePointer.matches;
-      this.sync();
-    }, { signal });
+    for (const query of [this.coarsePointer, this.finePointer, this.hover]) {
+      query.addEventListener('change', () => {
+        this.capable = navigator.maxTouchPoints > 0 || this.coarsePointer.matches;
+        this.sync();
+      }, { signal });
+    }
 
     this.bar = document.createElement('nav');
     this.bar.className = 'v-touch-navigation';
@@ -102,15 +106,21 @@ export class TouchNavigation {
     this.sync();
   }
 
-  visible() {
+  presented() {
     const p = this.presentation;
-    return this.capable && !p.hasAttribute('data-capture') &&
+    return !p.hasAttribute('data-capture') &&
       p._catalogView.hidden && p._toc.hidden && !!p._current && !p._stage.hidden;
+  }
+
+  visible() {
+    const mode = this.presentation._settings?.navigationMode || 'auto';
+    return this.presented() && (mode === 'show' ||
+      (mode === 'auto' && this.capable && !(this.finePointer.matches && this.hover.matches)));
   }
 
   available() {
     const p = this.presentation;
-    return this.visible() && !this.pending.size && p.hasAttribute('data-render-ready') &&
+    return this.presented() && !this.pending.size && p.hasAttribute('data-render-ready') &&
       p._keyboardHints.hidden && p._keyboardHelp.hidden &&
       !p.querySelector('dialog[open], [aria-modal="true"]:not([hidden])');
   }
@@ -138,7 +148,7 @@ export class TouchNavigation {
   }
 
   updateSurfaces() {
-    const root = this.visible() ? this.presentation._current.root : null;
+    const root = this.capable && this.presented() ? this.presentation._current.root : null;
     if (root !== this.observedRoot) {
       this.observer.disconnect();
       this.observer.observe(this.presentation, OBSERVATION);
