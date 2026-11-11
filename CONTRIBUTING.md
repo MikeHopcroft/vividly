@@ -4,35 +4,126 @@ This guide is for developing Vividly itself. To create a presentation instead, u
 the [getting-started guide](https://mikehopcroft.github.io/vividly/#/vividly/make-something/choose-your-path)
 or the [agentic bootstrap instructions](src/vividly/resources/reference/agentic-bootstrap.md).
 
-## Development setup
+Please keep in mind that Vividly doesn't generally accept unsolicited PRs. We encourage you to modify Vividly to try out new ideas and if you find something you feel would improve Vividly, describe it in a GitHub issue and include, if possible, any specs or agent prompts that could be used to implement the functionality.
 
-On Windows, start with the [Windows quickstart](WINDOWS-QUICKSTART.md). It separates
-CLI-only installation from the full contributor toolchain and explains how to
-use an organization-required package registry without rewriting the shared lockfile.
-If you used its export-based setup, keep using `uv run --no-sync` in place of
-`uv run --locked` throughout this guide. The locked setup below assumes the
-lockfile's public package sources are permitted in your environment.
+Choose one of the two setups below. Both assume [git](https://git-scm.com/) and
+[uv](https://docs.astral.sh/uv/getting-started/installation/) are available in your
+terminal. The commands work in macOS/Linux shells and Windows PowerShell unless
+otherwise noted.
 
-Use Python 3.12 or later and [uv](https://docs.astral.sh/uv/) for environment and
-dependency management. Clone the repository and synchronize its locked dependencies:
+## 1. You just want the Vividly CLI
+
+Use this to run Vividly from a checkout without installing development tools or
+matching the repository's exact dependency versions.
 
 ```console
 git clone https://github.com/MikeHopcroft/vividly.git
 cd vividly
-uv sync --locked
+uv tool install --editable .
+uv tool update-shell
 ```
 
-Run commands from the repository root:
+Restart your terminal application. For VS Code's integrated terminal, fully quit
+and reopen VS Code. Then, from the repository root:
 
 ```console
-uv run --locked vividly --help
+vividly --help
 ```
 
-Use locked mode for routine development. If uv reports that the lockfile is stale,
-resolve the dependency mismatch explicitly rather than regenerating it as part of
-an unrelated change.
+uv installs the CLI and its dependencies in a per-user tool environment, outside
+the project's `.venv`, and makes the command available globally for your user.
+This installation does not read or rewrite the repository's `uv.lock`.
+
+## 2. You want the full contributor toolchain
+
+This installs the editable project, pytest, Ruff, and Pyright in the project's
+`.venv`, plus Chromium for browser tests. Also install
+[Node.js 24](https://nodejs.org/) for the JavaScript tests, matching CI.
+You do not need the global CLI installation from scenario 1.
+
+Unlike CLI-only installation, contributor setup needs to account for your
+organization's supply-chain policy. The shared `uv.lock` records public package
+sources. `uv sync --locked` and `uv run --locked` prevent lockfile updates, but
+do not remap those sources to your organization's registry. They can fail when
+that registry is required. Dropping `--locked` can instead rewrite the lockfile
+with private registry URLs.
+
+The workflow below exports the locked versions and installs them through your
+configured registry, without rewriting `uv.lock`. Use your organization's approved
+registry, authentication, certificate, and proxy settings; confirm that this
+workflow is permitted rather than bypassing those settings.
+
+```console
+git clone https://github.com/MikeHopcroft/vividly.git
+cd vividly
+uv venv --python 3.12
+uv export --frozen --all-groups --no-emit-project --output-file .venv/requirements.txt
+uv pip sync .venv/requirements.txt
+uv pip install --no-deps --editable .
+```
+
+Verify the CLI and install the browser used by the tests:
+
+```console
+uv run --no-sync vividly --help
+uv run --no-sync vividly install-browser
+```
+
+Chromium installation requires an organization-approved browser download path
+on managed devices. On Linux, Playwright may also require system libraries; see
+its [system dependency instructions](https://playwright.dev/python/docs/browsers#install-system-dependencies).
+
+Run focused checks from the repository root, for example:
+
+```console
+uv run --no-sync pytest tests/test_cli.py
+uv run --no-sync ruff check src tests tools/release.py
+uv run --no-sync pyright
+node --test tests/billiards.test.mjs
+```
+
+Before contributing, review the details below, including line endings and
+pre-commit hook setup. Hook activation is separate from installing the toolchain.
+
+## Contributor details
+
+### Dependencies and package sources
+
+The export keeps version pins and hashes but does not emit registry index
+settings. `uv pip sync` uses your configured registry to fetch those packages.
+The requirements file stays inside the Git-ignored `.venv` directory.
+The editable-install command installs Vividly itself without resolving its
+dependencies again. If the approved registry lacks a pinned version or matching
+artifact, ask your organization's package-service owners; do not remove pins or
+hashes to force installation.
+
+Use `uv run --no-sync` with this setup. It runs the installed environment without
+reconciling it with the lockfile's public sources, and skips dependency freshness
+checks. Repeat the export, sync, and editable-install commands after pulling
+dependency updates. `--frozen` does not check that the lockfile matches changed
+project metadata; it is not a substitute for updating the lockfile when
+intentionally changing dependencies.
+
+If you already hit a lockfile problem:
+
+- If `--locked` fails, do not simply drop it. Use the export workflow for a
+  registry mismatch. If project metadata and the lockfile genuinely disagree,
+  resolve that dependency change intentionally.
+- If a commit is rejected for private URLs in `uv.lock`, inspect
+  `git diff -- uv.lock` and `git diff --cached -- uv.lock`. Remove unintended
+  local registry changes from the working and staged copies without discarding
+  intentional dependency work. Do not bypass the guard or commit the URLs.
+
+Before committing, review your changes, including `uv.lock`. Intentional lockfile
+updates must retain public sources and be produced in an approved environment
+with public PyPI access.
 
 ### Line endings
+
+Vividly verifies runtime resources against hashes of their exact bytes and
+requires the runtime manifest to use a canonical byte representation. Converting
+LF line endings to CRLF changes those bytes even when the text looks identical,
+so automatic conversion can cause runtime validation to fail.
 
 [.gitattributes](.gitattributes) keeps text files in LF format on checkout, including
 on Windows. [.editorconfig](.editorconfig) asks compatible editors to save files
@@ -106,8 +197,16 @@ Unrelated commits do not run the validator.
 
 To check a snapshot or another file manually without synchronizing dependencies:
 
+macOS/Linux:
+
 ```console
 .venv/bin/python -I tools/check_uv_lock.py uv.lock
+```
+
+Windows PowerShell:
+
+```powershell
+.\.venv\Scripts\python.exe -I tools\check_uv_lock.py uv.lock
 ```
 
 You can use `python3` instead if it is Python 3.12+. Hook activation is local to
@@ -129,7 +228,7 @@ for a real secret.
 Start the composed development server and open the reported URL:
 
 ```console
-uv run --locked vividly run
+uv run --no-sync vividly run
 ```
 
 The repository's [runtime selection](vividly.yaml) points to the editable browser
@@ -139,7 +238,7 @@ reloads connected browsers after relevant changes.
 Materialize the reference documentation for that selected runtime:
 
 ```console
-uv run --locked vividly reference
+uv run --no-sync vividly reference
 ```
 
 This writes derived, Git-ignored Markdown under `.vividly/reference/`. The canonical
@@ -158,21 +257,21 @@ changes do not require running the application test suites.
 Run focused tests with pytest, for example:
 
 ```console
-uv run --locked pytest tests/test_cli.py
+uv run --no-sync pytest tests/test_cli.py
 ```
 
 Use Ruff for linting and Pyright for strict type checking. Narrow the paths when
 appropriate; the repository-wide commands are:
 
 ```console
-uv run --locked ruff check src tests tools/release.py
-uv run --locked pyright
+uv run --no-sync ruff check src tests tools/release.py
+uv run --no-sync pyright
 ```
 
 Some tests require Playwright-managed Chromium. Install it when needed:
 
 ```console
-uv run --locked vividly install-browser
+uv run --no-sync vividly install-browser
 ```
 
 ### JavaScript
@@ -190,7 +289,7 @@ The [tests/](tests/) directory contains independent Python and JavaScript suites
 Neither runner executes the other suite. When broader validation is warranted:
 
 ```console
-uv run --locked pytest tests
+uv run --no-sync pytest tests
 node --test tests/*.test.mjs
 ```
 
