@@ -1,7 +1,6 @@
 # Presentation Orchestration Spec
 
-Status: implemented, except for the open questions and unimplemented items in §10
-and the linked implementation-pending Viewer Settings contract.
+Status: implemented, except for the open questions and unimplemented items in §10.
 Covers the slide module contract and the orchestrator that drives it. Thumbnail
 generation is covered where it meets the runtime contract; general bundling,
 narration, and deployment are out of scope.

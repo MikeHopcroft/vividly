@@ -7,6 +7,7 @@ import { adoptModuleStyles, moduleIdFor } from './styles.js';
 import { SlideContext } from './context.js';
 import { Slide, DYNAMIC } from './slide.js';
 import { TouchNavigation } from './touch.js';
+import { ViewerSettings } from './settings.js';
 import { loadManifest } from './manifest.js';
 import { loadCatalog } from './catalog.js';
 import { PUBLIC_DOCUMENTATION_URL } from './config.js';
@@ -117,7 +118,13 @@ class VividlyPresentation extends HTMLElement {
     });
     this._dependencyRegistry.push(runtimeDependencies);
     this._yaml = await this._dependencyRegistry.load('js-yaml');
-    this._siteState = new StateStore(this._catalogUrl, '~runtime');
+    this._siteState = new StateStore(this._catalogUrl, '~runtime', (error) => {
+      console.warn('[vividly] Viewer preferences could not be persisted.', error);
+      this._viewerStorageError = true;
+      this._settings?.sync();
+    });
+    this._settings = new ViewerSettings(this);
+    this._touch.sync();
     this._catalog = await loadCatalog(this._catalogUrl, this._yaml);
     this._dependencyRegistry.push(
       DependencyTable.fromCatalog(this._catalog.dependencies, this._catalogUrl)
@@ -298,6 +305,7 @@ class VividlyPresentation extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this._settings?.dispose();
     this._touch?.dispose();
     window.removeEventListener('hashchange', this._onHashChange);
     window.removeEventListener('popstate', this._onPopState);
@@ -671,6 +679,7 @@ class VividlyPresentation extends HTMLElement {
   }
 
   async _route(route = this._parseHash(), enqueueSlide = true, restoring = false) {
+    this._settings?.close(false);
     const routeGeneration = this._beginRender();
     if (route.view === 'catalog') {
       await this._enterCatalog();
@@ -736,6 +745,7 @@ class VividlyPresentation extends HTMLElement {
     const route = step > 0 ? `${address}/${step}` : address;
     const hash = this._hashForRoute(route);
     if (location.hash === hash) return;
+    this._settings?.close(false);
     history.pushState(this._historyState(), '', hash);
     this._lastHash = hash;
   }
@@ -1740,7 +1750,7 @@ class VividlyPresentation extends HTMLElement {
       <div class="v-keyboard-help-panel">
         <h2 id="v-keyboard-help-title">Keyboard shortcuts</h2>
         <p class="v-touch-instructions">Swipe left to continue, or right to go back.
-          You can also use Previous and Next below the slide. Tap a section to open it.</p>
+          Use Settings to show Previous and Next controls. Tap a section to open it.</p>
         <div class="v-keyboard-help-groups">
           <section>
             <h3>Steps</h3>
@@ -1779,7 +1789,9 @@ class VividlyPresentation extends HTMLElement {
           Show navigation hints when presentations start
         </label>
         <p>Press Esc or click outside the controls to close.</p>
-        <div class="v-keyboard-help-links"></div>
+        <div class="v-keyboard-help-links">
+          <button type="button" class="v-help-settings v-public-link">Settings</button>
+        </div>
       </div>`;
     const documentation = this._createVividlyLink('documentation/overview');
     documentation.textContent = 'Documentation';
@@ -1790,8 +1802,11 @@ class VividlyPresentation extends HTMLElement {
     overlay.querySelector('.v-keyboard-help-hints input').addEventListener('change', (event) => {
       this._setKeyboardHintsSuppressed(!event.target.checked);
     });
+    overlay.querySelector('.v-help-settings').addEventListener('click', () => {
+      this._settings.show(true);
+    });
     overlay.addEventListener('click', (event) => {
-      if (event.target.closest('a[href], label, input')) event.stopPropagation();
+      if (event.target.closest('a[href], label, input, button')) event.stopPropagation();
     });
     return overlay;
   }
@@ -1832,7 +1847,7 @@ class VividlyPresentation extends HTMLElement {
       <div class="v-keyboard-hints-panel">
         <strong>Getting started</strong>
         <p class="v-touch-instructions">Swipe left to continue, or right to go back.
-          Use Previous and Next below the slide, or tap a section to open it.
+          Use Settings to show Previous and Next controls, or tap a section to open it.
           Scroll normally to read; interactive controls keep their own gestures.</p>
         <details class="v-keyboard-hints-keyboard">
           <summary>Keyboard shortcuts</summary>
@@ -1957,10 +1972,11 @@ class VividlyPresentation extends HTMLElement {
 
   _syncKeyboardHintPreference() {
     const toggle = this._keyboardHelp.querySelector('.v-keyboard-help-hints input');
-    const policy = this._manifest?.keyboardHints || 'auto';
+    const policy = this._catalogView.hidden ? this._manifest?.keyboardHints || 'auto' : 'auto';
     const suppressed = this._siteState.scope('~keyboardHints').get('suppressed', false);
     toggle.disabled = policy !== 'auto';
     toggle.checked = policy === 'always' || (policy === 'auto' && !suppressed);
+    this._settings?.sync();
   }
 
   // --- transitions --------------------------------------------------------
@@ -2031,21 +2047,22 @@ class VividlyPresentation extends HTMLElement {
     if (e.key === 'Shift') return true;
     if (e.key === 'Tab') {
       const controls = [...dialog.querySelectorAll(
-        'summary, input:not(:disabled), button:not(:disabled), a[href]'
-      )];
+        'summary, input:not(:disabled), select:not(:disabled), button:not(:disabled), a[href]'
+      )].filter((control) => control.getClientRects().length);
       const index = controls.indexOf(document.activeElement);
       const next = e.shiftKey
         ? (index > 0 ? index - 1 : controls.length - 1)
         : (index + 1) % controls.length;
       e.preventDefault();
-      controls[next].focus();
+      controls[next]?.focus();
       return true;
     }
     return (e.key === 'Enter' || e.key === ' ') &&
-      !!e.target.closest('summary, input, button, a[href]');
+      !!e.target.closest('summary, input, select, button, a[href]');
   }
 
   _handleKey(e) {
+    if (this._settings?.dialog.open) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (!this._keyboardHints.hidden) {
       if (this._handleDialogControlKey(e, this._keyboardHints)) return;
@@ -2337,6 +2354,7 @@ class VividlyPresentation extends HTMLElement {
   // --- table of contents --------------------------------------------------
 
   _showCatalog() {
+    this._settings?.close(false);
     this._hideNavigationHud();
     this._stage.hidden = true;
     this._toc.hidden = true;
@@ -2447,6 +2465,7 @@ class VividlyPresentation extends HTMLElement {
   }
 
   _showToc({ focusSelection = false } = {}) {
+    this._settings?.close(false);
     this._hideNavigationHud();
     this._navigationDepth = null;
     this._stage.hidden = true;
