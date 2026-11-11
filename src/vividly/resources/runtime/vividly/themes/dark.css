@@ -1,6 +1,8 @@
-/* Tokens only. Slide stylesheets reference these and never literal values. */
+/* Theme tokens and the native browser color scheme. */
 @layer vividly.theme {
   :root {
+    color-scheme: dark;
+
     --bg-primary: #14161a;
     --bg-elevated: #1e2228;
     --bg-sunken: #0d0f12;

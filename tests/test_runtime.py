@@ -6078,6 +6078,89 @@ def test_advance_control_renders_message_and_requests_next_state(
     page.close()
 
 
+def test_theme_scrollbars_cover_content_and_allow_author_overrides(
+    browser: Browser, runtime_url: str,
+) -> None:
+    """Validate native color schemes and shared scrollbar theming in section 8."""
+    page = browser.new_page()
+    page.goto(f"{runtime_url}/?vividly-skip-hints=1#/vividly/opening/title-card")
+    page.locator("vividly-presentation[data-render-ready]").wait_for()
+    page.locator(".v-layer:not([hidden]) .v-slide").evaluate(
+        """root => {
+            root.replaceChildren();
+            root.style.cssText = 'display:flex;gap:12px;padding:12px;align-items:start';
+            const markdown = document.createElement('vividly-markdown');
+            markdown.id = 'scrollbar-markdown';
+            markdown.style.cssText = 'width:220px;height:180px';
+            markdown.value = '```text\\n' + 'wide '.repeat(100) + '\\n```\\n\\n'
+                + 'Paragraph.\\n\\n'.repeat(40);
+            const code = document.createElement('vividly-code');
+            code.id = 'scrollbar-code';
+            code.style.cssText = 'width:220px;height:180px';
+            code.value = ('wide '.repeat(100) + '\\n').repeat(40);
+            const authored = document.createElement('div');
+            authored.id = 'scrollbar-authored';
+            authored.style.cssText = 'width:220px;height:180px;overflow:auto';
+            authored.innerHTML = '<div style="width:900px;height:800px">Slide content</div>';
+            const overridden = authored.cloneNode(true);
+            overridden.id = 'scrollbar-overridden';
+            const style = document.createElement('style');
+            style.textContent = `#scrollbar-overridden {
+                color-scheme: light;
+                scrollbar-color: rgb(90, 100, 110) rgb(10, 20, 30);
+                scrollbar-width: auto;
+            }`;
+            root.append(markdown, code, authored, overridden, style);
+        }"""
+    )
+    page.locator("#scrollbar-markdown pre code").wait_for()
+    page.locator("#scrollbar-code .v-code-scroll").wait_for()
+    expect(page.locator("html")).to_have_css("color-scheme", "dark")
+    for selector in [
+        "#scrollbar-markdown",
+        "#scrollbar-markdown pre code",
+        "#scrollbar-code .v-code-scroll",
+        "#scrollbar-authored",
+    ]:
+        scroller = page.locator(selector)
+        assert scroller.evaluate(
+            """el => {
+                const style = getComputedStyle(el);
+                const thumb = style.getPropertyValue('--border').trim();
+                const probe = document.createElement('span');
+                probe.style.color = thumb;
+                el.append(probe);
+                const color = getComputedStyle(probe).color;
+                probe.remove();
+                return (el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth)
+                    && style.colorScheme === 'dark'
+                    && style.scrollbarWidth === 'thin'
+                    && style.scrollbarColor === `${color} rgba(0, 0, 0, 0)`
+                    && style.scrollbarGutter === 'auto';
+            }"""
+        ), selector
+        scroller.evaluate("el => { el.scrollTop = 50; el.scrollLeft = 50; }")
+        assert scroller.evaluate("el => el.scrollTop > 0 || el.scrollLeft > 0"), selector
+    authored = page.locator("#scrollbar-authored")
+    authored.hover()
+    expect(authored).to_have_css("scrollbar-color", "rgb(154, 163, 173) rgba(0, 0, 0, 0)")
+    page.mouse.move(0, 0)
+    authored.evaluate(
+        """el => {
+            const button = document.createElement('button');
+            button.textContent = 'Focus scroller';
+            el.prepend(button);
+            button.focus();
+        }"""
+    )
+    expect(authored).to_have_css("scrollbar-color", "rgb(154, 163, 173) rgba(0, 0, 0, 0)")
+    overridden = page.locator("#scrollbar-overridden")
+    expect(overridden).to_have_css("color-scheme", "light")
+    expect(overridden).to_have_css("scrollbar-width", "auto")
+    expect(overridden).to_have_css("scrollbar-color", "rgb(90, 100, 110) rgb(10, 20, 30)")
+    page.close()
+
+
 @pytest.mark.parametrize("tag", ["vividly-markdown", "vividly-code", "vividly-annotated-markdown"])
 def test_code_copy_defaults_text_keyboard_and_lifecycle(
     browser: Browser,

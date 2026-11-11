@@ -141,7 +141,7 @@ stylesheets are wrapped in cascade layers, declared in order by the shell:
 ```css
 @layer vividly.base,      /* resets, typography, step primitives */
        vividly.controls,  /* the standard control library (§4.7) */
-       vividly.theme;     /* tokens only */
+       vividly.theme;     /* tokens and native browser color scheme */
 ```
 
 Slide stylesheets are left unlayered, and unlayered author styles beat layered ones
@@ -1286,6 +1286,15 @@ share state with the original root.
 rule that makes theming work: **slide stylesheets reference tokens, never literal
 colors or spacings.** Tokens follow llm-explainer's naming — `--bg-*`, `--text-*`,
 `--accent`, `--spacing-*`.
+
+Themes also declare a matching `color-scheme` on `:root` so native browser controls
+use the appropriate light or dark treatment. Shared base styles apply theme-colored,
+thin native scrollbars with transparent tracks to scrolling elements, including
+Markdown, code, and slide-authored containers as well as runtime overlays. Hover and
+keyboard focus within a scroller emphasize its thumb; scrolling remains available
+without either interaction. Stable gutters remain specific to runtime overview and
+overlay panels rather than reserving space in every content container. Unlayered
+slide styles can override the native color scheme and scrollbar treatment.
 
 ## 9. Overview views
 
