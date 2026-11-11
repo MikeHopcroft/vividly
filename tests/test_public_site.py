@@ -472,6 +472,15 @@ def test_guided_introduction_step_navigation(chromium: None) -> None:
         process.communicate(timeout=5)
 
 
+def _gallery_card_count() -> int:
+    manifest = yaml.safe_load(
+        (REPOSITORY_ROOT / "site" / "presentations" / "vividly.yaml").read_text(encoding="utf-8")
+    )
+    gallery = next(section for section in manifest["nodes"] if section["id"] == "gallery")
+    gallery_overview = next(slide for slide in gallery["children"] if slide["id"] == "overview")
+    return len(gallery_overview["navigator"]["sections"])
+
+
 def test_repository_root_runs_public_site(
     chromium: None,
 ) -> None:
@@ -481,12 +490,7 @@ def test_repository_root_runs_public_site(
     )
     expected_presentations = [entry["id"] for entry in catalog["presentations"]]
     assert "vividly" in expected_presentations
-    manifest = yaml.safe_load(
-        (REPOSITORY_ROOT / "site" / "presentations" / "vividly.yaml").read_text(encoding="utf-8")
-    )
-    gallery = next(section for section in manifest["nodes"] if section["id"] == "gallery")
-    gallery_overview = next(slide for slide in gallery["children"] if slide["id"] == "overview")
-    expected_gallery_cards = len(gallery_overview["navigator"]["sections"])
+    expected_gallery_cards = _gallery_card_count()
     port = _available_port()
     process = subprocess.Popen(
         [
@@ -687,6 +691,7 @@ def test_demo_gallery_embeds_demos_and_preserves_standalone_routes(
 ) -> None:
     """Validate the embedded demo gallery, its posters, and standalone demo routes."""
     del chromium
+    expected_gallery_cards = _gallery_card_count()
     port = _available_port()
     # This test makes enough requests to fill an undrained pipe and stall the server.
     server_log = (tmp_path / "server.log").open("w")
@@ -722,7 +727,7 @@ def test_demo_gallery_embeds_demos_and_preserves_standalone_routes(
             cards = page.locator(".v-layer:not([hidden]) .card-navigator-card")
             for index, (demo_id, title, first_slide, last_slide) in enumerate(
                 (
-                    ("tic-tac-toe", "Tic-Tac-Toe", "demo", "training"),
+                    ("tic-tac-toe", "Tic-Tac-Toe", "demo", "tokens"),
                     ("inverted", "Inverted", "clarke-quote", "aglet-definition"),
                 )
             ):
@@ -733,7 +738,7 @@ def test_demo_gallery_embeds_demos_and_preserves_standalone_routes(
                     wait_until="domcontentloaded",
                 )
                 _wait_for_public_route(page, "vividly", "gallery/overview")
-                assert cards.count() == 4
+                assert cards.count() == expected_gallery_cards
                 expect(page.get_by_role("dialog", name="Keyboard navigation")).to_be_hidden()
                 assert cards.evaluate_all(
                     """cards => cards.every(card => {
@@ -830,7 +835,7 @@ def test_demo_gallery_embeds_demos_and_preserves_standalone_routes(
                 )
 
             for presentation_id, addresses in (
-                ("tic-tac-toe", ("demo/14", "inference", "training")),
+                ("tic-tac-toe", ("demo/14", "inference", "training", "movies", "tokens")),
                 (
                     "inverted",
                     (
