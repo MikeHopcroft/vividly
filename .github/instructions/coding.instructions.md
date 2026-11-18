@@ -10,7 +10,8 @@ Diagnostic identifier: coding2
 - Language: Python
 - Package manager: uv
 - Virtual environment: pre-created at `.venv/` — do not recreate it
-- Always run Python commands via `uv run`
+- Run local Python commands via `uv run --no-sync` in the existing `.venv`;
+  follow `CONTRIBUTING.md` for dependency setup and keep CI's `--locked` unchanged.
 - We use strict type checking. Please fix pylance and ruff warnings.
 - Ask me before suppressing any warnings or errors.
 - We're using python >= 3.12, so we can use the latest language features.

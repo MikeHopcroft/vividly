@@ -660,8 +660,12 @@ most recent deployment determines the live site. A failed deployment is recovere
 re-running it.
 
 A repository-local `release` command dispatches the Release workflow on `main` with an
-explicit full source SHA and version. It uses locked local dependencies, checks GitHub
-authentication, and targets `MikeHopcroft/vividly`. Dispatch returns the exact workflow
+explicit full source SHA and version. Its Bash and PowerShell wrappers use
+`uv run --no-sync` in the existing contributor environment, without resolving
+dependencies, checking index compatibility, or rewriting the lockfile. Contributor
+setup installs the committed dependency pins through the configured registry and must
+be repeated after dependency changes; CI retains locked execution. The command checks
+GitHub authentication and targets `MikeHopcroft/vividly`. Dispatch returns the exact workflow
 run URL; optional waiting observes that run and exits nonzero on failure without
 bypassing environment approvals. The site is deployed on its own with
 `gh workflow run deploy-pages.yml --ref main`.

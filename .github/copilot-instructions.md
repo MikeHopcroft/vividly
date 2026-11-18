@@ -16,19 +16,27 @@ Source tree organization:
 
 ## Python dependency and lockfile safety
 
-- Use locked execution for routine Python commands, such as
-  `uv run --locked ...`. Do not refresh dependencies or regenerate
+- Use `uv run --no-sync ...` for routine local Python commands, including
+  tests, version preparation, and release dispatch. Use the existing `.venv`;
+  follow [contributor setup](../CONTRIBUTING.md#contributor-details) if dependencies
+  need installing or updating. Do not refresh dependencies or regenerate
   `uv.lock` unless requested.
+- Keep `--locked` in GitHub Actions. Local execution uses `--no-sync` because
+  the committed lockfile records public PyPI sources while configured local
+  indexes may differ. `--no-sync` skips dependency freshness checks; repeat
+  contributor setup after dependency changes rather than assuming it validates
+  the installed environment.
 - A locked-command failure does not always mean dependencies changed.
   Environment-specific package-index settings (such as
   `UV_DEFAULT_INDEX`) can conflict with registry URLs in the lockfile.
-  Check for this possibility before proposing a lockfile refresh.
+  Check for this possibility before proposing a lockfile refresh. For a registry
+  mismatch, use the contributor workflow, not an unlocked retry or `--frozen`
+  as a substitute for dependency validation.
 - Respect the maintainer's configured indexes and proxies. Do not
   override them or retry unlocked without authorization.
-- If an unlocked retry is authorized, preserve pre-existing lockfile
-  edits, report resulting changes, and leave temporary registry
-  rewrites for the maintainer to review and revert. Never stage or
-  commit those temporary changes.
+- Preserve pre-existing lockfile edits. Never stage or commit temporary registry
+  rewrites; version preparation requires a lockfile satisfying the public-source
+  policy. Stop and ask about genuine metadata/lockfile inconsistencies.
 - Before completing work that used uv, check
   `git status --short -- uv.lock`. Never expose private registry
   URLs or credentials.

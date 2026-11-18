@@ -36,10 +36,17 @@ in CI before deploying. Run `vividly thumbnails` locally to preview them.
 
 ## Release to PyPI and deploy Pages
 
-1. Prepare the shared package/runtime version from the repository root:
+1. Use the existing contributor environment, installed through the configured
+   registry as described in [contributor setup](../CONTRIBUTING.md#contributor-details).
+   Repeat that setup after dependency changes: `--no-sync` runs the installed
+   environment without checking dependency freshness. Local release commands use
+   `--no-sync` to avoid reconciling public lockfile sources with a different
+   configured registry; GitHub Actions retains `--locked`.
+
+   Prepare the shared package/runtime version from the repository root:
 
    ```bash
-   uv run --locked python -m tools.bump_version 0.0.4
+   uv run --no-sync python -m tools.bump_version 0.0.4
    ```
 
    The script updates `pyproject.toml`, the runtime selector in `vividly.yaml`,
@@ -53,22 +60,24 @@ in CI before deploying. Run `vividly thumbnails` locally to preview them.
    The lockfile must already satisfy the public-source policy. A lockfile containing
    local registry rewrites is rejected before any writes; resolve those changes
    separately without discarding existing work. The script never bypasses configured
-   indexes. If locked execution itself fails, resolve that environment or dependency
-   mismatch explicitly rather than retrying unlocked.
+   indexes. An index mismatch is not a reason to regenerate the lockfile or retry
+   with a synchronizing, unlocked command. Resolve genuine metadata/lockfile
+   inconsistencies explicitly before preparing the version.
 
    Commit the resulting shared package/runtime version and all intended source
    changes, and get the selected source commit onto remote `main`. Do not change
    versions during a release.
 2. Dispatch the Release workflow with a full committed source SHA and its committed
    version, either from **Actions → Release → Run workflow** on **main**, or with the
-   maintainer script. For example, replacing `<full-source-sha>` and `0.0.3`:
+   maintainer script. For example, replacing `<full-source-sha>` with the selected
+   commit's full SHA for version `0.0.4`:
 
    ```bash
-   bash tools/release.sh --source-commit <full-source-sha> --version 0.0.3 --wait
+   bash tools/release.sh --source-commit <full-source-sha> --version 0.0.4 --wait
    ```
 
    ```powershell
-   pwsh -File tools/release.ps1 --source-commit <full-source-sha> --version 0.0.3 --wait
+   pwsh -File tools/release.ps1 --source-commit <full-source-sha> --version 0.0.4 --wait
    ```
 
 3. The workflow runs `validate` (reusable CI), then `build`, which checks source and
@@ -88,7 +97,9 @@ Nothing automatically bumps versions, creates a GitHub Release, or releases on p
 The `release` scripts are specific to `MikeHopcroft/vividly`. Bash and PowerShell
 entry points share [one implementation](../tools/maintain.py). They only dispatch the
 Release workflow on `main`; they do not bump versions, upload packages locally,
-approve environments, or push. They require `uv` and the GitHub CLI (`gh`),
+approve environments, or push. Both wrappers use `uv run --no-sync` with the existing
+contributor environment; they do not resolve dependencies or rewrite the lockfile.
+They require `uv` and the GitHub CLI (`gh`),
 authenticated with `gh auth login --hostname github.com` using an account allowed to
 dispatch this repository's workflows. For `--wait`, use authentication supported by
 `gh run watch` (fine-grained PATs are not supported by that command).

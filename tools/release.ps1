@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
-& uv --directory $root run --locked python -m tools.maintain release @args
+& uv --directory $root run --no-sync python -m tools.maintain release @args
 exit $LASTEXITCODE
