@@ -629,6 +629,15 @@ must be clean, on `main`'s history, and descend from `stable`. Package, runtime 
 runtime text, and project-selector versions must agree. New releases advance the
 version on `stable` and require an unused PyPI version and tag.
 
+When preparing a higher version, the repository version-bump tool records the full
+current `HEAD` in `runtime.commit` as the pre-bump source baseline. Uncommitted
+runtime or reference changes (staged, unstaged, or untracked non-ignored files) are
+rejected before any writes. Unrelated working-tree edits are preserved. Repeating
+the current version preserves the recorded commit, even if `HEAD` has advanced.
+Failure to inspect Git aborts preparation without writes, and manifest-generation
+failure restores the original selector, including its provenance. This baseline is
+not the final release identity; the release tag identifies the final source commit.
+
 The workflow runs reusable CI, then builds and checks the wheel and sdist once and
 saves them as a short-lived workflow artifact. The `pypi` environment gates upload.
 Trusted Publishing uploads those saved files, skipping files PyPI already has, and an

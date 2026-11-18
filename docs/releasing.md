@@ -57,6 +57,13 @@ in CI before deploying. Run `vividly thumbnails` locally to preview them.
    the same version is allowed; decreasing it or starting from mismatched versions
    is rejected. A manifest-generation failure restores the original file contents.
 
+   For a higher version, the script also sets `runtime.commit` to the full current
+   `HEAD` SHA. Commit intended runtime and reference changes first: staged, unstaged,
+   or untracked non-ignored changes in either source tree block the bump. Unrelated
+   edits are preserved. A same-version rerun preserves `runtime.commit`, even after
+   another commit. This records the pre-bump source baseline, not the final release
+   commit identified by the release tag.
+
    The lockfile must already satisfy the public-source policy. A lockfile containing
    local registry rewrites is rejected before any writes; resolve those changes
    separately without discarding existing work. The script never bypasses configured

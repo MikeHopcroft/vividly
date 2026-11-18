@@ -15,6 +15,28 @@ from tools import bump_version
 from tools.check_uv_lock import LockfileError
 
 ROOT = Path(__file__).resolve().parents[1]
+OLD_COMMIT = "b" * 40
+
+
+def git(root: Path, *arguments: str) -> str:
+    return subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=Release Test",
+            "-c",
+            "user.email=release@example.invalid",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "-c",
+            "commit.gpgsign=false",
+            *arguments,
+        ],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
 
 
 @pytest.fixture
@@ -26,7 +48,7 @@ def repository(tmp_path: Path) -> Path:
     )
     (tmp_path / "vividly.yaml").write_text(
         "schema: 1\nruntime:\n  source: repository\n  version: 0.0.3 # keep comment\n"
-        "  commit: unchanged\n",
+        f"  commit: '{OLD_COMMIT}' # keep provenance comment\n",
         encoding="utf-8",
     )
     (tmp_path / "uv.lock").write_text(
@@ -38,6 +60,7 @@ def repository(tmp_path: Path) -> Path:
     )
     runtime = tmp_path / bump_version.RUNTIME
     (runtime / "vividly").mkdir(parents=True)
+    (runtime / "index.html").write_text("<html></html>\n", encoding="utf-8")
     (runtime / "vividly/version.txt").write_text("0.0.3\n", encoding="utf-8")
     (runtime / "vividly-runtime.json").write_text('{"version":"0.0.3"}\n', encoding="utf-8")
     reference = runtime.parent / "reference"
@@ -45,15 +68,23 @@ def repository(tmp_path: Path) -> Path:
     (reference / "example.md").write_text("Unreleased reference edits\n", encoding="utf-8")
     (tmp_path / "tools").mkdir()
     shutil.copy2(ROOT / "tools/build_runtime_manifest.py", tmp_path / "tools")
+    git(tmp_path, "init")
+    git(tmp_path, "add", ".")
+    git(tmp_path, "commit", "-m", "Source baseline")
     return tmp_path
 
 
 def snapshot(root: Path) -> dict[Path, bytes]:
-    return {path.relative_to(root): path.read_bytes() for path in root.rglob("*") if path.is_file()}
+    return {
+        path.relative_to(root): path.read_bytes()
+        for path in root.rglob("*")
+        if path.is_file() and ".git" not in path.relative_to(root).parts
+    }
 
 
 def test_updates_all_versions_and_regenerates_hashes_without_resolving(repository: Path) -> None:
     before = snapshot(repository)
+    baseline = git(repository, "rev-parse", "HEAD")
     bump_version.bump_version(repository, "0.0.4")
     project = (repository / "pyproject.toml").read_text()
     assert project == before[Path("pyproject.toml")].decode().replace(
@@ -62,8 +93,9 @@ def test_updates_all_versions_and_regenerates_hashes_without_resolving(repositor
     selector = (repository / "vividly.yaml").read_text()
     assert selector == before[Path("vividly.yaml")].decode().replace(
         "version: 0.0.3", "version: 0.0.4"
-    )
+    ).replace(OLD_COMMIT, baseline)
     assert yaml.safe_load(selector)["runtime"]["version"] == "0.0.4"
+    assert yaml.safe_load(selector)["runtime"]["commit"] == baseline
     lock = (repository / "uv.lock").read_text()
     assert lock == before[Path("uv.lock")].decode().replace(
         'name = "vividly"\nversion = "0.0.3"', 'name = "vividly"\nversion = "0.0.4"'
@@ -80,6 +112,62 @@ def test_updates_all_versions_and_regenerates_hashes_without_resolving(repositor
     after = snapshot(repository)
     bump_version.bump_version(repository, "0.0.4")
     assert snapshot(repository) == after
+
+
+def test_same_version_preserves_provenance_after_head_advances(repository: Path) -> None:
+    baseline = git(repository, "rev-parse", "HEAD")
+    bump_version.bump_version(repository, "0.0.4")
+    git(repository, "add", ".")
+    git(repository, "commit", "-m", "Prepare release")
+    assert git(repository, "rev-parse", "HEAD") != baseline
+    before = snapshot(repository)
+    bump_version.bump_version(repository, "0.0.4")
+    assert snapshot(repository) == before
+    selector = yaml.safe_load((repository / "vividly.yaml").read_text())
+    assert selector["runtime"]["commit"] == baseline
+
+
+@pytest.mark.parametrize("tree", ["runtime", "reference"])
+@pytest.mark.parametrize("state", ["staged", "unstaged", "untracked"])
+def test_uncommitted_source_changes_reject_bump_without_writes(
+    repository: Path, tree: str, state: str
+) -> None:
+    directory = repository / "src/vividly/resources" / tree
+    path = directory / (
+        "new.txt"
+        if state == "untracked"
+        else "index.html"
+        if tree == "runtime"
+        else "example.md"
+    )
+    path.write_text("Uncommitted source edits\n")
+    if state == "staged":
+        git(repository, "add", str(path))
+    before = snapshot(repository)
+    with pytest.raises(bump_version.VersionError, match="commit runtime and reference changes"):
+        bump_version.bump_version(repository, "0.0.4")
+    assert snapshot(repository) == before
+
+
+def test_unrelated_edits_are_preserved(repository: Path) -> None:
+    path = repository / "pyproject.toml"
+    path.write_text(path.read_text().replace("Unreleased edits", "Unrelated edits"))
+    bump_version.bump_version(repository, "0.0.4")
+    assert 'description = "Unrelated edits"' in path.read_text()
+
+
+def test_git_failure_rejects_bump_without_writes(repository: Path) -> None:
+    before = snapshot(repository)
+    with (
+        patch.object(
+            bump_version.subprocess,
+            "run",
+            side_effect=subprocess.CalledProcessError(1, ["git"]),
+        ),
+        pytest.raises(bump_version.VersionError, match="cannot inspect Git provenance"),
+    ):
+        bump_version.bump_version(repository, "0.0.4")
+    assert snapshot(repository) == before
 
 
 @pytest.mark.parametrize("version", ["0.0.2", "1.0.0", "0.0.04", "0.0.4rc1", "0.0.4\n"])
@@ -139,7 +227,9 @@ def test_cli_rejects_malformed_documents_without_writes(
 
 def test_manifest_failure_restores_preexisting_file_contents(repository: Path) -> None:
     before = snapshot(repository)
+    baseline = git(repository, "rev-parse", "HEAD")
     with (
+        patch.object(bump_version, "source_commit", return_value=baseline),
         patch.object(
             bump_version.subprocess,
             "run",

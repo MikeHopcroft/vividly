@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = Path("src/vividly/resources/runtime")
 TOML_VERSION = r"""(?m)^([ \t]*version[ \t]*=[ \t]*["'])([^"'\r\n]+)(["'])"""
 YAML_VERSION = r"(?m)^([ \t]+version:[ \t]*)([^ \t\r\n#]+)"
+YAML_COMMIT = r"""(?m)^([ \t]+commit:[ \t]*["']?)([0-9a-f]{40})(["']?[ \t]*(?:#.*)?\r?$)"""
 
 
 class VersionError(ValueError):
@@ -30,6 +31,43 @@ def replace_version(content: str, pattern: str, old: str, new: str, label: str) 
         raise VersionError(f"{label}: expected exactly one version field matching {old}")
     start, end = matches[0].span(2)
     return content[:start] + new + content[end:]
+
+
+def source_commit(root: Path) -> str:
+    """Capture a committed runtime/reference baseline before preparing a new version."""
+    try:
+        status = subprocess.run(
+            [
+                "git",
+                "status",
+                "--porcelain=v1",
+                "--untracked-files=all",
+                "--",
+                str(RUNTIME),
+                str(RUNTIME.parent / "reference"),
+            ],
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        if status.stdout:
+            raise VersionError("commit runtime and reference changes before bumping the version")
+        result = subprocess.run(
+            ["git", "rev-parse", "--verify", "HEAD"],
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError) as error:
+        raise VersionError(
+            "cannot inspect Git provenance; a repository with a commit is required"
+        ) from error
+    commit = result.stdout.strip()
+    if re.fullmatch(r"[0-9a-f]{40}", commit) is None:
+        raise VersionError("Git HEAD must be a full 40-character commit SHA")
+    return commit
 
 
 def bump_version(root: Path, version: str) -> None:
@@ -94,9 +132,19 @@ def bump_version(root: Path, version: str) -> None:
     if tomllib.loads(updated_lock) != expected_lock:
         raise VersionError("uv.lock: could not isolate the root package version")
 
+    updated_selector = replace_version(
+        contents[paths[1]], YAML_VERSION, old, version, "vividly.yaml"
+    )
+    if version != old:
+        commit = cast(dict[str, object], runtime).get("commit")
+        if not isinstance(commit, str) or re.fullmatch(r"[0-9a-f]{40}", commit) is None:
+            raise VersionError("vividly.yaml: expected a full runtime.commit SHA")
+        updated_selector = replace_version(
+            updated_selector, YAML_COMMIT, commit, source_commit(root), "vividly.yaml"
+        )
     updates = {
         paths[0]: replace_version(contents[paths[0]], TOML_VERSION, old, version, "pyproject.toml"),
-        paths[1]: replace_version(contents[paths[1]], YAML_VERSION, old, version, "vividly.yaml"),
+        paths[1]: updated_selector,
         paths[2]: updated_lock,
         paths[3]: contents[paths[3]].replace(old, version, 1),
     }
